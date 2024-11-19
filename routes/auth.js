@@ -44,6 +44,31 @@ authRouter.get("/token", async (req, res) => {
     res.json({ status: true })
 })
 
+
+authRouter.post("/logout", async (req, res) => {
+    const token = req.cookies.tk;
+    console.log(token);
+    const userid = req.body.userid;
+    console.log(userid);
+
+
+
+    try {
+        res.clearCookie("tk", {
+            httpOnly: true,
+            secure: false, // HTTPS 환경에서는 true로 설정
+            sameSite: "Lax",
+        });
+        const logoutQuery = "UPDATE users SET refresh_token = ? WHERE userid = ?"
+        await sql_con.promise().query(logoutQuery, [null, userid]);
+    } catch (err) {
+        console.error(err.message);
+    }
+
+
+    res.json({})
+})
+
 // 회원가입 엔드포인트
 authRouter.post("/register", async (req, res) => {
 

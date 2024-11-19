@@ -17,7 +17,7 @@
     });
 
     async function loginSubmit() {
-        if (!userId ||!userPwd) {
+        if (!userId || !userPwd) {
             alert("아이디와 비밀번호를 모두 입력하세요.");
             return;
         }
@@ -31,12 +31,14 @@
                 { withCredentials: true },
             );
             if (res.status === 200) {
-                goto('/')
+                goto("/");
             }
         } catch (err) {
-            console.log(err.message);
-
-            console.error(err.message);
+            if (err.response) {
+                alert(err.response.data.message);
+            } else {
+                console.error("네트워크 에러 발생! 잠시 후 다시 시도해주세요!");
+            }
         }
     }
 </script>

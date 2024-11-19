@@ -1,166 +1,170 @@
 <script>
-    import { user_info } from "$lib/store.js";
+    import {
+        admin_sidebar,
+        admin_sidebar_width,
+        user_info,
+    } from "$src/lib/store";
+    import Drawer from "$lib/components/Drawer.svelte";
+    import { onMount } from "svelte";
     import { goto } from "$app/navigation";
 
-    let drawerToggle;
+    let innerWidth;
+    const width = 192;
 
-    $effect(() => {
-        if ($user_info.rate < 2) {
-            alert("확인할수 없는 등급입니다. 관리자에게 문의해주세요.");
-            goto("/");
+    
+
+    $: {
+        if (innerWidth < 1000) {
+            $admin_sidebar = false;
+            $admin_sidebar_width = false;
+        } else {
+            $admin_sidebar = true;
+            $admin_sidebar_width = true;
         }
-    });
-
-    function menuClick() {
-        drawerToggle.click();
     }
+
+    onMount(() => {
+        console.log($user_info);
+        if(Object.keys($user_info).length === 0){
+            alert('로그인이 필요합니다.')
+            goto('/auth/login');
+        }
+        
+    })
+
+
 </script>
 
-<div class="drawer">
-    <input
-        id="my-drawer"
-        type="checkbox"
-        class="drawer-toggle"
-        bind:this={drawerToggle}
-    />
-    <div class="drawer-content suit-font">
-        <!-- 상단 고정 부분 -->
-        <div class="py-3 px-5 bg-gray-600 flex items-center gap-6">
-            <!-- Page content here -->
-            <label for="my-drawer" class="text-white text-2xl cursor-pointer">
-                <i class="fa fa-bars" aria-hidden="true"></i>
-            </label>
+<svelte:window bind:innerWidth />
 
-            <div>
-                <!-- svelte-ignore a11y_consider_explicit_label -->
-                <a href="/admin">
-                    <i class="fa fa-home text-2xl text-white" aria-hidden="true"
-                    ></i>
-                </a>
-            </div>
+<div
+    class="fixed top-0 left-0 w-full bg-stone-300 py-2 px-6 suit-font z-30 flex items-center pretendard"
+    class:ml-48={$admin_sidebar && $admin_sidebar_width}
+>
+    <!-- svelte-ignore a11y_consider_explicit_label -->
+    <button on:click={() => ($admin_sidebar = !$admin_sidebar)}>
+        <i class="fa fa-bars" aria-hidden="true"></i>
+    </button>
 
-            <span class="text-white">{$user_info.name}님 반갑습니다.</span>
-        </div>
-        <!-- svelte-ignore slot_element_deprecated -->
-        <div class="py-3 px-5">
-            <slot></slot>
+    <!-- svelte-ignore a11y_consider_explicit_label -->
+    <a href="/" class="mx-5">
+        <i class="fa fa-home text-xl" aria-hidden="true"></i>
+    </a>
+
+    <span class="text-sm">{$user_info.name}님 반갑습니다.</span>
+
+    <a
+        href="/auth/logout"
+        class="ml-2 text-xs px-2 py-1 bg-red-400 rounded-md text-white"
+    >
+        로그아웃
+    </a>
+</div>
+
+<Drawer drawerOpen={$admin_sidebar} bgGray={false} {width}>
+    <div class="flex justify-between mb-5">
+        <div>Admin</div>
+        <div>
+            <!-- svelte-ignore a11y_consider_explicit_label -->
+            <button
+                on:click={() => {
+                    $admin_sidebar = false;
+                }}
+            >
+                <i class="fa fa-times" aria-hidden="true"></i>
+            </button>
         </div>
     </div>
-    <div class="drawer-side suit-font">
-        <label
-            for="my-drawer"
-            aria-label="close sidebar"
-            class="drawer-overlay"
-        >
-        </label>
 
-        <ul class="menu bg-base-200 text-base-content min-h-full w-80 p-4">
-            <div class="py-5 flex justify-between items-center">
-                <span>관리자 메뉴</span>
-                <!-- svelte-ignore a11y_consider_explicit_label -->
-                <!-- svelte-ignore event_directive_deprecated -->
-                <button
-                    on:click={() => {
-                        drawerToggle.click();
-                    }}
-                    class="text-2xl"
-                >
-                    <i class="fa fa-times" aria-hidden="true"></i>
-                </button>
+    {#if $user_info.rate >= 5}
+        <a href="/admin">
+            <div class="p-2 hover:bg-gray-100 rounded-md mb-1 text-sm">
+                <span class="mr-1">
+                    <i class="fa fa-cog" aria-hidden="true"></i>
+                </span>
+                <span> 기본설정 </span>
             </div>
+        </a>
 
-            {#if $user_info.rate >= 5}
-                <!-- Sidebar content here -->
-                <li class="side-menu">
-                    <!-- svelte-ignore event_directive_deprecated -->
-                    <a href="/admin" on:click={menuClick}>
-                        <span>
-                            <i class="fa fa-cog" aria-hidden="true"></i>
-                        </span>
-                        <span> 환경설정 </span>
-                    </a>
-                </li>
+        <a href="/admin/minisite1">
+            <div class="p-2 hover:bg-gray-100 rounded-md mb-1 text-sm">
+                <span class="mr-1">
+                    <i class="fa fa-home" aria-hidden="true"></i>
+                </span>
+                <span> 미니사이트1 </span>
+            </div>
+        </a>
 
-                <li class="side-menu">
-                    <!-- svelte-ignore event_directive_deprecated -->
-                    <a href="/admin/minisite1" on:click={menuClick}>
-                        <span>
-                            <i class="fa fa-home" aria-hidden="true"></i>
-                        </span>
-                        <span> 미니사이트1 </span>
-                    </a>
-                </li>
-                <li class="side-menu">
-                    <!-- svelte-ignore event_directive_deprecated -->
-                    <a href="/admin/minisite2" on:click={menuClick}>
-                        <span>
-                            <i class="fa fa-home" aria-hidden="true"></i>
-                        </span>
-                        <span> 미니사이트2 </span>
-                    </a>
-                </li>
-                <li class="side-menu">
-                    <!-- svelte-ignore event_directive_deprecated -->
-                    <a href="/admin/dbcount" on:click={menuClick}>
-                        <span>
-                            <i class="fa fa-list-ol" aria-hidden="true"></i>
-                        </span>
-                        <span> DB 갯수 체크 </span>
-                    </a>
-                </li>
+        <a href="/admin/minisite2">
+            <div class="p-2 hover:bg-gray-100 rounded-md mb-1 text-sm">
+                <span class="mr-1">
+                    <i class="fa fa-home" aria-hidden="true"></i>
+                </span>
+                <span> 미니사이트2 </span>
+            </div>
+        </a>
 
-                <li class="side-menu">
-                    <!-- svelte-ignore event_directive_deprecated -->
-                    <a href="/admin/usermanage" on:click={menuClick}>
-                        <span>
-                            <i class="fa fa-users" aria-hidden="true"></i>
-                        </span>
-                        <span> 회원관리 </span>
-                    </a>
-                </li>
+        <a href="/admin/dbcount">
+            <div class="p-2 hover:bg-gray-100 rounded-md mb-1 text-sm">
+                <span class="mr-1">
+                    <i class="fa fa-list-ol" aria-hidden="true"></i>
+                </span>
+                <span> DB 갯수 체크 </span>
+            </div>
+        </a>
 
-                <li class="side-menu">
-                    <!-- svelte-ignore event_directive_deprecated -->
-                    <a href="/admin/dbupload" on:click={menuClick}>
-                        <span>
-                            <i class="fa fa-upload" aria-hidden="true"></i>
-                        </span>
-                        <span> DB 업로드 </span>
-                    </a>
-                </li>
+        <a href="/admin/usermanage">
+            <div class="p-2 hover:bg-gray-100 rounded-md mb-1 text-sm">
+                <span class="mr-1">
+                    <i class="fa fa-users" aria-hidden="true"></i>
+                </span>
+                <span> 회원관리 </span>
+            </div>
+        </a>
 
-                <li class="side-menu">
-                    <!-- svelte-ignore event_directive_deprecated -->
-                    <a href="/admin/alldb" on:click={menuClick}>
-                        <span>
-                            <i class="fa fa-table" aria-hidden="true"></i>
-                        </span>
-                        <span> 전체 DB </span>
-                    </a>
-                </li>
-            {/if}
+        <a href="/admin/dbupload">
+            <div class="p-2 hover:bg-gray-100 rounded-md mb-1 text-sm">
+                <span class="mr-1">
+                    <i class="fa fa-upload" aria-hidden="true"></i>
+                </span>
+                <span> DB 업로드 </span>
+            </div>
+        </a>
 
-            <li class="side-menu">
-                <!-- svelte-ignore event_directive_deprecated -->
-                <a href="/admin/managerdb" on:click={menuClick}>
-                    <span>
-                        <i class="fa fa-database" aria-hidden="true"></i>
-                    </span>
-                    <span> 접수 DB </span>
-                </a>
-            </li>
+        <a href="/admin/alldb">
+            <div class="p-2 hover:bg-gray-100 rounded-md mb-1 text-sm">
+                <span class="mr-1">
+                    <i class="fa fa-table" aria-hidden="true"></i>
+                </span>
+                <span> 전체 DB </span>
+            </div>
+        </a>
+    {/if}
 
-            <li class="side-menu">
-                <!-- svelte-ignore event_directive_deprecated -->
-                <a href="/admin/myinfomanage" on:click={menuClick}>
-                    <span>
-                        <i class="fa fa-user" aria-hidden="true"></i>
-                    </span>
-                    <span> 내 정보 변경 </span>
-                </a>
-            </li>
-        </ul>
-    </div>
+    <a href="/admin/managerdb">
+        <div class="p-2 hover:bg-gray-100 rounded-md mb-1 text-sm">
+            <span class="mr-1">
+                <i class="fa fa-database" aria-hidden="true"></i>
+            </span>
+            <span> 접수 DB </span>
+        </div>
+    </a>
+
+    <a href="/admin/myinfomanage">
+        <div class="p-2 hover:bg-gray-100 rounded-md mb-1 text-sm">
+            <span class="mr-1">
+                <i class="fa fa-user" aria-hidden="true"></i>
+            </span>
+            <span> 내 정보 변경 </span>
+        </div>
+    </a>
+</Drawer>
+
+<div
+    class="mt-14 px-2 text-sm suit-font"
+    class:ml-52={$admin_sidebar && $admin_sidebar_width}
+>
+    <slot />
 </div>
 
 <style>

@@ -9,13 +9,20 @@ export async function handle({ event, resolve }) {
 
     let userInfo = {}
     const refreshToken = event.cookies.get('tk'); // 쿠키에서 Refresh Token 가져오기
+    console.log(refreshToken);
+
     if (refreshToken) {
         const getUserInfoQuery = "SELECT * FROM users WHERE refresh_token = ?";
         const [userInfoRow] = await sql_con.promise().query(getUserInfoQuery, [refreshToken]);
-        userInfo = {
-            id: userInfoRow[0].userid,
-            name: userInfoRow[0].nick,
-            rate: userInfoRow[0].rate
+
+        if (userInfoRow.length > 0) {
+            userInfo = {
+                id: userInfoRow[0].userid,
+                name: userInfoRow[0].nick,
+                rate: userInfoRow[0].rate
+            }
+        } else {
+            event.cookies.delete('tk', { path: '/' });
         }
     }
 
