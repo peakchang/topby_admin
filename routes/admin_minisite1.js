@@ -3,6 +3,19 @@ import { sql_con } from '../back-lib/db.js'
 import { getQueryStr } from '../back-lib/lib.js';
 const minisite1Router = express.Router();
 
+minisite1Router.post('/load_hy_data', async (req, res) => {
+    const hyId = req.body.getHyId;
+    let hyData = {}
+    try {
+        const getHyDattaQuery = "SELECT * FROM hy_site WHERE hy_id = ? ";
+        const [hyDataRows] = await sql_con.promise().query(getHyDattaQuery, [hyId]);
+        hyData = hyDataRows[0]
+    } catch (err) {
+        console.error(err.message);
+    }
+    res.json({ hyData })
+})
+
 minisite1Router.post('/load_minisite', async (req, res) => {
 
     let minisiteData = [];
