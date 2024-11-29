@@ -1,7 +1,11 @@
 <script>
     import { tick } from "svelte";
+    import axios from "axios";
+    import { back_api } from "$src/lib/const";
+    import imageCompression from "browser-image-compression";
 
-    let items = $state(["Item 1", "Item 2", "Item 3", "Item 4"]);
+    let imgArr = $state([]);
+    let maxImgCount = 99999999;
     let positions = new Map();
     let animating = false;
 
@@ -10,6 +14,79 @@
     function dragOverAction(e) {
         console.log(e);
     }
+
+    function deleteItem(e) {
+        const itemId = parseInt(this.value);
+        console.log(itemId);
+        imgArr.splice(itemId, 1);
+        
+    }
+
+    // 이미지를 선택하면 사이즈 변경 (최대 1200px) 및 webp 변경 후 업로드
+    const onFileSelected = (e) => {
+        if (imgArr.length >= maxImgCount) {
+            alert(`최대 ${maxImgCount}개 이미지만 업로드 가능합니다.`);
+            return false;
+        }
+
+        const input = document.createElement("input");
+        input.setAttribute("type", "file");
+        input.setAttribute("accept", ".png,.jpg,.jpeg");
+        input.click();
+
+        // input change
+        input.onchange = async (e) => {
+            const imageFile = e.target.files[0];
+            const options = {
+                maxSizeMB: 1, // 최대 파일 크기 (MB)
+                maxWidthOrHeight: 1024, // 최대 너비 또는 높이
+                useWebWorker: true, // 웹 워커 사용
+            };
+
+            try {
+                const compressedFile = await imageCompression(
+                    imageFile,
+                    options,
+                );
+                console.log("Compressed file:", compressedFile);
+                console.log(compressedFile.name);
+
+                let imgForm = new FormData();
+
+                const timestamp = new Date().getTime();
+                const fileName = `${timestamp}${Math.random()
+                    .toString(36)
+                    .substring(2, 11)}.${compressedFile.name.split(".")[1]}`;
+
+                console.log(fileName);
+
+                imgForm.append("onimg", compressedFile, fileName);
+
+                const res = await axios.post(
+                    `${back_api}/img_upload`,
+                    imgForm,
+                    {
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        },
+                    },
+                );
+
+                console.log(res);
+
+                if (res.status == 200) {
+                    imgArr.push(res.data.baseUrl);
+                    imgArr = [...new Set(imgArr)];
+                    // dispatch("updateImgeList", {
+                    //     imgArr,
+                    // });
+                }
+            } catch (error) {
+                console.error("Error during image compression:", error);
+                alert("이미지 업로드 오류! 다시 시도해주세요!");
+            }
+        };
+    };
 
     // *************** 아래는 정렬되는 드래그 앤 드롭 함수!!! 건들지 말자!!! ********************
     // 상태 관리
@@ -49,7 +126,7 @@
         if (fromIndex === index) return;
 
         // 배열 업데이트: 값 교환
-        const updatedItems = [...items];
+        const updatedItems = [...imgArr];
         [updatedItems[fromIndex], updatedItems[index]] = [
             updatedItems[index],
             updatedItems[fromIndex],
@@ -58,8 +135,8 @@
         // 애니메이션 트리거
         await animateSwap(fromIndex, index);
 
-        items = updatedItems;
-        dragOverAction(items)
+        imgArr = updatedItems;
+        dragOverAction(imgArr);
 
         hoveredIndex = null; // 드롭 후 초기화
     }
@@ -70,8 +147,8 @@
         // 새로운 위치 측정
         measurePositions();
 
-        const fromKey = items[fromIndex];
-        const toKey = items[toIndex];
+        const fromKey = imgArr[fromIndex];
+        const toKey = imgArr[toIndex];
 
         const fromPos = positions.get(fromKey);
         const toPos = positions.get(toKey);
@@ -110,7 +187,7 @@
 
     <button
         on:click={() => {
-            items.push(addItemVal);
+            imgArr.push(addItemVal);
         }}
     >
         gogogogo
@@ -118,7 +195,7 @@
 </div>
 
 <ul>
-    {#each items as item, index (item)}
+    {#each imgArr as item, index (item)}
         <!-- svelte-ignore event_directive_deprecated -->
         <li
             draggable="true"
@@ -130,10 +207,32 @@
             class={hoveredIndex === index ? "hovered" : ""}
             style="--hover-color: {hoverColor}"
         >
-            {item}
+            <div class="w-full h-full relative flex items-center">
+                <button
+                    class="absolute top-0 right-0 text-lg text-red-400 cursor-default"
+                    value={index}
+                    on:click={deleteItem}
+                >
+                    <i class="fa fa-times-circle-o" aria-hidden="true"></i>
+                </button>
+                <img src={item} alt="" class="" />
+            </div>
         </li>
     {/each}
 </ul>
+
+<div id="app" class="pretendard mt-3">
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <div class="flex items-center">
+        <button
+            class="flex justify-center items-center gap-1 bg-green-600 py-1 px-3 rounded-md text-white text-sm"
+            on:click={onFileSelected}
+        >
+            <i class="fa fa-file-image-o" aria-hidden="true"></i>
+            이미지 업로드
+        </button>
+    </div>
+</div>
 
 <style>
     ul {
@@ -144,9 +243,9 @@
         gap: 8px;
     }
     li {
-        padding: 10px;
-        width: 80px;
-        height: 80px;
+        padding: 3px;
+        width: 120px;
+        height: 120px;
         background: #f3f3f3;
         border: 1px solid #ddd;
         cursor: grab;
