@@ -1,13 +1,5 @@
 <script>
     import { tick } from "svelte";
-<<<<<<< HEAD
-    import axios from "axios";
-    import { back_api } from "$src/lib/const";
-    import imageCompression from "browser-image-compression";
-
-    let imgArr = $state([]);
-    let maxImgCount = 99999999;
-=======
     import imageCompression from "browser-image-compression";
     import axios from "axios";
     import { back_api } from "$src/lib/const";
@@ -17,6 +9,7 @@
         maxImgCount = 999999,
         imgModifyList = [],
         btnLocation = "left",
+        imgFolder = "",
     } = $props();
 
     let imgArr = $state([]);
@@ -24,23 +17,18 @@
         imgArr = imgModifyList;
     }
 
->>>>>>> 71466e030f1714861a3e66709f41236d80fe26d5
     let positions = new Map();
     let animating = false;
 
     let hoverColor = "#FFFFD2"; // 드래그 드롭시 변경되는 배경색 (변경 가능)
 
+    let hoveredIndex = $state(null); // 현재 마우스 오버 인덱스
+    let draggedIndex = $state(null); // 드래그된 인덱스 (모바일용)
+
     function dragOverAction() {
         updateImg(imgArr);
     }
 
-<<<<<<< HEAD
-    function deleteItem(e) {
-        const itemId = parseInt(this.value);
-        console.log(itemId);
-        imgArr.splice(itemId, 1);
-        
-=======
     async function deleteImg() {
         const arrIdx = this.value;
         const deleteData = imgArr[arrIdx];
@@ -49,10 +37,11 @@
         const getFolder = getImgSplit[getImgSplit.length - 2];
         const getImgName = getImgSplit[getImgSplit.length - 1];
 
+        console.log(getImgName);
         try {
             const res = await axios.post(`${back_api}/delete_sort_img`, {
-                getFolder,
                 getImgName,
+                getFolder,
             });
 
             if (res.status == 200) {
@@ -66,7 +55,6 @@
         }
 
         // const res = await axios.post()
->>>>>>> 71466e030f1714861a3e66709f41236d80fe26d5
     }
 
     // 이미지를 선택하면 사이즈 변경 (최대 1200px) 및 webp 변경 후 업로드
@@ -108,11 +96,8 @@
                 console.log(fileName);
 
                 imgForm.append("onimg", compressedFile, fileName);
+                imgForm.append("folderName", imgFolder); // �����명 추가 (��가할 경우)
 
-<<<<<<< HEAD
-                const res = await axios.post(
-                    `${back_api}/img_upload`,
-=======
                 // FormData의 key 값과 value값 찾기
                 // let keys = imgForm.keys();
                 // for (const pair of keys) {
@@ -124,29 +109,26 @@
                 //     console.log(`value : ${pair}`);
                 // }
 
-                const res = await axios.post(
-                    `${back_api}/upload_sort_img`,
->>>>>>> 71466e030f1714861a3e66709f41236d80fe26d5
-                    imgForm,
-                    {
-                        headers: {
-                            "Content-Type": "multipart/form-data",
+                let res = {};
+                try {
+                    res = await axios.post(
+                        `${back_api}/upload_sort_img`,
+                        imgForm,
+                        {
+                            headers: {
+                                "Content-Type": "multipart/form-data",
+                            },
                         },
-                    },
-                );
-
-                console.log(res);
-
-                if (res.status == 200) {
-                    imgArr.push(res.data.baseUrl);
-                    imgArr = [...new Set(imgArr)];
-<<<<<<< HEAD
-                    // dispatch("updateImgeList", {
-                    //     imgArr,
-                    // });
-=======
-                    updateImg(imgArr);
->>>>>>> 71466e030f1714861a3e66709f41236d80fe26d5
+                    );
+                    if (res.status == 200) {
+                        imgArr.push(res.data.baseUrl);
+                        imgArr = [...new Set(imgArr)];
+                        updateImg(imgArr);
+                    }
+                } catch (error) {
+                    console.error("Error during image upload:", error.message);
+                    alert("이미지 업로드 오류! 다시 시도해주세요!");
+                    return;
                 }
             } catch (error) {
                 console.error("Error during image compression:", error);
@@ -157,7 +139,6 @@
 
     // *************** 아래는 정렬되는 드래그 앤 드롭 함수!!! 건들지 말자!!! ********************
     // 상태 관리
-    let hoveredIndex = $state(null); // 오버된 인덱스 추적
 
     function measurePositions() {
         const elements = document.querySelectorAll("li");
@@ -170,19 +151,19 @@
     }
 
     async function handleDragStart(event, index) {
-        measurePositions(); // 요소의 초기 위치 저장
+        measurePositions();
         event.dataTransfer.effectAllowed = "move";
         event.dataTransfer.setData("text/plain", index);
     }
 
     function handleDragOver(event, index) {
         event.preventDefault();
-        hoveredIndex = index; // 현재 마우스가 위치한 인덱스를 추적
+        hoveredIndex = index;
     }
 
     function handleDragLeave(event, index) {
         if (hoveredIndex === index) {
-            hoveredIndex = null; // 마우스가 위치에서 벗어나면 초기화
+            hoveredIndex = null;
         }
     }
 
@@ -192,26 +173,59 @@
 
         if (fromIndex === index) return;
 
-        // 배열 업데이트: 값 교환
         const updatedItems = [...imgArr];
         [updatedItems[fromIndex], updatedItems[index]] = [
             updatedItems[index],
             updatedItems[fromIndex],
         ];
 
-        // 애니메이션 트리거
         await animateSwap(fromIndex, index);
 
         imgArr = updatedItems;
-        dragOverAction(imgArr);
+        hoveredIndex = null;
+    }
 
-        hoveredIndex = null; // 드롭 후 초기화
+    // 모바일 터치 이벤트 핸들러
+    function handleTouchStart(event, index) {
+        measurePositions();
+        draggedIndex = index;
+    }
+
+    function handleTouchMove(event) {
+        event.preventDefault();
+        const touch = event.touches[0];
+        const target = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (!target) return;
+
+        const index = Array.from(target.parentNode.children).indexOf(target);
+        if (index !== -1 && index !== draggedIndex) {
+            hoveredIndex = index;
+        }
+    }
+
+    async function handleTouchEnd(event) {
+        if (draggedIndex === null || hoveredIndex === null) {
+            draggedIndex = null;
+            hoveredIndex = null;
+            return;
+        }
+
+        const updatedItems = [...imgArr];
+        [updatedItems[draggedIndex], updatedItems[hoveredIndex]] = [
+            updatedItems[hoveredIndex],
+            updatedItems[draggedIndex],
+        ];
+
+        await animateSwap(draggedIndex, hoveredIndex);
+
+        imgArr = updatedItems;
+        draggedIndex = null;
+        hoveredIndex = null;
     }
 
     async function animateSwap(fromIndex, toIndex) {
         animating = true;
 
-        // 새로운 위치 측정
         measurePositions();
 
         const fromKey = imgArr[fromIndex];
@@ -223,21 +237,18 @@
         const deltaX = toPos.left - fromPos.left;
         const deltaY = toPos.top - fromPos.top;
 
-        // 요소 이동
         const fromElement = document.querySelector(`li[data-key="${fromKey}"]`);
         const toElement = document.querySelector(`li[data-key="${toKey}"]`);
 
         fromElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
         toElement.style.transform = `translate(${-deltaX}px, ${-deltaY}px)`;
 
-        // 애니메이션 적용
         await tick();
         fromElement.style.transition = "transform 0.3s ease";
         toElement.style.transition = "transform 0.3s ease";
 
-        await new Promise((resolve) => setTimeout(resolve, 300)); // 애니메이션 시간 대기
+        await new Promise((resolve) => setTimeout(resolve, 300));
 
-        // 초기화
         fromElement.style.transform = "";
         toElement.style.transform = "";
         fromElement.style.transition = "";
@@ -245,29 +256,10 @@
 
         animating = false;
     }
-
-    let addItemVal = $state("");
 </script>
 
-<<<<<<< HEAD
-<div class="mb-3">
-    <input type="text" class="border" bind:value={addItemVal} />
-
-    <button
-        on:click={() => {
-            imgArr.push(addItemVal);
-        }}
-    >
-        gogogogo
-    </button>
-</div>
-
-<ul>
-    {#each imgArr as item, index (item)}
-=======
 <ul>
     {#each imgArr as img, index (img)}
->>>>>>> 71466e030f1714861a3e66709f41236d80fe26d5
         <!-- svelte-ignore event_directive_deprecated -->
         <li
             draggable="true"
@@ -276,20 +268,12 @@
             on:dragover={(event) => handleDragOver(event, index)}
             on:dragleave={(event) => handleDragLeave(event, index)}
             on:drop={(event) => handleDrop(event, index)}
+            on:touchstart={(event) => handleTouchStart(event, index)}
+            on:touchmove={handleTouchMove}
+            on:touchend={handleTouchEnd}
             class={hoveredIndex === index ? "hovered" : ""}
             style="--hover-color: {hoverColor}"
         >
-<<<<<<< HEAD
-            <div class="w-full h-full relative flex items-center">
-                <button
-                    class="absolute top-0 right-0 text-lg text-red-400 cursor-default"
-                    value={index}
-                    on:click={deleteItem}
-                >
-                    <i class="fa fa-times-circle-o" aria-hidden="true"></i>
-                </button>
-                <img src={item} alt="" class="" />
-=======
             <div class="w-full h-full flex items-center relative">
                 <button
                     class="absolute top-0 right-0 text-red-600 cursor-default"
@@ -299,27 +283,19 @@
                     <i class="fa fa-times-circle-o"></i>
                 </button>
                 <img src={img} alt="" />
->>>>>>> 71466e030f1714861a3e66709f41236d80fe26d5
             </div>
         </li>
     {/each}
 </ul>
 
 <div id="app" class="pretendard mt-3">
-<<<<<<< HEAD
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div class="flex items-center">
-        <button
-            class="flex justify-center items-center gap-1 bg-green-600 py-1 px-3 rounded-md text-white text-sm"
-=======
     <div
         class:text-left={btnLocation == "left"}
         class:text-center={btnLocation == "center"}
         class:text-right={btnLocation == "right"}
     >
         <button
-            class="gap-1 bg-green-600 py-1 px-3 rounded-md text-white text-sm"
->>>>>>> 71466e030f1714861a3e66709f41236d80fe26d5
+            class="flex items-center gap-2 bg-green-600 active:bg-green-700 py-1 px-3 rounded-md text-white text-sm"
             on:click={onFileSelected}
         >
             <i class="fa fa-file-image-o" aria-hidden="true"></i>
@@ -337,11 +313,7 @@
         gap: 8px;
     }
     li {
-<<<<<<< HEAD
-        padding: 3px;
-=======
         padding: 5px;
->>>>>>> 71466e030f1714861a3e66709f41236d80fe26d5
         width: 120px;
         height: 120px;
         background: #f3f3f3;

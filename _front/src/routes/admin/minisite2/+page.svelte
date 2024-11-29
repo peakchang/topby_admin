@@ -1,7 +1,7 @@
 <script>
-    import SortableImg from "$src/lib/components/SortableImg.svelte";
+    import SortableImgSetFolder from "$src/lib/components/SortableImgSetFolder.svelte";
+    import OneImg from "$src/lib/components/OneImg.svelte";
 
-    
     function updateImg(e) {
         console.log("여기는 어떻게 되야?!?!?!?!");
         console.log(e);
@@ -21,5 +21,13 @@
     }
 </script>
 
-<SortableImg {updateImg} maxImgCount={9999} imgModifyList={[]}
-></SortableImg>
+<div class="mb-10">
+    <SortableImgSetFolder
+        {updateImg}
+        imgFolder="test_folder"
+        maxImgCount={9999}
+        imgModifyList={[]}
+    ></SortableImgSetFolder>
+</div>
+
+<OneImg {updateImg}></OneImg>

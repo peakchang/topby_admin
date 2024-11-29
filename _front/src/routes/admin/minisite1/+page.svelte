@@ -2,7 +2,7 @@
     import axios from "axios";
     import { back_api } from "$lib/const.js";
     import { goto, invalidateAll } from "$app/navigation";
-    import SortableImg from "$src/lib/components/SortableImg.svelte";
+    import SortableImgSetFolder from "$src/lib/components/SortableImgSetFolder.svelte";
 
     // let loading = true;
     let { data } = $props();
@@ -223,7 +223,7 @@
         </table>
         <div class="mt-3 p-3 border rounded-md">
             <div class="mb-3 font-semibold">이미지 리스트</div>
-            <SortableImg {updateImg} btnLocation="center"></SortableImg>
+            <SortableImgSetFolder {updateImg} btnLocation="center"></SortableImgSetFolder>
         </div>
 
         <div class="mt-5">
