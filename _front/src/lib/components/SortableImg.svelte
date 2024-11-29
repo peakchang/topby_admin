@@ -1,25 +1,72 @@
 <script>
     import { tick } from "svelte";
+<<<<<<< HEAD
     import axios from "axios";
     import { back_api } from "$src/lib/const";
     import imageCompression from "browser-image-compression";
 
     let imgArr = $state([]);
     let maxImgCount = 99999999;
+=======
+    import imageCompression from "browser-image-compression";
+    import axios from "axios";
+    import { back_api } from "$src/lib/const";
+
+    let {
+        updateImg,
+        maxImgCount = 999999,
+        imgModifyList = [],
+        btnLocation = "left",
+    } = $props();
+
+    let imgArr = $state([]);
+    if (imgModifyList.length > 0) {
+        imgArr = imgModifyList;
+    }
+
+>>>>>>> 71466e030f1714861a3e66709f41236d80fe26d5
     let positions = new Map();
     let animating = false;
 
     let hoverColor = "#FFFFD2"; // 드래그 드롭시 변경되는 배경색 (변경 가능)
 
-    function dragOverAction(e) {
-        console.log(e);
+    function dragOverAction() {
+        updateImg(imgArr);
     }
 
+<<<<<<< HEAD
     function deleteItem(e) {
         const itemId = parseInt(this.value);
         console.log(itemId);
         imgArr.splice(itemId, 1);
         
+=======
+    async function deleteImg() {
+        const arrIdx = this.value;
+        const deleteData = imgArr[arrIdx];
+
+        const getImgSplit = deleteData.split("/");
+        const getFolder = getImgSplit[getImgSplit.length - 2];
+        const getImgName = getImgSplit[getImgSplit.length - 1];
+
+        try {
+            const res = await axios.post(`${back_api}/delete_sort_img`, {
+                getFolder,
+                getImgName,
+            });
+
+            if (res.status == 200) {
+                imgArr.splice(arrIdx, 1);
+                updateImg(imgArr);
+            } else {
+                alert("에러가 발생했습니다. 다시 시도해주세요");
+            }
+        } catch (error) {
+            console.error(error.message);
+        }
+
+        // const res = await axios.post()
+>>>>>>> 71466e030f1714861a3e66709f41236d80fe26d5
     }
 
     // 이미지를 선택하면 사이즈 변경 (최대 1200px) 및 webp 변경 후 업로드
@@ -62,8 +109,24 @@
 
                 imgForm.append("onimg", compressedFile, fileName);
 
+<<<<<<< HEAD
                 const res = await axios.post(
                     `${back_api}/img_upload`,
+=======
+                // FormData의 key 값과 value값 찾기
+                // let keys = imgForm.keys();
+                // for (const pair of keys) {
+                //     console.log(`name : ${pair}`);
+                // }
+
+                // let values = imgForm.values();
+                // for (const pair of values) {
+                //     console.log(`value : ${pair}`);
+                // }
+
+                const res = await axios.post(
+                    `${back_api}/upload_sort_img`,
+>>>>>>> 71466e030f1714861a3e66709f41236d80fe26d5
                     imgForm,
                     {
                         headers: {
@@ -77,9 +140,13 @@
                 if (res.status == 200) {
                     imgArr.push(res.data.baseUrl);
                     imgArr = [...new Set(imgArr)];
+<<<<<<< HEAD
                     // dispatch("updateImgeList", {
                     //     imgArr,
                     // });
+=======
+                    updateImg(imgArr);
+>>>>>>> 71466e030f1714861a3e66709f41236d80fe26d5
                 }
             } catch (error) {
                 console.error("Error during image compression:", error);
@@ -182,6 +249,7 @@
     let addItemVal = $state("");
 </script>
 
+<<<<<<< HEAD
 <div class="mb-3">
     <input type="text" class="border" bind:value={addItemVal} />
 
@@ -196,10 +264,14 @@
 
 <ul>
     {#each imgArr as item, index (item)}
+=======
+<ul>
+    {#each imgArr as img, index (img)}
+>>>>>>> 71466e030f1714861a3e66709f41236d80fe26d5
         <!-- svelte-ignore event_directive_deprecated -->
         <li
             draggable="true"
-            data-key={item}
+            data-key={img}
             on:dragstart={(event) => handleDragStart(event, index)}
             on:dragover={(event) => handleDragOver(event, index)}
             on:dragleave={(event) => handleDragLeave(event, index)}
@@ -207,6 +279,7 @@
             class={hoveredIndex === index ? "hovered" : ""}
             style="--hover-color: {hoverColor}"
         >
+<<<<<<< HEAD
             <div class="w-full h-full relative flex items-center">
                 <button
                     class="absolute top-0 right-0 text-lg text-red-400 cursor-default"
@@ -216,16 +289,37 @@
                     <i class="fa fa-times-circle-o" aria-hidden="true"></i>
                 </button>
                 <img src={item} alt="" class="" />
+=======
+            <div class="w-full h-full flex items-center relative">
+                <button
+                    class="absolute top-0 right-0 text-red-600 cursor-default"
+                    value={index}
+                    on:click={deleteImg}
+                >
+                    <i class="fa fa-times-circle-o"></i>
+                </button>
+                <img src={img} alt="" />
+>>>>>>> 71466e030f1714861a3e66709f41236d80fe26d5
             </div>
         </li>
     {/each}
 </ul>
 
 <div id="app" class="pretendard mt-3">
+<<<<<<< HEAD
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div class="flex items-center">
         <button
             class="flex justify-center items-center gap-1 bg-green-600 py-1 px-3 rounded-md text-white text-sm"
+=======
+    <div
+        class:text-left={btnLocation == "left"}
+        class:text-center={btnLocation == "center"}
+        class:text-right={btnLocation == "right"}
+    >
+        <button
+            class="gap-1 bg-green-600 py-1 px-3 rounded-md text-white text-sm"
+>>>>>>> 71466e030f1714861a3e66709f41236d80fe26d5
             on:click={onFileSelected}
         >
             <i class="fa fa-file-image-o" aria-hidden="true"></i>
@@ -243,7 +337,11 @@
         gap: 8px;
     }
     li {
+<<<<<<< HEAD
         padding: 3px;
+=======
+        padding: 5px;
+>>>>>>> 71466e030f1714861a3e66709f41236d80fe26d5
         width: 120px;
         height: 120px;
         background: #f3f3f3;

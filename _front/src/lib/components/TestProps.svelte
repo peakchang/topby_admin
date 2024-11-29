@@ -1,8 +1,10 @@
 <script>
-    let { onYes, onNo } = $props();
-    let testVal = 'sdjfsjdfljls'
+    let { inflate, deflate } = $props();
+    let power = $state(5);
 </script>
 
-<button onclick={onYes}>YES</button>
-
-<button onclick={onNo}>NO</button>
+<button onclick={inflate}> inflate </button>
+<button onclick={() => deflate(power)}> deflate </button>
+<button onclick={() => power--}>-</button>
+Pump power: {power}
+<button onclick={() => power++}>+</button>

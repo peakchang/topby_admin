@@ -24,7 +24,25 @@ apiRouter.get('/', (req, res) => {
     res.send('asldfjalisjdfliajsdf')
 })
 
-apiRouter.post('/img_upload', img_upload.single('onimg'), (req, res, next) => {
+
+
+apiRouter.post('/delete_sort_img', async (req, res, next) => {
+    const body = req.body;
+    const delPath = `public\\uploads\\image\\${body.getFolder}\\${body.getImgName}`
+
+    try {
+        await fs.unlink(delPath, (err) => {
+
+        })
+    } catch (error) {
+        status = false
+        console.error(error);
+    }
+    res.json({})
+})
+apiRouter.post('/upload_sort_img', img_upload.single('onimg'), (req, res, next) => {
+    console.log('여긴 문제 없었는데?');
+    
     let status = true;
     let baseUrl
     let saveUrl
@@ -33,7 +51,7 @@ apiRouter.post('/img_upload', img_upload.single('onimg'), (req, res, next) => {
         const lastFolderArr = req.file.destination.split('/');
         const lastFolder = lastFolderArr[lastFolderArr.length - 1];
         var origin = req.get('host');
-        baseUrl = req.protocol + '://' + origin + '/image/' + lastFolder + '/' + req.file.filename;
+        baseUrl = req.protocol + '://' + origin + '/img/' + lastFolder + '/' + req.file.filename;
         saveUrl = req.file.path
 
     } catch (error) {
