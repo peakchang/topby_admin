@@ -3,11 +3,10 @@
     import axios from "axios";
     import { back_api } from "$src/lib/const";
 
-    let {
-        updateImg,
-    } = $props();
+    let { updateImg, imgFolder = "", imageLink = "" } = $props();
 
-    let imgArr = $state([]);
+    console.log(imageLink);
+
     // 이미지를 선택하면 사이즈 변경 (최대 1200px) 및 webp 변경 후 업로드
     const onFileSelected = (e) => {
         const input = document.createElement("input");
@@ -39,21 +38,8 @@
                     .toString(36)
                     .substring(2, 11)}.${compressedFile.name.split(".")[1]}`;
 
-                console.log(fileName);
-
                 imgForm.append("onimg", compressedFile, fileName);
-
-                // FormData의 key 값과 value값 찾기
-                // let keys = imgForm.keys();
-                // for (const pair of keys) {
-                //     console.log(`name : ${pair}`);
-                // }
-
-                // let values = imgForm.values();
-                // for (const pair of values) {
-                //     console.log(`value : ${pair}`);
-                // }
-
+                imgForm.append("folderName", imgFolder); // �����명 추가 (��가할 경우)
                 let res = {};
                 try {
                     res = await axios.post(
@@ -65,18 +51,14 @@
                             },
                         },
                     );
+                    if (res.status == 200) {
+                        imageLink = res.data.baseUrl;
+                        updateImg(res.data.baseUrl);
+                    }
                 } catch (error) {
                     console.error("Error during image upload:", error.message);
                     alert("이미지 업로드 오류! 다시 시도해주세요!");
                     return;
-                }
-
-                console.log(res);
-
-                if (res.status == 200) {
-                    imgArr.push(res.data.baseUrl);
-                    imgArr = [...new Set(imgArr)];
-                    updateImg(imgArr);
                 }
             } catch (error) {
                 console.error("Error during image compression:", error);
@@ -84,9 +66,56 @@
             }
         };
     };
+
+
+    async function deleteImg(){
+
+        const getImgSplit = imageLink.split("/");
+        const getFolder = getImgSplit[getImgSplit.length - 2];
+        const getImgName = getImgSplit[getImgSplit.length - 1];
+
+        console.log(getImgName);
+        try {
+            const res = await axios.post(`${back_api}/delete_sort_img`, {
+                getImgName,
+                getFolder,
+            });
+
+            if (res.status == 200) {
+                imageLink = "";
+                updateImg("");
+            } else {
+                alert("에러가 발생했습니다. 다시 시도해주세요");
+            }
+        } catch (error) {
+            console.error(error.message);
+        }
+    }
 </script>
 
-<button class="btn btn-info min-h-8 h-8 text-white" on:click={onFileSelected}>
-    <i class="fa fa-upload" aria-hidden="true"></i>
-    <span>이미지 업로드</span>
-</button>
+{#if imageLink}
+    <div class=" max-w-[700px] w-full">
+        <img src={imageLink} alt="" />
+    </div>
+{:else}
+    <div></div>
+{/if}
+
+<!-- svelte-ignore event_directive_deprecated -->
+{#if imageLink}
+    <button
+        class="btn btn-error min-h-8 h-8 text-white mt-3"
+        on:click={deleteImg}
+    >
+        <i class="fa fa-trash" aria-hidden="true"></i>
+        <span>이미지 삭제</span>
+    </button>
+{:else}
+    <button
+        class="btn btn-info min-h-8 h-8 text-white mt-3"
+        on:click={onFileSelected}
+    >
+        <i class="fa fa-upload" aria-hidden="true"></i>
+        <span>이미지 업로드</span>
+    </button>
+{/if}

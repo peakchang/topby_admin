@@ -2,7 +2,7 @@
     import axios from "axios";
     import { back_api } from "$lib/const.js";
     import { goto, invalidateAll } from "$app/navigation";
-    import SortableImgSetFolder from "$src/lib/components/SortableImgSetFolder.svelte";
+    
 
     // let loading = true;
     let { data } = $props();
@@ -20,231 +20,21 @@
         console.log(minisiteData);
     }
 
-    async function openEditModal() {
-        console.log(this);
-        const getHyId = this.getAttribute("data");
-        console.log(getHyId);
+    async function openEditWindow() {
+        const hyId = this.getAttribute('data')
+        const url = `/mini_window/${hyId}`; // 열고 싶은 페이지의 URL
+        const windowName = "smallWindow"; // 새 창의 이름
+        const features = "width=700,height=900,top=100,left=100"; // 창 크기와 위치 설정
 
-        try {
-            const res = await axios.post(`${back_api}/minisite1/load_hy_data`, {
-                getHyId,
-            });
-            if (res.status == 200) {
-                console.log(res.data);
-                hyData = res.data.hyData;
-                my_modal.showModal();
-            }
-        } catch (error) {
-            alert("에러 발생 다시 시도 해주세요.");
-        }
+        window.open(url, windowName, features);
     }
-
     function updateImg(sortImgArr) {
         console.log(sortImgArr);
     }
 </script>
 
 <dialog id="my_modal" class="modal">
-    <div class="modal-box w-11/12 md:w-5/6 max-w-5xl">
-        <form method="dialog">
-            <div class="pb-3 text-base flex justify-between">
-                <span> 현장명 수정 페이지 </span>
-
-                <button>
-                    <i class="fa fa-times" aria-hidden="true"></i>
-                </button>
-            </div>
-        </form>
-        <table class="w-full">
-            <tbody>
-                <tr>
-                    <th class="in-th">현장명</th>
-                    <td class="in-td">
-                        <input
-                            type="text"
-                            class="input-base"
-                            bind:value={hyData.hy_title}
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th class="in-th">간략설명</th>
-                    <td class="in-td">
-                        <input
-                            type="text"
-                            class="input-base"
-                            bind:value={hyData.hy_description}
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th class="in-th">사이트명</th>
-                    <td class="in-td">
-                        <input
-                            type="text"
-                            class="input-base"
-                            bind:value={hyData.hy_site_name}
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th class="in-th">사업명</th>
-                    <td class="in-td">
-                        <input
-                            type="text"
-                            class="input-base"
-                            bind:value={hyData.hy_businessname}
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th class="in-th">분류</th>
-                    <td class="in-td">
-                        <input
-                            type="text"
-                            class="input-base"
-                            bind:value={hyData.hy_type}
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th class="in-th">규모</th>
-                    <td class="in-td">
-                        <input
-                            type="text"
-                            class="input-base"
-                            bind:value={hyData.hy_scale}
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th class="in-th">전용면적</th>
-                    <td class="in-td">
-                        <input
-                            type="text"
-                            class="input-base"
-                            bind:value={hyData.hy_areasize}
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th class="in-th">세대수</th>
-                    <td class="in-td">
-                        <input
-                            type="text"
-                            class="input-base"
-                            bind:value={hyData.hy_house_number}
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th class="in-th">공급위치</th>
-                    <td class="in-td">
-                        <input
-                            type="text"
-                            class="input-base"
-                            bind:value={hyData.hy_location}
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th class="in-th">입주예정</th>
-                    <td class="in-td">
-                        <input
-                            type="text"
-                            class="input-base"
-                            bind:value={hyData.hy_scheduled}
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th class="in-th">카카오링크</th>
-                    <td class="in-td">
-                        <input
-                            type="text"
-                            class="input-base"
-                            bind:value={hyData.hy_kakao_link}
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th class="in-th">특장점</th>
-                    <td class="in-td">
-                        <textarea
-                            rows="12"
-                            class="w-full border bg-gray-150 focus:outline-none focus:border-blue-500"
-                            bind:value={hyData.hy_features}
-                        >
-                        </textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <th class="in-th">추가 스크립트</th>
-                    <td class="in-td">
-                        <textarea
-                            rows="8"
-                            class="w-full border bg-gray-150 focus:outline-none focus:border-blue-500"
-                            bind:value={hyData.hy_add_script}
-                        >
-                        </textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <th class="in-th">전화번호</th>
-                    <td class="in-td">
-                        <input
-                            type="text"
-                            class="input-base"
-                            bind:value={hyData.hy_callnumber}
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th class="in-th">문자번호</th>
-                    <td class="in-td">
-                        <input
-                            type="text"
-                            class="input-base"
-                            bind:value={hyData.hy_sms}
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th class="in-th">명함이미지</th>
-                    <td class="in-td">
-                        <div></div>
-                    </td>
-                </tr>
-                <tr>
-                    <th class="in-th">메인이미지</th>
-                    <td class="in-td"> </td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="mt-3 p-3 border rounded-md">
-            <div class="mb-3 font-semibold">이미지 리스트</div>
-            <SortableImgSetFolder {updateImg} btnLocation="center"></SortableImgSetFolder>
-        </div>
-
-        <div class="mt-5">
-            <form method="dialog">
-                <div class="text-right">
-                    <!-- if there is a button, it will close the modal -->
-                    <!-- svelte-ignore event_directive_deprecated -->
-                    <button
-                        type="button"
-                        class="btn btn-accent text-white mr-5"
-                        on:click={() => {
-                            alert("업데이트가 완료 되었습니다.");
-                        }}
-                    >
-                        업데이트
-                    </button>
-                    <button class="btn">닫기</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    
 </dialog>
 
 <div class="">
@@ -299,7 +89,7 @@
                         <span
                             class="cursor-pointer"
                             data={minisiteData[idx].hy_id}
-                            on:click={openEditModal}
+                            on:click={openEditWindow}
                         >
                             {minisiteData[idx].hy_title}
                         </span>

@@ -8,11 +8,13 @@ minisite1Router.post('/load_hy_data', async (req, res) => {
     let hyData = {}
     try {
         const getHyDattaQuery = "SELECT * FROM hy_site WHERE hy_id = ? ";
-        const [hyDataRows] = await sql_con.promise().query(getHyDattaQuery, [hyId]);
+        console.log(getHyDattaQuery);
+        const [hyDataRows] = await sql_con.promise().query(getHyDattaQuery, [hyId.id]);
         hyData = hyDataRows[0]
     } catch (err) {
         console.error(err.message);
     }
+    
     res.json({ hyData })
 })
 

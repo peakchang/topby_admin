@@ -2,23 +2,18 @@ import express from "express";
 import multer from "multer";
 import moment from "moment-timezone";
 import fs from "fs";
+import path from "path";
 
 const apiRouter = express.Router();
 
-let img_upload = multer({
-    storage: multer.diskStorage({
-        // 경로를 설정
-        destination(req, file, cb) {
-            const setFolder = imgFolderChk();
-            cb(null, setFolder);
-        },
-        filename(req, file, cb) {
-            //파일명 설정
-            cb(null, file.originalname);
-        },
-    }),
-    // limits: { fileSize: 10 * 1024 * 1024 },
+const storage = multer.diskStorage({
+    destination: "temp/", // 임시 저장 경로
+    filename(req, file, cb) {
+        cb(null, file.originalname); // 원본 파일명을 사용
+    },
 });
+
+const img_upload = multer({ storage });
 
 apiRouter.get('/', (req, res) => {
     res.send('asldfjalisjdfliajsdf')
@@ -42,26 +37,49 @@ apiRouter.post('/delete_sort_img', async (req, res, next) => {
 })
 apiRouter.post('/upload_sort_img', img_upload.single('onimg'), (req, res, next) => {
     console.log('여긴 문제 없었는데?');
+
+    console.log('일단 들어는 오는거지?!?!??!');
     
-    let status = true;
+
     let baseUrl
-    let saveUrl
-
-    try {
-        const lastFolderArr = req.file.destination.split('/');
-        const lastFolder = lastFolderArr[lastFolderArr.length - 1];
-        var origin = req.get('host');
-        baseUrl = req.protocol + '://' + origin + '/img/' + lastFolder + '/' + req.file.filename;
-        saveUrl = req.file.path
-
-    } catch (error) {
-        status = false;
+    const body = req.body;
+    console.log(body);
+    const { folderName } = req.body; // POST로 전달된 폴더명
+    if (!folderName) {
+        return res.status(400).send("Folder name is required");
     }
 
-    res.json({ status, baseUrl, saveUrl })
+    try {
+        const uploadPath = imgFolderChk(folderName)
+        // 파일 이동
+        const tempPath = req.file.path; // 임시 저장된 경로
+
+        console.log(tempPath);
+        console.log(uploadPath);
+
+        const targetPath = path.join(uploadPath, req.file.originalname); // 최종 저장 경로
+        fs.renameSync(tempPath, targetPath); // 파일 이동
+
+        const origin = req.get('host');
+        baseUrl = req.protocol + '://' + origin + '/img/' + folderName + '/' + req.file.filename;
+        
+        console.log(baseUrl);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err });
+    }
+
+    // let status = true;
+
+
+
+
+
+
+    res.json({ baseUrl })
 })
 
-function imgFolderChk() {
+function imgFolderChk(folderName) {
     let setFolder
     const now = moment().format('YYMMDD')
 
@@ -85,11 +103,11 @@ function imgFolderChk() {
     }
 
     try {
-        fs.readdirSync(`public/uploads/image/img${now}`);
+        fs.readdirSync(`public/uploads/image/${folderName}`);
     } catch (error) {
-        fs.mkdirSync(`public/uploads/image/img${now}`);
+        fs.mkdirSync(`public/uploads/image/${folderName}`);
     }
-    setFolder = `public/uploads/image/img${now}`
+    setFolder = `public/uploads/image/${folderName}`
 
 
     return setFolder;

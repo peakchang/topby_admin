@@ -2,32 +2,36 @@
     import SortableImgSetFolder from "$src/lib/components/SortableImgSetFolder.svelte";
     import OneImg from "$src/lib/components/OneImg.svelte";
 
+    let imgArr = $state([]);
+
     function updateImg(e) {
         console.log("여기는 어떻게 되야?!?!?!?!");
         console.log(e);
-
-        console.log(e.detail);
+        imgArr = e;
     }
 
-    let size = $state(15);
-    let burst = $state(false);
-
-    function onAnswerNo(e) {
-        alert(e.detail);
-    }
-
-    function onAnswerYes(e) {
-        alert(e);
+    function updateOneImg(e) {
+        console.log(e);
     }
 </script>
 
 <div class="mb-10">
     <SortableImgSetFolder
         {updateImg}
-        imgFolder="test_folder"
+        imgFolder="chk_folder"
         maxImgCount={9999}
         imgModifyList={[]}
     ></SortableImgSetFolder>
 </div>
 
-<OneImg {updateImg}></OneImg>
+<OneImg updateImg={updateOneImg} imgFolder="chk_folder"></OneImg>
+
+<div>
+    <button
+        on:click={() => {
+            console.log(imgArr);
+        }}
+    >
+        gogogogo
+    </button>
+</div>

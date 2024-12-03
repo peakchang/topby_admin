@@ -97,18 +97,6 @@
 
                 imgForm.append("onimg", compressedFile, fileName);
                 imgForm.append("folderName", imgFolder); // �����명 추가 (��가할 경우)
-
-                // FormData의 key 값과 value값 찾기
-                // let keys = imgForm.keys();
-                // for (const pair of keys) {
-                //     console.log(`name : ${pair}`);
-                // }
-
-                // let values = imgForm.values();
-                // for (const pair of values) {
-                //     console.log(`value : ${pair}`);
-                // }
-
                 let res = {};
                 try {
                     res = await axios.post(
@@ -275,6 +263,7 @@
             style="--hover-color: {hoverColor}"
         >
             <div class="w-full h-full flex items-center relative">
+                <!-- svelte-ignore a11y_consider_explicit_label -->
                 <button
                     class="absolute top-0 right-0 text-red-600 cursor-default"
                     value={index}
@@ -294,6 +283,7 @@
         class:text-center={btnLocation == "center"}
         class:text-right={btnLocation == "right"}
     >
+        <!-- svelte-ignore event_directive_deprecated -->
         <button
             class="flex items-center gap-2 bg-green-600 active:bg-green-700 py-1 px-3 rounded-md text-white text-sm"
             on:click={onFileSelected}
