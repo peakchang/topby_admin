@@ -69,7 +69,6 @@
         border: 1px solid #cfcfcf;
     }
     :global(.in-td) {
-        padding: 3px 2px;
         border: 1px solid #cfcfcf;
     }
 </style>

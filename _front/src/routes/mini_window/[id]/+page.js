@@ -9,7 +9,7 @@ export const load = async ({ params, url, data }) => {
     console.log(getHyId);
 
     try {
-        const res = await axios.post(`${back_api}/minisite1/load_hy_data`, {
+        const res = await axios.post(`${back_api}/minisite/load_hy_data`, {
             getHyId,
         });
         if (res.status == 200) {

@@ -8,7 +8,7 @@
         updateImg,
         maxImgCount = 999999,
         imgModifyList = [],
-        btnLocation = "left",
+        btnLocation = "center",
         imgFolder = "",
     } = $props();
 
@@ -278,21 +278,23 @@
 </ul>
 
 <div id="app" class="pretendard mt-3">
-    <div
-        class:text-left={btnLocation == "left"}
-        class:text-center={btnLocation == "center"}
-        class:text-right={btnLocation == "right"}
-    >
+    <div>
         <!-- svelte-ignore event_directive_deprecated -->
         <button
             class="flex items-center gap-2 bg-green-600 active:bg-green-700 py-1 px-3 rounded-md text-white text-sm"
+            class:mx-auto={btnLocation == "center"}
+            class:ml-auto={btnLocation == "right"}
             on:click={onFileSelected}
         >
             <i class="fa fa-file-image-o" aria-hidden="true"></i>
-            이미지 업로드
+            <span>이미지 업로드</span>
         </button>
     </div>
 </div>
+
+<!-- class:text-left={btnLocation == "left"}
+        class:text-center={btnLocation == "center"}
+        class:text-right={btnLocation == "right"} -->
 
 <style>
     ul {
@@ -309,6 +311,7 @@
         background: #f3f3f3;
         border: 1px solid #ddd;
         cursor: grab;
+        overflow: hidden;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         transition: background-color 0.3s ease;
     }

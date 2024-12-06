@@ -1,6 +1,10 @@
 <script>
     import SortableImgSetFolder from "$src/lib/components/SortableImgSetFolder.svelte";
+    import OneImg from "$src/lib/components/OneImg.svelte";
     import { page } from "$app/stores";
+    import axios from "axios";
+    import { back_api } from "$src/lib/const.js";
+    import { invalidateAll } from "$app/navigation";
     console.log($page.params);
 
     let { data } = $props();
@@ -8,6 +12,33 @@
     let hyData = $state(data.hyData);
     function updateImg(e) {
         console.log(e);
+        hyData.hy_image_list = e.join(",");;
+    }
+
+    function cardImageUpload(e) {
+        console.log(e);
+        hyData.hy_card_image = e;
+    }
+
+    function mainImageUpload(e) {
+        console.log(e);
+        hyData.hy_main_image = e
+    }
+
+    async function updateHySite() {
+        console.log(hyData);
+        try {
+            const res = await axios.post(
+                `${back_api}/minisite/update_hy_data`,
+                hyData,
+            );
+
+            console.log(res);
+            if (res.status == 200) {
+                alert("수정이 완료 되었습니다.");
+                invalidateAll();
+            }
+        } catch (error) {}
     }
 </script>
 
@@ -208,14 +239,28 @@
                     >명함이미지</th
                 >
                 <td class="in-td">
-                    <div></div>
+                    <div>
+                        <OneImg
+                            updateImg={cardImageUpload}
+                            imgFolder={hyData.hy_num}
+                            imageLink={hyData.hy_card_image}
+                        ></OneImg>
+                    </div>
                 </td>
             </tr>
             <tr>
-                <th class="in-th text-sm bg-slate-100 border-slate-300"
-                    >메인이미지</th
-                >
-                <td class="in-td"> </td>
+                <th class="in-th text-sm bg-slate-100 border-slate-300">
+                    메인이미지
+                </th>
+                <td class="in-td">
+                    <div>
+                        <OneImg
+                            updateImg={mainImageUpload}
+                            imgFolder={hyData.hy_num}
+                            imageLink={hyData.hy_main_image}
+                        ></OneImg>
+                    </div>
+                </td>
             </tr>
         </tbody>
     </table>
@@ -225,25 +270,22 @@
             {updateImg}
             imgFolder={hyData.hy_num}
             btnLocation="center"
+            imgModifyList={hyData.hy_image_list.split(',')}
         ></SortableImgSetFolder>
     </div>
 
-    <div class="mt-5">
-        <form method="dialog">
-            <div class="text-right">
-                <!-- if there is a button, it will close the modal -->
-                <!-- svelte-ignore event_directive_deprecated -->
-                <button
-                    type="button"
-                    class="btn btn-accent text-white mr-5"
-                    on:click={() => {
-                        alert("업데이트가 완료 되었습니다.");
-                    }}
-                >
-                    업데이트
-                </button>
-                <button class="btn">닫기</button>
-            </div>
-        </form>
+    <div class="my-5">
+        <div class="text-center">
+            <!-- if there is a button, it will close the modal -->
+            <!-- svelte-ignore event_directive_deprecated -->
+            <button
+                type="button"
+                class="btn btn-accent text-white mr-5 min-h-9 h-9"
+                on:click={updateHySite}
+            >
+                업데이트
+            </button>
+            <button class="btn min-h-9 h-9">닫기</button>
+        </div>
     </div>
 </div>

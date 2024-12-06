@@ -2,22 +2,33 @@ import axios from "axios";
 import { back_api } from "$lib/const.js";
 import { getPagination } from "$lib/lib.js"
 
+
 // 사이트 접속시 user_info store 값에 user 정보 넣기
 export const load = async ({ params, url, data }) => {
 
+    console.log('들어오긴 함?!');
+    
     const nowPage = url.searchParams.get('page') || 1;
+    console.log(`in pagejs : ${nowPage}`);
+    
     let pageArr = []
-    let minisiteData = [];
+    let user_datas = [];
     try {
-        const res = await axios.post(`${back_api}/minisite/load_minisite`, { nowPage })
+        const res = await axios.post(`${back_api}/usermanage/load_users`, { nowPage })        
         if (res.status == 200) {
-            minisiteData = res.data.minisiteData;
+            user_datas = res.data.user_datas
             pageArr = getPagination(parseInt(nowPage), res.data.allPage);
         }
     } catch (error) {
 
     }
 
+    console.log(pageArr);
+    
 
-    return { minisiteData, pageArr }
+    
+    
+
+
+    return { user_datas, pageArr }
 }

@@ -10,8 +10,9 @@ dotenv.config();
 
 import { handler } from "./_front/build/handler.js"
 
-import { minisite1Router } from './routes/admin_minisite1.js'
+import { minisiteRouter } from './routes/admin_minisite.js'
 import { adminBaseRouter } from "./routes/admin_base.js"
+import { userManageRouter } from './routes/admin_user.js';
 import { apiRouter } from "./routes/api.js"
 import { authRouter } from "./routes/auth.js"
 
@@ -57,7 +58,9 @@ app.enable('trust proxy');
 app.use('/api/v3', apiRouter);
 app.use('/api/v3/auth', authRouter);
 app.use('/api/v3/adminbase', adminBaseRouter);
-app.use('/api/v3/minisite1', minisite1Router);
+app.use('/api/v3/minisite', minisiteRouter);
+app.use('/api/v3/usermanage', userManageRouter);
+
 
 app.use('/chk', (req, res) => {
     res.send('백엔드 생성 완료!!')

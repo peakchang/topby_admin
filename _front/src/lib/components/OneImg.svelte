@@ -3,7 +3,12 @@
     import axios from "axios";
     import { back_api } from "$src/lib/const";
 
-    let { updateImg, imgFolder = "", imageLink = "" } = $props();
+    let {
+        updateImg,
+        imgFolder = "",
+        imageLink = "",
+        btnLocation = "center",
+    } = $props();
 
     console.log(imageLink);
 
@@ -67,9 +72,7 @@
         };
     };
 
-
-    async function deleteImg(){
-
+    async function deleteImg() {
         const getImgSplit = imageLink.split("/");
         const getFolder = getImgSplit[getImgSplit.length - 2];
         const getImgName = getImgSplit[getImgSplit.length - 1];
@@ -102,20 +105,27 @@
 {/if}
 
 <!-- svelte-ignore event_directive_deprecated -->
-{#if imageLink}
-    <button
-        class="btn btn-error min-h-8 h-8 text-white mt-3"
-        on:click={deleteImg}
-    >
-        <i class="fa fa-trash" aria-hidden="true"></i>
-        <span>이미지 삭제</span>
-    </button>
-{:else}
-    <button
-        class="btn btn-info min-h-8 h-8 text-white mt-3"
-        on:click={onFileSelected}
-    >
-        <i class="fa fa-upload" aria-hidden="true"></i>
-        <span>이미지 업로드</span>
-    </button>
-{/if}
+
+<div
+    class:text-center={btnLocation == "center"}
+    class:text-left={btnLocation == "left"}
+    class:text-right={btnLocation == "right"}
+>
+    {#if imageLink}
+        <button
+            class="btn btn-error min-h-8 h-8 text-white mt-3"
+            on:click={deleteImg}
+        >
+            <i class="fa fa-trash" aria-hidden="true"></i>
+            <span>이미지 삭제</span>
+        </button>
+    {:else}
+        <button
+            class="btn btn-info min-h-8 h-8 text-white mt-3"
+            on:click={onFileSelected}
+        >
+            <i class="fa fa-upload" aria-hidden="true"></i>
+            <span>이미지 업로드</span>
+        </button>
+    {/if}
+</div>

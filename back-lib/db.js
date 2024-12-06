@@ -14,5 +14,8 @@ export const sql_con = mysql.createConnection({
 /*
 
 ALTER TABLE users ADD COLUMN refresh_token TEXT DEFAULT NULL;
+ALTER TABLE hy_site MODIFY COLUMN hy_main_image VARCHAR(255);
+ALTER TABLE hy_site MODIFY COLUMN hy_card_image VARCHAR(255);
+
 
 */
