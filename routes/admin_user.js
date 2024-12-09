@@ -2,7 +2,52 @@ import express from "express";
 import { sql_con } from '../back-lib/db.js'
 import { getQueryStr } from '../back-lib/lib.js';
 import moment from "moment-timezone";
+import bcrypt from "bcrypt";
+
 const userManageRouter = express.Router();
+
+
+userManageRouter.post('/update_user_site_list', async (req, res) => {
+    const selectedEstateStr = req.body.selectedEstateStr;
+    const userId = req.body.userId;
+    try {
+        const updateUserEstateQuery = "UPDATE users SET manage_estate = ? WHERE id = ?";
+        await sql_con.promise().query(updateUserEstateQuery, [selectedEstateStr, userId])
+    } catch (err) {
+        console.error(err.message);
+    }
+
+    res.json({})
+})
+
+userManageRouter.post('/update_user_info', async (req, res) => {
+    console.log('고고고고');
+
+    const userInfo = req.body.user_info;
+    const userId = userInfo.id;
+    delete userInfo.id;
+    let hashedPassword = ""
+    userInfo.created_at = moment(userInfo.created_at).format('YYYY-MM-DD HH:mm:ss');
+    if (userInfo.type == 'password') {
+        hashedPassword = await bcrypt.hash(password, 10);
+        userInfo.password = hashedPassword;
+    } else {
+        delete userInfo.password;
+    }
+
+    try {
+        const queryStr = getQueryStr(userInfo, 'update');
+        console.log(queryStr);
+        const updateUserInfoQuery = `UPDATE users SET ${queryStr.str} WHERE id = ${userId}`;
+        await sql_con.promise().query(updateUserInfoQuery, queryStr.values)
+    } catch (err) {
+        console.error(err.message);
+
+    }
+
+
+    res.json({})
+})
 userManageRouter.post('/load_users', async (req, res) => {
     let user_datas = [];
     let manager_datas = [];
@@ -33,7 +78,7 @@ userManageRouter.post('/load_users', async (req, res) => {
         console.error(err.message);
     }
 
-    res.json({ user_datas, allPage })
+    res.json({ user_datas, allPage, manager_datas })
 })
 
 userManageRouter.post('/load_site_list', async (req, res) => {

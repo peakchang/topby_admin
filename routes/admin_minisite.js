@@ -4,6 +4,24 @@ import { getQueryStr } from '../back-lib/lib.js';
 import moment from "moment-timezone";
 const minisiteRouter = express.Router();
 
+minisiteRouter.post('/add_hy_site', async (req, res) => {
+    const hy_num = req.body.hy_num;
+    const hy_site_name = req.body.hy_site_name;
+    const now = moment().format('YYYY-MM-DD HH:mm:ss');
+    let err_message = "";
+    try {
+        const addHySiteQuery = `INSERT INTO hy_site (hy_num, hy_title, hy_creted_at) VALUES (?,?,?)`;
+        await sql_con.promise().query(addHySiteQuery, [hy_num, hy_site_name, now]);
+    } catch (err) {
+        err_message = err.message;
+        console.error(err_message);
+
+    }
+
+    res.json({ err_message })
+})
+
+
 minisiteRouter.post('/apply_site', async (req, res) => {
     const ldId = req.body.ld_id
     const setSite = req.body.setSite
@@ -72,6 +90,46 @@ minisiteRouter.get('/', (req, res) => {
 
 // 아래는 미니 사이트1 !!!!!!!!!!!!
 
+
+
+
+minisiteRouter.post('/delete_hy_raw', async (req, res) => {
+    const deleteData = req.body.deleteData;
+    for (let i = 0; i < deleteData.length; i++) {
+        const data = deleteData[i];
+        try {
+            const deleteHyRawQuery = "DELETE FROM hy_site WHERE hy_id = ?";
+            await sql_con.promise().query(deleteHyRawQuery, data.hy_id);
+        } catch (error) {
+        }
+    }
+    res.json({})
+})
+minisiteRouter.post('/update_hy_raw', async (req, res) => {
+    const updateData = req.body.updateData;
+    let duplication_num = 0;
+    for (let i = 0; i < updateData.length; i++) {
+        const data = updateData[i];
+        const hyId = data.hy_id;
+        delete data.hy_id;
+        const queryStr = getQueryStr(data, 'update');
+        queryStr.values.push(hyId);
+
+        try {
+            const updateHyRawQuery = `UPDATE hy_site SET ${queryStr.str} WHERE hy_id = ?`;
+            await sql_con.promise().query(updateHyRawQuery, queryStr.values);
+        } catch (error) {
+            console.error(error.message);
+
+            duplication_num++
+        }
+    }
+    console.log(duplication_num);
+
+    res.json({ duplication_num })
+})
+
+
 minisiteRouter.post('/update_hy_data', async (req, res) => {
     const hySiteData = req.body
     console.log(hySiteData);
@@ -97,6 +155,8 @@ minisiteRouter.post('/load_hy_data', async (req, res) => {
     try {
         const getHyDattaQuery = "SELECT * FROM hy_site WHERE hy_id = ? ";
         console.log(getHyDattaQuery);
+        console.log(hyId);
+
         const [hyDataRows] = await sql_con.promise().query(getHyDattaQuery, [hyId.id]);
         hyData = hyDataRows[0]
     } catch (err) {
@@ -113,8 +173,16 @@ minisiteRouter.post('/load_minisite', async (req, res) => {
     let allPage = 0;
     let onePageCount = 10;
     const nowPage = req.body.nowPage || 1;
+    const search = req.body.search || "";
+    let searchStr = "";
+    if (search) {
+        searchStr = `WHERE hy_title LIKE '%${search}%'`;
+    }
+
     try {
-        const getMinisite1CountQuery = "SELECT count(*) AS m1Count FROM hy_site";
+        const getMinisite1CountQuery = `SELECT count(*) AS m1Count FROM hy_site ${searchStr}`;
+        console.log(getMinisite1CountQuery);
+
         const [countRows] = await sql_con.promise().query(getMinisite1CountQuery);
         allCount = countRows[0].m1Count;
         console.log(allCount);
@@ -122,7 +190,7 @@ minisiteRouter.post('/load_minisite', async (req, res) => {
         const startCount = (nowPage - 1) * onePageCount;
 
 
-        const getMinisite1Query = `SELECT hy_id,hy_num,hy_title,hy_counter FROM hy_site ORDER BY hy_id DESC LIMIT ${startCount}, ${onePageCount}`;
+        const getMinisite1Query = `SELECT hy_id,hy_num,hy_title,hy_counter FROM hy_site ${searchStr} ORDER BY hy_id DESC LIMIT ${startCount}, ${onePageCount}`;
         const [miniSiteRows] = await sql_con.promise().query(getMinisite1Query);
         minisiteData = miniSiteRows;
     } catch (err) {

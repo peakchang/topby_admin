@@ -9,7 +9,12 @@
 
     let { data } = $props();
     console.log(data);
-    let hyData = $state(data.hyData);
+    let hyData = $state({});
+    let modifyImgArr = $state([]);
+    $effect(() => {
+        hyData = data.hyData
+        modifyImgArr = hyData.hy_image_list.split(',')
+    })
     function updateImg(e) {
         console.log(e);
         hyData.hy_image_list = e.join(",");;
@@ -270,7 +275,7 @@
             {updateImg}
             imgFolder={hyData.hy_num}
             btnLocation="center"
-            imgModifyList={hyData.hy_image_list.split(',')}
+            imgModifyList={modifyImgArr}
         ></SortableImgSetFolder>
     </div>
 

@@ -46,7 +46,7 @@
                 mDatas[selectIdx]["ld_site"] = setSite;
                 siteList = [];
                 filterKeyword = "";
-                setSite = 'none'
+                setSite = "none";
                 invalidateAll();
             }
         } catch (error) {}
@@ -54,6 +54,10 @@
 </script>
 
 <div>
+    <div class="mb-5">
+        <button class="btn btn-success btn-sm text-white">행추가</button>
+        <button class="btn btn-error btn-sm text-white">선택삭제</button>
+    </div>
     <table class="w-full">
         <thead>
             <tr>
@@ -177,8 +181,7 @@
                                     class="select select-info w-full max-w-xs select-sm"
                                     bind:value={setSite}
                                 >
-                                    <option disabled selected
-                                    value="none"
+                                    <option disabled selected value="none"
                                         >1차 검색을 완료 해주세요</option
                                     >
                                     {#each siteList as site}
