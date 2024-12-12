@@ -105,6 +105,7 @@
 <dialog id="manage_estate_modal" class="modal">
     <div class="w-1/3 flex items-center gap-1">
         <input type="text" class="input-base" bind:value={siteSearchKeyword} />
+        <!-- svelte-ignore event_directive_deprecated -->
         <button
             class="btn btn-info btn-sm text-white"
             value={selectedEstateStr}
@@ -112,6 +113,7 @@
         >
             검색
         </button>
+        <!-- svelte-ignore event_directive_deprecated -->
         <button
             class="btn btn-accent btn-sm text-white"
             value={selectedEstateStr}
@@ -127,6 +129,7 @@
     </div>
     <div class="modal-box w-11/12 max-w-5xl relative max-h-[500px]">
         <form method="dialog">
+            <!-- svelte-ignore event_directive_deprecated -->
             <button
                 class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
                 on:click={closeModal}
@@ -258,6 +261,7 @@
                                 {manage}
                             </div>
                         {/each}
+                        <!-- svelte-ignore event_directive_deprecated -->
                         <button
                             class="btn btn-primary btn-xs"
                             value={manager.manage_estate}
@@ -269,6 +273,7 @@
                             변경하기
                         </button>
                     {:else}
+                        <!-- svelte-ignore event_directive_deprecated -->
                         <button
                             class="btn btn-primary btn-xs"
                             value={manager.manage_estate}
@@ -310,6 +315,7 @@
                             <option value="1">일반</option>
                         </select>
 
+                        <!-- svelte-ignore event_directive_deprecated -->
                         <button
                             class="btn btn-info btn-xs text-white"
                             value={idx}
@@ -321,6 +327,7 @@
                 </td>
                 <td class="in-td py-2 px-2">
                     <div class="flex justify-center items-center gap-1">
+                        <!-- svelte-ignore event_directive_deprecated -->
                         <input
                             type="text"
                             class="input-base"
@@ -329,6 +336,7 @@
                             }}
                         />
 
+                        <!-- svelte-ignore event_directive_deprecated -->
                         <button
                             class="btn btn-primary btn-xs text-white"
                             value={idx}
@@ -347,6 +355,7 @@
                             bind:value={users[idx]["user_email"]}
                         />
 
+                        <!-- svelte-ignore event_directive_deprecated -->
                         <button
                             class="btn btn-accent btn-xs text-white"
                             value={idx}
@@ -364,6 +373,7 @@
                             bind:value={users[idx]["user_phone"]}
                         />
 
+                        <!-- svelte-ignore event_directive_deprecated -->
                         <button
                             class="btn btn-secondary btn-xs text-white"
                             value={idx}
@@ -380,6 +390,7 @@
                                 {manage}
                             </div>
                         {/each}
+                        <!-- svelte-ignore event_directive_deprecated -->
                         <button
                             class="btn btn-primary btn-xs"
                             value={user.manage_estate}
@@ -392,6 +403,7 @@
                             변경하기
                         </button>
                     {:else}
+                        <!-- svelte-ignore event_directive_deprecated -->
                         <button
                             class="btn btn-primary btn-xs"
                             value={user.manage_estate}
@@ -415,9 +427,11 @@
 </table>
 
 <div class="flex justify-center items-center my-5 gap-1">
+    <!-- svelte-ignore a11y_consider_explicit_label -->
     <button class="page-btn w-8 h-8 text-sm border rounded-md">
         <i class="fa fa-angle-double-left" aria-hidden="true"></i>
     </button>
+    <!-- svelte-ignore a11y_consider_explicit_label -->
     <button class="page-btn w-8 h-8 text-sm border rounded-md">
         <i class="fa fa-angle-left" aria-hidden="true"></i>
     </button>
@@ -429,6 +443,7 @@
                 {page}
             </button>
         {:else}
+            <!-- svelte-ignore event_directive_deprecated -->
             <button
                 class="page-btn w-8 h-8 text-sm border rounded-md"
                 value={page}
@@ -441,9 +456,11 @@
             </button>
         {/if}
     {/each}
+    <!-- svelte-ignore a11y_consider_explicit_label -->
     <button class="page-btn w-8 h-8 text-sm border rounded-md">
         <i class="fa fa-angle-right" aria-hidden="true"></i>
     </button>
+    <!-- svelte-ignore a11y_consider_explicit_label -->
     <button class="page-btn w-8 h-8 text-sm border rounded-md">
         <i class="fa fa-angle-double-right" aria-hidden="true"></i>
     </button>

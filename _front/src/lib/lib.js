@@ -91,6 +91,6 @@ export function formatPhoneNumber(input) {
         return sanitized.replace(/(\d{4})(\d{4})/, '$1-$2');
     } else {
         // 길이가 8, 10, 11이 아닐 경우
-        return 'Invalid phone number';
+        return false;
     }
 }

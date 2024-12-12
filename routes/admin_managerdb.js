@@ -3,8 +3,8 @@ import { sql_con } from '../back-lib/db.js'
 import { getQueryStr } from '../back-lib/lib.js';
 import moment from "moment-timezone";
 
-const adminAllDbRouter = express.Router();
-adminAllDbRouter.post('/add_memo_content', async (req, res) => {
+const adminManagerDbRouter = express.Router();
+adminManagerDbRouter.post('/add_memo_content', async (req, res) => {
     const body = req.body;
     try {
         const insertMemoQuery = "INSERT INTO memos (mo_depend_id,mo_manager,mo_memo) VALUES (?,?,?)";
@@ -15,7 +15,7 @@ adminAllDbRouter.post('/add_memo_content', async (req, res) => {
     res.json({})
 })
 
-adminAllDbRouter.post('/load_customer_info', async (req, res) => {
+adminManagerDbRouter.post('/load_customer_info', async (req, res) => {
 
     const body = req.body;
     let customer_info = {}
@@ -39,7 +39,6 @@ adminAllDbRouter.post('/load_customer_info', async (req, res) => {
         `
         const [customerInfoRows] = await sql_con.promise().query(getCustomerInfoQuery);
         customer_info = customerInfoRows[0]
-        console.log(customer_info);
 
     } catch (error) {
 
@@ -47,7 +46,11 @@ adminAllDbRouter.post('/load_customer_info', async (req, res) => {
 
     res.json({ customer_info })
 })
-adminAllDbRouter.post('/load_data', async (req, res) => {
+adminManagerDbRouter.post('/load_data', async (req, res) => {
+
+    const body = req.body;
+    console.log(body);
+
     let datas = [];
     let allCount = 0;
     let allPage = 0;
@@ -60,13 +63,41 @@ adminAllDbRouter.post('/load_data', async (req, res) => {
 
     const startDate = req.body.start_date + " 00:00:00"
     const endDate = req.body.end_date + " 23:59:59"
-    const filterSite = req.body.filterSite
     const setStatus = req.body.setStatus
     const setSite = req.body.setSite
 
     let addQuery = "";
+    let getSiteAddQuery = "";
+    if (body.manager_id != 'masters') {
+        console.log(body.manager_id);
+
+        try {
+            const getSiteDataQuery = "SELECT * FROM users WHERE userid = ?";
+            const [siteRows] = await sql_con.promise().query(getSiteDataQuery, [body.manager_id]);
+            console.log(siteRows[0]);
+            
+            addQuery = `WHERE '${siteRows[0].manage_estate}' LIKE CONCAT('%', af_form_name, '%') AND af_form_name <> ''`
+
+            getSiteAddQuery = `WHERE '${siteRows[0].manage_estate}' LIKE CONCAT('%', sl_site_name , '%')`
+        } catch (err) {
+            console.error(err.message);
+
+        }
+    }
+
+    console.log(addQuery);
+    
+
+
+
+
+
     if (startDate && endDate) {
-        addQuery = `WHERE af_created_at BETWEEN '${startDate}' AND '${endDate}'`;
+        if (addQuery.includes('WHERE')) {
+            addQuery += `AND af_created_at BETWEEN '${startDate}' AND '${endDate}'`;
+        } else {
+            addQuery = `WHERE af_created_at BETWEEN '${startDate}' AND '${endDate}'`;
+        }
     }
 
     if (setStatus) {
@@ -77,10 +108,7 @@ adminAllDbRouter.post('/load_data', async (req, res) => {
         addQuery += ` AND af_form_name = '${setSite}'`;
     }
 
-    let statusAddQuery = "";
-    if (filterSite) {
-        statusAddQuery = `WHERE sl_site_name LIKE '%${filterSite}%'`;
-    }
+    
 
     try {
 
@@ -92,7 +120,10 @@ adminAllDbRouter.post('/load_data', async (req, res) => {
         status_color_list = statusRows[0].fs_estate_status_color.split(',');
 
         // 사이트 리스트 구하기
-        const getSiteListQuery = `SELECT sl_id, sl_site_name FROM site_list ${statusAddQuery} ORDER BY sl_id DESC;`;
+        const getSiteListQuery = `SELECT sl_id, sl_site_name FROM site_list ${getSiteAddQuery} ORDER BY sl_id DESC;`;
+
+        console.log(getSiteListQuery);
+        
         const [siteListRows] = await sql_con.promise().query(getSiteListQuery);
         site_list = siteListRows;
         // const getAllCountApFormQuery = `SELECT count(*) AS af_count FROM application_form`;
@@ -109,10 +140,13 @@ adminAllDbRouter.post('/load_data', async (req, res) => {
             ) AS g ON g.af_form_name = t.af_form_name
                 AND g.af_mb_phone = t.af_mb_phone
                 AND g.max_af_id = t.af_id`;
+
         const [countRows] = await sql_con.promise().query(getAllCountApFormQuery);
         allCount = countRows[0].af_count;
         allPage = Math.ceil(allCount / onePageCount);
         const startCount = (nowPage - 1) * onePageCount
+
+
         // const formStatusDataQuery = `SELECT * FROM application_form ${addQuery} ORDER BY af_id DESC LIMIT 0, ${onePageCount};`
         const formStatusDataQuery = `SELECT 
             t.af_id, 
@@ -136,6 +170,10 @@ adminAllDbRouter.post('/load_data', async (req, res) => {
             ORDER BY t.af_id DESC
             LIMIT ${startCount},${onePageCount};`
 
+
+
+
+
         const [formStatusData] = await sql_con.promise().query(formStatusDataQuery);
         datas = formStatusData;
     } catch (err) {
@@ -145,4 +183,4 @@ adminAllDbRouter.post('/load_data', async (req, res) => {
     res.json({ datas, allPage, allCount, site_list, status_list, status_color_list })
 })
 
-export { adminAllDbRouter }
+export { adminManagerDbRouter }
