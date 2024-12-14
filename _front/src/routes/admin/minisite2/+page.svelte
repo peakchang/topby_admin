@@ -14,6 +14,9 @@
     let siteList = $state([]);
     let setSite = $state("none");
 
+    let addSubDomainVal = $state("");
+    let addSubDomainBool = $state(true);
+
     async function searchSiteList() {
         console.log(this.value);
 
@@ -51,13 +54,35 @@
             }
         } catch (error) {}
     }
+
+    async function addSubDomain() {
+        
+    }
 </script>
 
 <div>
-    <div class="mb-5">
-        <button class="btn btn-success btn-sm text-white">행추가</button>
-        <button class="btn btn-error btn-sm text-white">선택삭제</button>
+    <div class="mb-2">
+        <button
+            class="btn btn-success btn-sm text-white"
+            on:click={() => {
+                addSubDomainBool = !addSubDomainBool;
+            }}
+        >
+            사이트 추가
+        </button>
     </div>
+    <div
+        class="mb-1 w-1/2 md:w-1/3 flex gap-2 items-center"
+        class:hidden={addSubDomainBool}
+    >
+        <input type="text" class="input-base" bind:value={addSubDomainVal} />
+        <button class="btn btn-info btn-sm text-white" on:click={addSubDomain}> 도메인 추가 </button>
+    </div>
+    <div class="mb-2 text-xs text-red-500">
+        ※ 고급 미니사이트 현장 삭제는 각 사이트의 "관리" 페이지로 들어가서 삭제
+        해주세요
+    </div>
+
     <table class="w-full">
         <thead>
             <tr>

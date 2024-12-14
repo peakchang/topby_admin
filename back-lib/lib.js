@@ -1,5 +1,6 @@
 import fs from 'fs'
 import moment from "moment-timezone";
+import path from 'path';
 moment.tz.setDefault("Asia/Seoul");
 
 export const getQueryStr = (data, type, addTimeStr = '') => {
@@ -46,4 +47,16 @@ export const getQueryStr = (data, type, addTimeStr = '') => {
     }
 
     return returnData;
+}
+
+
+export function deleteFolder(folderPath) {
+    const targetPath = path.resolve(folderPath);
+
+    if (fs.existsSync(targetPath)) {
+        fs.rmSync(targetPath, { recursive: true, force: true });
+        console.log(`${targetPath} 폴더를 삭제했습니다.`);
+    } else {
+        console.log(`${targetPath} 폴더가 존재하지 않습니다.`);
+    }
 }

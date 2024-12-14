@@ -1,7 +1,16 @@
 import express from "express";
 import { sql_con } from '../back-lib/db.js'
-import { getQueryStr } from '../back-lib/lib.js';
+import { getQueryStr, deleteFolder } from '../back-lib/lib.js';
 import moment from "moment-timezone";
+import fs from "fs-extra";
+
+
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const minisiteRouter = express.Router();
 
 minisiteRouter.post('/add_hy_site', async (req, res) => {
@@ -90,13 +99,73 @@ minisiteRouter.get('/', (req, res) => {
 
 // 아래는 미니 사이트1 !!!!!!!!!!!!
 
+minisiteRouter.post('/copy_hy_data', async (req, res) => {
+    const body = req.body;
+    console.log(body);
 
+    try {
+        const getHyDataQuery = "SELECT * FROM hy_site WHERE hy_id = ?";
+        const [getHyDataRow] = await sql_con.promise().query(getHyDataQuery, body.copyData.hy_id);
+        const getHyData = getHyDataRow[0];
+
+        delete getHyData.hy_id;
+
+        let keyStr = "";
+        let questions = "";
+        let values = [];
+        for (const key in getHyData) {
+            console.log(key);
+            console.log(getHyData[key]);
+            keyStr += `${key},`;
+            questions += `?,`;
+
+            if (key == 'hy_creted_at') {
+                const getTime = moment(getHyData[key]).format('YYYY-MM-DD HH:mm:ss');
+                values.push(getTime)
+            } else if (key == 'hy_num') {
+                values.push(body.copyId)
+            } else if (key.includes('image')) {
+                const getImgPath = getHyData[key].replaceAll(body.copyData.hy_num, body.copyId)
+                values.push(getImgPath);
+            } else {
+                values.push(getHyData[key])
+            }
+
+        }
+
+        if (keyStr.endsWith(',')) {
+            keyStr = keyStr.slice(0, -1);
+        }
+
+        if (questions.endsWith(',')) {
+            questions = questions.slice(0, -1);
+        }
+
+        const getOldFolder = `./public/uploads/image/${body.copyData.hy_num}`
+        const getNewFolder = `./public/uploads/image/${body.copyId}`;
+        if (fs.existsSync(getOldFolder)) {
+            console.log('있다~~~~~~~~~~~~~~');
+            fs.copySync(getOldFolder, getNewFolder);
+        } else {
+            console.log('없다~~~~~~');
+        }
+
+        const addHyDataQuery = `INSERT INTO hy_site (${keyStr}) VALUES (${questions})`;
+        await sql_con.promise().query(addHyDataQuery, values);
+    } catch (err) {
+        console.error(err.message);
+    }
+
+    res.json({})
+})
 
 
 minisiteRouter.post('/delete_hy_raw', async (req, res) => {
     const deleteData = req.body.deleteData;
     for (let i = 0; i < deleteData.length; i++) {
         const data = deleteData[i];
+        const deletePath = `./public/uploads/image/${data.hy_num}`
+        deleteFolder(deletePath)
         try {
             const deleteHyRawQuery = "DELETE FROM hy_site WHERE hy_id = ?";
             await sql_con.promise().query(deleteHyRawQuery, data.hy_id);

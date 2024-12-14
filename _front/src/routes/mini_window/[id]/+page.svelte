@@ -5,19 +5,20 @@
     import axios from "axios";
     import { back_api } from "$src/lib/const.js";
     import { invalidateAll } from "$app/navigation";
-    console.log($page.params);
+    // console.log($page.params);
 
     let { data } = $props();
     console.log(data);
     let hyData = $state({});
     let modifyImgArr = $state([]);
-    $effect(() => {
-        hyData = data.hyData
-        modifyImgArr = hyData.hy_image_list.split(',')
-    })
+
+    hyData = data.hyData;
+    modifyImgArr = data.hyData.hy_image_list.split(",");
+
+    $effect(() => {});
     function updateImg(e) {
         console.log(e);
-        hyData.hy_image_list = e.join(",");;
+        hyData.hy_image_list = e.join(",");
     }
 
     function cardImageUpload(e) {
@@ -27,7 +28,7 @@
 
     function mainImageUpload(e) {
         console.log(e);
-        hyData.hy_main_image = e
+        hyData.hy_main_image = e;
     }
 
     async function updateHySite() {

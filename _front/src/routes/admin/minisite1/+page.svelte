@@ -15,6 +15,10 @@
     let hyData = $state({});
     let nowPage = $state(1);
 
+    // 카피할 아이디 및 창 보이게 bool
+    let copyRawBool = $state(true);
+    let copyId = $state("");
+
     // 검색 변수
     let searchVal = $state("");
 
@@ -137,7 +141,33 @@
         } catch (error) {}
     }
 
-    function copyRaw() {}
+    async function copyHyData() {
+        if (checkedList.length == 0) {
+            alert("복사할 항목을 선택해주세요");
+            return;
+        } else if (checkedList.length > 1) {
+            alert("복사할 현장은 한번에 한군데만 가능합니다.");
+            return;
+        }
+
+        if (!copyId) {
+            alert("복사 대상 아이디 값을 입력하세요");
+            return;
+        }
+        const copyData = minisiteData[checkedList[0]];
+        try {
+            const res = await axios.post(`${back_api}/minisite/copy_hy_data`, {
+                copyData,
+                copyId,
+            });
+            if (res.status == 200) {
+                alert("복사가 완료 되었습니다.");
+                checkedList = [];
+                copyId = "";
+                invalidateAll();
+            }
+        } catch (error) {}
+    }
 </script>
 
 <dialog id="add_hy_modal" class="modal">
@@ -186,9 +216,29 @@
             <button class="btn btn-xs md:btn-sm btn-error" on:click={deleteRaw}>
                 삭제
             </button>
-            <button class="btn btn-xs md:btn-sm btn-warning" on:click={copyRaw}>
+            <button
+                class="btn btn-xs md:btn-sm btn-warning"
+                on:click={() => {
+                    copyRawBool = false;
+                }}
+            >
                 복사
             </button>
+
+            <div class="flex items-center gap-1" class:hidden={copyRawBool}>
+                <input
+                    type="text"
+                    class="input-base"
+                    placeholder="아이디값을 입력하세요"
+                    bind:value={copyId}
+                />
+                <button
+                    class="btn btn-xs md:btn-sm btn-success text-white"
+                    on:click={copyHyData}
+                >
+                    확인
+                </button>
+            </div>
         </div>
     </div>
     <table class="w-full text-xs md:text-sm text-center">
