@@ -5,19 +5,27 @@
     import axios from "axios";
     import moment from "moment";
     import { isHashedPassword } from "$src/lib/lib.js";
+    import { setParams } from "$src/lib/lib.js";
 
     let { data } = $props();
     let users = $state([]);
     let managers = $state([]);
     let pages = $state([]);
 
+    // 검색~~~~
+    let userRate = $state("0");
+    let searchName = $state("");
+    let searchEmail = $state("");
+
+    userRate = $page.url.searchParams.get('user_rate');
+    searchName = $page.url.searchParams.get('search_name');
+    searchEmail = $page.url.searchParams.get('search_email');
+
     $effect(() => {
         users = data.user_datas;
         managers = data.manager_datas;
-        console.log("여기에는?!?!");
         pages = data.pageArr;
     });
-    console.log(data);
 
     let nowPage = $state($page.url.searchParams.get("page") || 1);
     let siteList = $state([]);
@@ -39,18 +47,12 @@
                 { site_search_keyword: siteSearchKeyword },
             );
             if (res.status == 200) {
-                console.log(res);
                 siteList = res.data.site_list;
-
-                // console.log(siteList);
             }
         } catch (error) {}
     }
 
     async function updateUserSiteList() {
-        console.log(selectedEstate);
-        console.log(userId);
-
         const selectedEstateStr = selectedEstate.join(",");
         try {
             const res = await axios.post(
@@ -73,11 +75,6 @@
     async function updateUserInfo() {
         const getIdx = this.value;
         const type = this.getAttribute("data-type");
-        console.log(users[getIdx]);
-        console.log(this.getAttribute("data-type"));
-
-        console.log(users[getIdx]["password"]);
-        console.log(isHashedPassword(users[getIdx]["password"]));
 
         if (type == "password") {
             if (
@@ -99,6 +96,26 @@
                 invalidateAll();
             }
         } catch (error) {}
+    }
+
+    function userManageSearch(e) {
+        e.preventDefault();
+
+        let option = {};
+        if (userRate != 0 || searchName || searchEmail) {
+            if (userRate != 0) {
+                option["user_rate"] = userRate;
+            }
+            if (searchName) {
+                option["search_name"] = searchName;
+            }
+            if (searchEmail) {
+                option["search_email"] = searchEmail;
+            }
+            setParams(option, true);
+        }else if(userRate == 0 && !searchName && !searchEmail){
+            setParams({}, true);
+        }
     }
 </script>
 
@@ -155,31 +172,34 @@
         </div>
     </div>
 </dialog>
+<form on:submit={userManageSearch}>
+    <div class="mb-4 flex items-center gap-2">
+        <select class="select select-bordered select-sm" bind:value={userRate}>
+            <option value="0">전체</option>
+            <option value="2">분양사</option>
+            <option value="1">일반</option>
+        </select>
 
-<div class="mb-4 flex items-center gap-2">
-    <select class="select select-bordered select-sm">
-        <option value="">전체</option>
-        <option value="">분양사</option>
-        <option value="">일반</option>
-    </select>
+        <span> 이름(닉네임) : </span>
+        <input
+            type="text"
+            class="input input-bordered input-sm"
+            placeholder="부분 입력 가능"
+            bind:value={searchName}
+        />
 
-    <span> 이름(닉네임) : </span>
-    <input
-        type="text"
-        class="input input-bordered input-sm"
-        placeholder="부분 입력 가능"
-    />
+        <span>이메일 : </span>
+        <input
+            type="text"
+            class="input input-bordered input-sm"
+            placeholder="부분 입력 가능"
+            bind:value={searchEmail}
+        />
 
-    <span>이메일 : </span>
-    <input
-        type="text"
-        class="input input-bordered input-sm"
-        placeholder="부분 입력 가능"
-    />
-
-    <button class="btn btn-sm btn-info text-white">조회</button>
-    <button class="btn btn-sm btn-error text-white">선택삭제</button>
-</div>
+        <button class="btn btn-sm btn-info text-white">조회</button>
+        <button class="btn btn-sm btn-error text-white">선택삭제</button>
+    </div>
+</form>
 <table class="w-full text-xs md:text-sm text-center">
     <thead>
         <tr>
@@ -192,6 +212,7 @@
                 </div>
             </th>
             <th class="in-th">아이디</th>
+            <th class="in-th">이름</th>
             <th class="in-th">등급</th>
             <th class="in-th">비번변경</th>
             <th class="in-th">이메일</th>
@@ -211,8 +232,12 @@
                         />
                     </div>
                 </td>
+
                 <td class="in-td py-2 px-2">
                     {manager.userid}
+                </td>
+                <td class="in-td py-2 px-2">
+                    {manager.nick}
                 </td>
                 <td class="in-td py-2 px-2">
                     <div class="flex justify-center items-center gap-1">
@@ -304,6 +329,9 @@
                 </td>
                 <td class="in-td py-2 px-2">
                     {user.userid}
+                </td>
+                <td class="in-td py-2 px-2 w-20">
+                    {user.nick}
                 </td>
                 <td class="in-td py-2 px-2">
                     <div class="flex justify-center items-center gap-1">
@@ -448,7 +476,7 @@
                 class="page-btn w-8 h-8 text-sm border rounded-md"
                 value={page}
                 on:click={(e) => {
-                    goto(`?page=${e.target.value}`);
+                    setParams({page : e.target.value});
                     nowPage = e.target.value;
                 }}
             >

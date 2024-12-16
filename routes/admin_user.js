@@ -21,7 +21,6 @@ userManageRouter.post('/update_user_site_list', async (req, res) => {
 })
 
 userManageRouter.post('/update_user_info', async (req, res) => {
-    console.log('고고고고');
 
     const userInfo = req.body.user_info;
     const userId = userInfo.id;
@@ -37,7 +36,6 @@ userManageRouter.post('/update_user_info', async (req, res) => {
 
     try {
         const queryStr = getQueryStr(userInfo, 'update');
-        console.log(queryStr);
         const updateUserInfoQuery = `UPDATE users SET ${queryStr.str} WHERE id = ${userId}`;
         await sql_con.promise().query(updateUserInfoQuery, queryStr.values)
     } catch (err) {
@@ -55,13 +53,27 @@ userManageRouter.post('/load_users', async (req, res) => {
     let allPage = 0;
     let onePageCount = 20;
     const nowPage = req.body.nowPage || 1;
+
+    const body = req.body;
+    console.log(body);
+
+    let addQuery = "";
+    if (body.userRate) {
+        addQuery += ` AND rate = ${body.userRate}`
+    }
+    if (body.searchName) {
+        addQuery += ` AND nick LIKE '%${body.searchName}%'`
+    }
+    if (body.searchEmail) {
+        addQuery += ` AND user_email LIKE '%${body.searchEmail}%'`
+    }
+
     try {
 
 
-        const getUserCountQuery = "SELECT count(*) AS userCount FROM users WHERE rate != 5";
+        const getUserCountQuery = `SELECT count(*) AS userCount FROM users WHERE rate != 5 ${addQuery}`;
         const [countRows] = await sql_con.promise().query(getUserCountQuery);
         allCount = countRows[0].userCount;
-        console.log(allCount);
         allPage = Math.ceil(allCount / onePageCount);
         const startCount = (nowPage - 1) * onePageCount;
 
@@ -69,10 +81,9 @@ userManageRouter.post('/load_users', async (req, res) => {
         const [managerRows] = await sql_con.promise().query(getManagerUserQuery);
         manager_datas = managerRows;
 
-        const getUsersQuery = `SELECT * FROM users WHERE rate != 5 ORDER BY id DESC LIMIT ${startCount}, ${onePageCount}`;
+        const getUsersQuery = `SELECT * FROM users WHERE rate != 5 ${addQuery} ORDER BY id DESC LIMIT ${startCount}, ${onePageCount}`;
         const [userRows] = await sql_con.promise().query(getUsersQuery);
         user_datas = userRows;
-        console.log(user_datas);
 
     } catch (err) {
         console.error(err.message);
@@ -96,7 +107,6 @@ userManageRouter.post('/load_site_list', async (req, res) => {
         console.error(err.message);
 
     }
-    console.log(site_list);
 
 
     res.json({ site_list })

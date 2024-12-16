@@ -77,7 +77,7 @@
     </div>
 
     {#if $user_info.rate >= 5}
-        <a href="/admin">
+        <a data-sveltekit-preload-data="tap" href="/admin">
             <div class="p-2 hover:bg-gray-100 rounded-md mb-1 text-sm">
                 <span class="mr-1">
                     <i class="fa fa-cog" aria-hidden="true"></i>
@@ -86,7 +86,7 @@
             </div>
         </a>
 
-        <a href="/admin/minisite1">
+        <a data-sveltekit-preload-data="tap" href="/admin/minisite1">
             <div class="p-2 hover:bg-gray-100 rounded-md mb-1 text-sm">
                 <span class="mr-1">
                     <i class="fa fa-home" aria-hidden="true"></i>
@@ -95,7 +95,7 @@
             </div>
         </a>
 
-        <a href="/admin/minisite2">
+        <a data-sveltekit-preload-data="tap" href="/admin/minisite2">
             <div class="p-2 hover:bg-gray-100 rounded-md mb-1 text-sm">
                 <span class="mr-1">
                     <i class="fa fa-home" aria-hidden="true"></i>
@@ -104,7 +104,7 @@
             </div>
         </a>
 
-        <a href="/admin/dbcount">
+        <a data-sveltekit-preload-data="tap" href="/admin/dbcount">
             <div class="p-2 hover:bg-gray-100 rounded-md mb-1 text-sm">
                 <span class="mr-1">
                     <i class="fa fa-list-ol" aria-hidden="true"></i>
@@ -113,7 +113,7 @@
             </div>
         </a>
 
-        <a href="/admin/usermanage">
+        <a data-sveltekit-preload-data="tap" href="/admin/usermanage">
             <div class="p-2 hover:bg-gray-100 rounded-md mb-1 text-sm">
                 <span class="mr-1">
                     <i class="fa fa-users" aria-hidden="true"></i>
@@ -122,7 +122,7 @@
             </div>
         </a>
 
-        <a href="/admin/dbupload">
+        <a data-sveltekit-preload-data="tap" href="/admin/dbupload">
             <div class="p-2 hover:bg-gray-100 rounded-md mb-1 text-sm">
                 <span class="mr-1">
                     <i class="fa fa-upload" aria-hidden="true"></i>
@@ -131,7 +131,7 @@
             </div>
         </a>
 
-        <a href="/admin/alldb">
+        <a data-sveltekit-preload-data="tap" href="/admin/alldb">
             <div class="p-2 hover:bg-gray-100 rounded-md mb-1 text-sm">
                 <span class="mr-1">
                     <i class="fa fa-table" aria-hidden="true"></i>

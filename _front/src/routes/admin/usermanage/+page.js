@@ -7,11 +7,15 @@ import { getPagination } from "$lib/lib.js"
 export const load = async ({ params, url, data }) => {
     const nowPage = url.searchParams.get('page') || 1;
 
+    let userRate = url.searchParams.get('user_rate') || "";
+    let searchName = url.searchParams.get('search_name') || "";
+    let searchEmail = url.searchParams.get('search_email') || "";
+
     let pageArr = []
     let user_datas = [];
     let manager_datas = [];
     try {
-        const res = await axios.post(`${back_api}/usermanage/load_users`, { nowPage })
+        const res = await axios.post(`${back_api}/usermanage/load_users`, { nowPage, userRate, searchName, searchEmail })
         if (res.status == 200) {
             user_datas = res.data.user_datas
             manager_datas = res.data.manager_datas

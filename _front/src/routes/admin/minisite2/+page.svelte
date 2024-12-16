@@ -4,10 +4,12 @@
     import axios from "axios";
 
     let { data } = $props();
-    console.log(data);
-    let mDatas = $state(data.minisiteData);
+    let mDatas = $state([]);
     let selectIdx = $state(0);
-    console.log(mDatas);
+
+    $effect(() => {
+        mDatas = data.minisiteData;
+    });
 
     // 현장들 변경할때 쓰는 변수
     let filterKeyword = $state("");
@@ -18,14 +20,11 @@
     let addSubDomainBool = $state(true);
 
     async function searchSiteList() {
-        console.log(this.value);
-
         try {
             const res = await axios.post(
                 `${back_api}/minisite/load_site_list`,
                 { filter_keyword: filterKeyword },
             );
-            console.log(res);
             if (res.status == 200) {
                 siteList = res.data.site_list;
             }
@@ -33,11 +32,7 @@
     }
 
     async function applySite() {
-        console.log(setSite);
-
         const ld_id = this.value;
-        console.log(ld_id);
-
         try {
             const res = await axios.post(`${back_api}/minisite/apply_site`, {
                 ld_id,
@@ -56,7 +51,18 @@
     }
 
     async function addSubDomain() {
-        
+        try {
+            const res = await axios.post(
+                `${back_api}/minisite/add_sub_domain`,
+                { addSubDomainVal },
+            );
+            if (res.status == 200) {
+                alert("도메인이 추가되었습니다.");
+                addSubDomainVal = "";
+                invalidateAll();
+                addSubDomainBool = false;
+            }
+        } catch (error) {}
     }
 </script>
 
@@ -76,7 +82,9 @@
         class:hidden={addSubDomainBool}
     >
         <input type="text" class="input-base" bind:value={addSubDomainVal} />
-        <button class="btn btn-info btn-sm text-white" on:click={addSubDomain}> 도메인 추가 </button>
+        <button class="btn btn-info btn-sm text-white" on:click={addSubDomain}>
+            도메인 추가
+        </button>
     </div>
     <div class="mb-2 text-xs text-red-500">
         ※ 고급 미니사이트 현장 삭제는 각 사이트의 "관리" 페이지로 들어가서 삭제

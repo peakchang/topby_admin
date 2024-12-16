@@ -13,6 +13,22 @@ const __dirname = dirname(__filename);
 
 const minisiteRouter = express.Router();
 
+minisiteRouter.post('/add_sub_domain', async (req, res) => {
+    const body = req.body;
+    console.log(body);
+
+    const now = moment().format('YYYY-MM-DD HH:mm:ss');
+
+    try {
+        const addSubDomainQuery = "INSERT INTO land (ld_domain, ld_created_at) VALUES (?,?)";
+        await sql_con.promise().query(addSubDomainQuery, [body.addSubDomainVal, now]);
+    } catch (error) {
+
+    }
+    res.json({})
+
+})
+
 minisiteRouter.post('/add_hy_site', async (req, res) => {
     const hy_num = req.body.hy_num;
     const hy_site_name = req.body.hy_site_name;
