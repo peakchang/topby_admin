@@ -19,6 +19,7 @@ export async function handle({ event, resolve }) {
             userInfo = {
                 id: userInfoRow[0].userid,
                 name: userInfoRow[0].nick,
+                email: userInfoRow[0].user_email,
                 rate: userInfoRow[0].rate
             }
         } else {

@@ -25,6 +25,8 @@
     let setSite = $state("base");
     let setStatus = $state("base");
 
+    let allPageCount = $state(0);
+
     //
     let site_list = $state([]);
     let status_list = $state([]);
@@ -41,11 +43,8 @@
         reverseIdxArr = data.reverseIdxArr;
         site_list = data.site_list;
         status_list = data.statusArr;
+        allPageCount = data.allPage;
     });
-
-    function movePage() {
-        setParams({ page: this.value });
-    }
 
     function searchFunc(e) {
         console.log("이쪽으로는 안와?!?!");
@@ -79,7 +78,6 @@
     }
 
     async function openScheduleManageModal(load = false, id = 0) {
-
         let customer_id = 0;
         if (load == true) {
             customer_id = id;
@@ -182,6 +180,39 @@
             }
         } catch (error) {}
     }
+
+    function movePage() {
+        console.log(nowPage);
+
+        console.log(this.value);
+
+        console.log(allPageCount);
+
+        let setPage = 0;
+        if (this.value == "prev") {
+            setPage = nowPage - 1;
+            if (setPage < 1) {
+                alert("처음 페이지 입니다.");
+                return;
+            }
+        } else if (this.value == "next") {
+            setPage = Number(nowPage) + 1;
+            if (setPage > allPageCount) {
+                alert("마지막 페이지 입니다.");
+                return;
+            }
+        } else if (this.value == "first_page") {
+            setPage = 1;
+        } else if (this.value == "last_page") {
+            setPage = allPageCount;
+        } else {
+            setPage = parseInt(this.value);
+        }
+
+        console.log(setPage);
+
+        setParams({ page: setPage });
+    }
 </script>
 
 <dialog id="schedule_manage_modal" class="modal">
@@ -245,10 +276,10 @@
                 </div>
                 <ul class="border-t border-r border-l mt-3 h-96 overflow-auto">
                     {#each customerInfo.memo_list as memo}
-                        <li
-                            class="border-b p-2"
-                        >
-                            <div class="flex justify-between gap-2 items-center">
+                        <li class="border-b p-2">
+                            <div
+                                class="flex justify-between gap-2 items-center"
+                            >
                                 <span>{memo.memo}</span>
                                 <button class="btn btn-info btn-xs text-white"
                                     >스케줄 추가</button
@@ -285,7 +316,7 @@
                 class="border px-2 py-1 rounded-md"
                 bind:value={endDate}
             />
-            
+
             <select
                 class="select select-sm select-bordered"
                 bind:value={setSite}
@@ -382,11 +413,19 @@
 
 <div class="flex justify-center items-center my-5 gap-1">
     <!-- svelte-ignore a11y_consider_explicit_label -->
-    <button class="page-btn w-8 h-8 text-sm border rounded-md">
+    <button
+        class="page-btn w-8 h-8 text-sm border rounded-md"
+        value="first_page"
+        on:click={movePage}
+    >
         <i class="fa fa-angle-double-left" aria-hidden="true"></i>
     </button>
     <!-- svelte-ignore a11y_consider_explicit_label -->
-    <button class="page-btn w-8 h-8 text-sm border rounded-md">
+    <button
+        class="page-btn w-8 h-8 text-sm border rounded-md"
+        value="prev"
+        on:click={movePage}
+    >
         <i class="fa fa-angle-left" aria-hidden="true"></i>
     </button>
     {#each pages as page}
@@ -408,11 +447,19 @@
         {/if}
     {/each}
     <!-- svelte-ignore a11y_consider_explicit_label -->
-    <button class="page-btn w-8 h-8 text-sm border rounded-md">
+    <button
+        class="page-btn w-8 h-8 text-sm border rounded-md"
+        value="next"
+        on:click={movePage}
+    >
         <i class="fa fa-angle-right" aria-hidden="true"></i>
     </button>
     <!-- svelte-ignore a11y_consider_explicit_label -->
-    <button class="page-btn w-8 h-8 text-sm border rounded-md">
+    <button
+        class="page-btn w-8 h-8 text-sm border rounded-md"
+        value="last_page"
+        on:click={movePage}
+    >
         <i class="fa fa-angle-double-right" aria-hidden="true"></i>
     </button>
 </div>

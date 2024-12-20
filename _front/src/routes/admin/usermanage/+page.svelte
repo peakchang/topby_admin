@@ -12,22 +12,30 @@
     let managers = $state([]);
     let pages = $state([]);
 
+    let checkedList = $state([]);
+    let allChecked = $state(false);
+
     // 검색~~~~
-    let userRate = $state("0");
+    let userRate = $state("");
     let searchName = $state("");
     let searchEmail = $state("");
+    let allPageCount = $state(0);
 
-    userRate = $page.url.searchParams.get('user_rate');
-    searchName = $page.url.searchParams.get('search_name');
-    searchEmail = $page.url.searchParams.get('search_email');
+    let nowPage = $state(0);
+
+    userRate = $page.url.searchParams.get("user_rate") || "0";
+    searchName = $page.url.searchParams.get("search_name");
+    searchEmail = $page.url.searchParams.get("search_email");
 
     $effect(() => {
         users = data.user_datas;
         managers = data.manager_datas;
         pages = data.pageArr;
+        allPageCount = data.allPage
+        nowPage = parseInt($page.url.searchParams.get("page")) || 1
     });
 
-    let nowPage = $state($page.url.searchParams.get("page") || 1);
+    
     let siteList = $state([]);
     let siteSearchKeyword = $state("");
     let selectedEstate = $state([]);
@@ -113,9 +121,62 @@
                 option["search_email"] = searchEmail;
             }
             setParams(option, true);
-        }else if(userRate == 0 && !searchName && !searchEmail){
+        } else if (userRate == 0 && !searchName && !searchEmail) {
             setParams({}, true);
         }
+        nowPage = 1;
+    }
+
+    async function deleteUserRows() {
+        if (checkedList.length == 0) {
+            alert("삭제할 유저를 선택해주세요");
+            return;
+        }
+
+        const deleteList = checkedList;
+
+        try {
+            const res = await axios.post(
+                `${back_api}/usermanage/delete_user_rows`,
+                { deleteList },
+            );
+            if (res.status == 200) {
+                alert("삭제가 완료되었습니다.");
+                invalidateAll();
+            }
+        } catch (error) {}
+        console.log(checkedList);
+    }
+
+    function movePage() {
+        console.log(this.value);
+
+        console.log(allPageCount);
+
+        console.log(nowPage);
+        let setPage = 0;
+        if (this.value == "prev") {
+            setPage = nowPage - 1;
+            if (setPage < 1) {
+                alert("처음 페이지 입니다.");
+                return;
+            }
+        } else if (this.value == "next") {
+            setPage = Number(nowPage) + 1;
+            if (setPage > allPageCount) {
+                alert("마지막 페이지 입니다.");
+                return;
+            }
+        } else if (this.value == "first_page") {
+            setPage = 1;
+        } else if (this.value == "last_page") {
+            setPage = allPageCount;
+        } else {
+            setPage = parseInt(this.value);
+        }
+        console.log("340958309580934850");
+
+        setParams({ page: setPage });
     }
 </script>
 
@@ -197,7 +258,11 @@
         />
 
         <button class="btn btn-sm btn-info text-white">조회</button>
-        <button class="btn btn-sm btn-error text-white">선택삭제</button>
+        <button
+            type="button"
+            class="btn btn-sm btn-error text-white"
+            on:click={deleteUserRows}>선택삭제</button
+        >
     </div>
 </form>
 <table class="w-full text-xs md:text-sm text-center">
@@ -208,6 +273,14 @@
                     <input
                         type="checkbox"
                         class="checkbox checkbox-xs md:checkbox-sm"
+                        bind:checked={allChecked}
+                        on:change={(e) => {
+                            if (allChecked) {
+                                checkedList = users.map((v) => v.id);
+                            } else {
+                                checkedList = [];
+                            }
+                        }}
                     />
                 </div>
             </th>
@@ -225,12 +298,7 @@
         {#each managers as manager, idx}
             <tr>
                 <td class="in-td py-2">
-                    <div class="flex items-center justify-center">
-                        <input
-                            type="checkbox"
-                            class="checkbox checkbox-xs md:checkbox-sm"
-                        />
-                    </div>
+                    <div class="flex items-center justify-center"></div>
                 </td>
 
                 <td class="in-td py-2 px-2">
@@ -324,6 +392,8 @@
                         <input
                             type="checkbox"
                             class="checkbox checkbox-xs md:checkbox-sm"
+                            value={user.id}
+                            bind:group={checkedList}
                         />
                     </div>
                 </td>
@@ -456,11 +526,19 @@
 
 <div class="flex justify-center items-center my-5 gap-1">
     <!-- svelte-ignore a11y_consider_explicit_label -->
-    <button class="page-btn w-8 h-8 text-sm border rounded-md">
+    <button
+        class="page-btn w-8 h-8 text-sm border rounded-md"
+        value="first_page"
+        on:click={movePage}
+    >
         <i class="fa fa-angle-double-left" aria-hidden="true"></i>
     </button>
     <!-- svelte-ignore a11y_consider_explicit_label -->
-    <button class="page-btn w-8 h-8 text-sm border rounded-md">
+    <button
+        class="page-btn w-8 h-8 text-sm border rounded-md"
+        value="prev"
+        on:click={movePage}
+    >
         <i class="fa fa-angle-left" aria-hidden="true"></i>
     </button>
     {#each pages as page}
@@ -475,21 +553,26 @@
             <button
                 class="page-btn w-8 h-8 text-sm border rounded-md"
                 value={page}
-                on:click={(e) => {
-                    setParams({page : e.target.value});
-                    nowPage = e.target.value;
-                }}
+                on:click={movePage}
             >
                 {page}
             </button>
         {/if}
     {/each}
     <!-- svelte-ignore a11y_consider_explicit_label -->
-    <button class="page-btn w-8 h-8 text-sm border rounded-md">
+    <button
+        class="page-btn w-8 h-8 text-sm border rounded-md"
+        value="next"
+        on:click={movePage}
+    >
         <i class="fa fa-angle-right" aria-hidden="true"></i>
     </button>
     <!-- svelte-ignore a11y_consider_explicit_label -->
-    <button class="page-btn w-8 h-8 text-sm border rounded-md">
+    <button
+        class="page-btn w-8 h-8 text-sm border rounded-md"
+        value="last_page"
+        on:click={movePage}
+    >
         <i class="fa fa-angle-double-right" aria-hidden="true"></i>
     </button>
 </div>

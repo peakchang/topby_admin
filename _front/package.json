@@ -48,6 +48,7 @@
 		"crypto-random-string": "^5.0.0",
 		"lodash": "^4.17.21",
 		"mysql2": "^3.11.4",
-		"sortablejs": "^1.15.3"
+		"sortablejs": "^1.15.3",
+		"swiper": "^11.1.15"
 	}
 }

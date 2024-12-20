@@ -6,6 +6,23 @@ import bcrypt from "bcrypt";
 
 const userManageRouter = express.Router();
 
+userManageRouter.post('/delete_user_rows', async (req, res) => {
+    const deleteList = req.body.deleteList;
+    console.log(deleteList);
+
+    for (let i = 0; i < deleteList.length; i++) {
+        const userId = deleteList[i];
+        try {
+            const deleteUserQuery = "DELETE FROM users WHERE id = ?";
+            await sql_con.promise().query(deleteUserQuery, [userId])
+        } catch (error) {
+
+        }
+    }
+
+    res.json({})
+
+})
 
 userManageRouter.post('/update_user_site_list', async (req, res) => {
     const selectedEstateStr = req.body.selectedEstateStr;

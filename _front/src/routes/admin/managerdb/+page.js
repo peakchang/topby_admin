@@ -45,6 +45,8 @@ export const load = async ({ params, url, data }) => {
     let colorArr = [];
 
     let site_list = [];
+
+
     try {
         const res = await axios.post(`${back_api}/managerdb/load_data`, { start_date, end_date, nowPage, one_page_count, filterSite, setSite, setStatus, manager_id })
         if (res.status == 200) {
@@ -72,7 +74,7 @@ export const load = async ({ params, url, data }) => {
             datas[i]['bg_color'] = getColorByStatus(datas[i]['af_mb_status'], statusArr, colorArr)
         }
     }
-    return { datas, pageArr, reverseIdxArr, site_list, statusArr }
+    return { datas, pageArr, reverseIdxArr, site_list, statusArr, allPage }
 }
 
 

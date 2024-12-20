@@ -1,9 +1,17 @@
 <script>
 	import "../app.css";
-	
 </script>
 
 <svelte:head>
+	<!-- Swiper JS -->
+	<script
+		src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"
+	></script>
+	<!-- Link Swiper's CSS -->
+	<link
+		rel="stylesheet"
+		href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+	/>
 	<!-- SUIT 폰트 CSS -->
 	<link
 		href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css"
@@ -53,22 +61,22 @@
 	}
 
 	:global(.input-base) {
-        border-radius: 6px;
-        padding: 7px 5px;
-        border: 1px solid #cfcfcf;
-        width: 100%;
-        background-color: #f6f6f6;
-    }
-    :global(.input-base:focus) {
-        border: 1px solid #40a9ff;
-        outline: none;
-        background-color: #ffffff;
-    }
-    :global(.in-th) {
-        padding: 10px 5px;
-        border: 1px solid #cfcfcf;
-    }
-    :global(.in-td) {
-        border: 1px solid #cfcfcf;
-    }
+		border-radius: 6px;
+		padding: 7px 5px;
+		border: 1px solid #cfcfcf;
+		width: 100%;
+		background-color: #f6f6f6;
+	}
+	:global(.input-base:focus) {
+		border: 1px solid #40a9ff;
+		outline: none;
+		background-color: #ffffff;
+	}
+	:global(.in-th) {
+		padding: 10px 5px;
+		border: 1px solid #cfcfcf;
+	}
+	:global(.in-td) {
+		border: 1px solid #cfcfcf;
+	}
 </style>

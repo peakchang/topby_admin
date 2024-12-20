@@ -9,10 +9,12 @@ export const load = async ({ params, url, data }) => {
     const search = url.searchParams.get('search');
     let pageArr = []
     let minisiteData = [];
+    let allPageCount = 0;
     try {
         const res = await axios.post(`${back_api}/minisite/load_minisite`, { nowPage, search })
         if (res.status == 200) {
             minisiteData = res.data.minisiteData;
+            allPageCount = res.data.allPage;
             pageArr = getPagination(parseInt(nowPage), res.data.allPage);
         }
     } catch (error) {
@@ -20,5 +22,5 @@ export const load = async ({ params, url, data }) => {
     }
 
 
-    return { minisiteData, pageArr }
+    return { minisiteData, pageArr, allPageCount }
 }

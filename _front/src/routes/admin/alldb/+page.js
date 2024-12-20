@@ -30,6 +30,7 @@ export const load = async ({ params, url, data }) => {
         if (res.status == 200) {
             datas = res.data.datas;
             allPage = res.data.allPage;
+            
             pageArr = getPagination(parseInt(nowPage), allPage);
             allCount = res.data.allCount;
             const reverseStartCount = allCount - ((nowPage - 1) * one_page_count)
@@ -53,7 +54,7 @@ export const load = async ({ params, url, data }) => {
             datas[i]['bg_color'] = getColorByStatus(datas[i]['af_mb_status'], statusArr, colorArr)
         }
     }
-    return { datas, pageArr, reverseIdxArr, site_list, statusArr }
+    return { datas, pageArr, reverseIdxArr, site_list, statusArr, allPage }
 }
 
 

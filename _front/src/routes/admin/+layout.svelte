@@ -7,11 +7,10 @@
     import Drawer from "$lib/components/Drawer.svelte";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
+    import { page } from "$app/stores";
 
     let innerWidth;
     const width = 192;
-
-    
 
     $: {
         if (innerWidth < 1000) {
@@ -24,15 +23,14 @@
     }
 
     onMount(() => {
+        console.log($page);
+
         console.log($user_info);
-        if(Object.keys($user_info).length === 0){
-            alert('로그인이 필요합니다.')
-            goto('/auth/login');
+        if (Object.keys($user_info).length === 0) {
+            alert("로그인이 필요합니다.");
+            goto(`/auth/login?url=${$page.url.pathname}`);
         }
-        
-    })
-
-
+    });
 </script>
 
 <svelte:window bind:innerWidth />
@@ -172,6 +170,4 @@
         padding: 8px 0px;
         font-size: 16px;
     }
-
-    
 </style>

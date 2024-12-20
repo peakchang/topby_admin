@@ -3,20 +3,27 @@
     import { back_api } from "$lib/const.js";
     import { goto } from "$app/navigation";
     import { user_info } from "$lib/store.js";
+    import { page } from "$app/stores";
 
     let userId = $state("");
     let userPwd = $state("");
 
-    console.log(back_api);
+    let moveUrl = $state("");
 
     $effect(() => {
+        moveUrl = $page.url.searchParams.get("url");
+        console.log(moveUrl);
+        
         if ($user_info.id) {
             alert("이미 로그인 되어 있습니다.");
             goto("/");
         }
     });
 
-    async function loginSubmit() {
+    async function loginSubmit(e) {
+        e.preventDefault();
+        console.log(moveUrl);
+        
         if (!userId || !userPwd) {
             alert("아이디와 비밀번호를 모두 입력하세요.");
             return;
@@ -31,7 +38,15 @@
                 { withCredentials: true },
             );
             if (res.status === 200) {
-                goto("/");
+             
+                const moveUrl = $page.url.searchParams.get("url");
+                console.log(moveUrl);
+                
+                if (moveUrl) {
+                    location.href = moveUrl
+                } else {
+                    goto("/");
+                }
             }
         } catch (err) {
             if (err.response) {

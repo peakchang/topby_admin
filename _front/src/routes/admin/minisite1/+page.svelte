@@ -3,6 +3,7 @@
     import { back_api } from "$lib/const.js";
     import { setParams, createArray } from "$lib/lib.js";
     import { goto, invalidateAll } from "$app/navigation";
+    import { page } from "$app/stores";
 
     // let loading = true;
     let { data } = $props();
@@ -13,7 +14,8 @@
     let minisiteData = $state([]);
     let pageArr = $state([]);
     let hyData = $state({});
-    let nowPage = $state(1);
+    let nowPage = $state(0);
+    let allPageCount = $state(0);
 
     // 카피할 아이디 및 창 보이게 bool
     let copyRawBool = $state(true);
@@ -33,6 +35,8 @@
     $effect(() => {
         minisiteData = data.minisiteData;
         pageArr = data.pageArr;
+        nowPage = $page.url.searchParams.get("page") || 1;
+        allPageCount = data.allPageCount;
     });
 
     function allCheckedChange() {
@@ -167,6 +171,37 @@
                 invalidateAll();
             }
         } catch (error) {}
+    }
+
+    function movePage() {
+        console.log(this.value);
+
+        console.log(allPageCount);
+
+        console.log(nowPage);
+        let setPage = 0;
+        if (this.value == "prev") {
+            setPage = nowPage - 1;
+            if (setPage < 1) {
+                alert("처음 페이지 입니다.");
+                return;
+            }
+        } else if (this.value == "next") {
+            setPage = Number(nowPage) + 1;
+            if (setPage > allPageCount) {
+                alert("마지막 페이지 입니다.");
+                return;
+            }
+        } else if (this.value == "first_page") {
+            setPage = 1;
+        } else if (this.value == "last_page") {
+            setPage = allPageCount;
+        } else {
+            setPage = parseInt(this.value);
+        }
+        console.log("340958309580934850");
+
+        setParams({ page: setPage });
     }
 </script>
 
@@ -319,24 +354,57 @@
             {/each}
         </tbody>
     </table>
+</div>
 
-    <div class="flex">
-        <div class="join mt-3 mx-auto">
-            {#each pageArr as page}
-                <!-- svelte-ignore event_directive_deprecated -->
-                <input
-                    class="join-item btn w-10 min-h-10 h-10 checked:!bg-blue-500 checked:border-none"
-                    type="radio"
-                    name="options"
-                    checked={nowPage == page}
-                    value={page}
-                    aria-label={page}
-                    on:click={(e) => {
-                        goto(`?page=${e.target.value}`);
-                        nowPage = e.target.value;
-                    }}
-                />
-            {/each}
-        </div>
-    </div>
+<div class="flex justify-center items-center my-5 gap-1">
+    <!-- svelte-ignore a11y_consider_explicit_label -->
+    <button
+        class="page-btn w-8 h-8 text-sm border rounded-md"
+        value="first_page"
+        on:click={movePage}
+    >
+        <i class="fa fa-angle-double-left" aria-hidden="true"></i>
+    </button>
+    <!-- svelte-ignore a11y_consider_explicit_label -->
+    <button
+        class="page-btn w-8 h-8 text-sm border rounded-md"
+        value="prev"
+        on:click={movePage}
+    >
+        <i class="fa fa-angle-left" aria-hidden="true"></i>
+    </button>
+    {#each pageArr as page}
+        {#if nowPage == page}
+            <button
+                class="page-btn w-8 h-8 text-sm border rounded-md border-orange-400 bg-orange-400 text-white"
+            >
+                {page}
+            </button>
+        {:else}
+            <!-- svelte-ignore event_directive_deprecated -->
+            <button
+                class="page-btn w-8 h-8 text-sm border rounded-md"
+                value={page}
+                on:click={movePage}
+            >
+                {page}
+            </button>
+        {/if}
+    {/each}
+    <!-- svelte-ignore a11y_consider_explicit_label -->
+    <button
+        class="page-btn w-8 h-8 text-sm border rounded-md"
+        value="next"
+        on:click={movePage}
+    >
+        <i class="fa fa-angle-right" aria-hidden="true"></i>
+    </button>
+    <!-- svelte-ignore a11y_consider_explicit_label -->
+    <button
+        class="page-btn w-8 h-8 text-sm border rounded-md"
+        value="last_page"
+        on:click={movePage}
+    >
+        <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+    </button>
 </div>

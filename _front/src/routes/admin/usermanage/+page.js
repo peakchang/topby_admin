@@ -14,15 +14,17 @@ export const load = async ({ params, url, data }) => {
     let pageArr = []
     let user_datas = [];
     let manager_datas = [];
+    let allPage = 0;
     try {
         const res = await axios.post(`${back_api}/usermanage/load_users`, { nowPage, userRate, searchName, searchEmail })
         if (res.status == 200) {
             user_datas = res.data.user_datas
             manager_datas = res.data.manager_datas
             pageArr = getPagination(parseInt(nowPage), res.data.allPage);
+            allPage = res.data.allPage;
         }
     } catch (error) {
 
     }
-    return { user_datas, manager_datas, pageArr }
+    return { user_datas, manager_datas, pageArr, allPage }
 }

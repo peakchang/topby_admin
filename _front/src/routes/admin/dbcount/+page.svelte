@@ -9,20 +9,20 @@
     let dateArr = $state([]);
     let pages = $state([]);
     let nowPage = $state(0);
+    let allPageCount = $state(0);
 
     // 검색 관련!!
     let startDate = $state(moment().subtract(4, "days").format("YYYY-MM-DD"));
     let endDate = $state(moment().format("YYYY-MM-DD"));
     let seachVal = $state("");
-    dateArr = data.dateArr;
-    nowPage = $page.url.searchParams.get("page") || 1;
 
-    
     $effect(() => {
+        dateArr = data.dateArr;
         pages = data.pageList;
         siteCountInfoList = data.site_count_info_list;
+        nowPage = $page.url.searchParams.get("page") || 1;
+        allPageCount = data.allPageCount;
     });
-    console.log(data);
 
     function searchSubmit(e) {
         e.preventDefault();
@@ -32,6 +32,40 @@
             option.search = seachVal;
         }
         setParams(option, true);
+    }
+
+    function movePage() {
+        console.log(nowPage);
+
+        console.log(this.value);
+
+        console.log(allPageCount);
+        
+
+        let setPage = 0;
+        if (this.value == "prev") {
+            setPage = nowPage - 1;
+            if (setPage < 1) {
+                alert("처음 페이지 입니다.");
+                return;
+            }
+        } else if (this.value == "next") {
+            setPage = Number(nowPage) + 1;
+            if (setPage > allPageCount) {
+                alert("마지막 페이지 입니다.");
+                return;
+            }
+        } else if (this.value == "first_page") {
+            setPage = 1;
+        } else if (this.value == "last_page") {
+            setPage = allPageCount;
+        } else {
+            setPage = parseInt(this.value);
+        }
+
+        console.log(setPage);
+
+        setParams({ page: setPage });
     }
 </script>
 
@@ -59,9 +93,10 @@
             <button class="btn btn-success btn-sm text-white"> 검색 </button>
         </div>
     </form>
+
     <div class="table-wrapper">
         <div
-            class="w-full h-screen max-w-[1920px] overflow-auto mt-3"
+            class="w-full h-[630px] max-w-[1920px] overflow-auto mt-3"
             style="max-height: 700px;"
         >
             <table
@@ -148,11 +183,19 @@
 
     <div class="flex justify-center items-center my-5 gap-1">
         <!-- svelte-ignore a11y_consider_explicit_label -->
-        <button class="page-btn w-8 h-8 text-sm border rounded-md">
+        <button
+            class="page-btn w-8 h-8 text-sm border rounded-md"
+            value="first_page"
+            on:click={movePage}
+        >
             <i class="fa fa-angle-double-left" aria-hidden="true"></i>
         </button>
         <!-- svelte-ignore a11y_consider_explicit_label -->
-        <button class="page-btn w-8 h-8 text-sm border rounded-md">
+        <button
+            class="page-btn w-8 h-8 text-sm border rounded-md"
+            value="prev"
+            on:click={movePage}
+        >
             <i class="fa fa-angle-left" aria-hidden="true"></i>
         </button>
         {#each pages as page}
@@ -167,21 +210,26 @@
                 <button
                     class="page-btn w-8 h-8 text-sm border rounded-md"
                     value={page}
-                    on:click={(e) => {
-                        setParams({ page: e.target.value });
-                        nowPage = e.target.value;
-                    }}
+                    on:click={movePage}
                 >
                     {page}
                 </button>
             {/if}
         {/each}
         <!-- svelte-ignore a11y_consider_explicit_label -->
-        <button class="page-btn w-8 h-8 text-sm border rounded-md">
+        <button
+            class="page-btn w-8 h-8 text-sm border rounded-md"
+            value="next"
+            on:click={movePage}
+        >
             <i class="fa fa-angle-right" aria-hidden="true"></i>
         </button>
         <!-- svelte-ignore a11y_consider_explicit_label -->
-        <button class="page-btn w-8 h-8 text-sm border rounded-md">
+        <button
+            class="page-btn w-8 h-8 text-sm border rounded-md"
+            value="last_page"
+            on:click={movePage}
+        >
             <i class="fa fa-angle-double-right" aria-hidden="true"></i>
         </button>
     </div>
