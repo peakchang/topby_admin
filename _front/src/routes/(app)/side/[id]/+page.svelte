@@ -3,12 +3,12 @@
 
     let minisiteData = $derived(data.minisiteData);
     let imgList = $state([]);
-    if (minisiteData.hy_image_list) {
+    // svelte-ignore state_referenced_locally
+        if (minisiteData.hy_image_list) {
         imgList = minisiteData.hy_image_list.split(",");
-        console.log(imgList);
     }
 
-    console.log(minisiteData);
+    let formArea = $state();
 </script>
 
 <svelte:head></svelte:head>
@@ -127,7 +127,10 @@
     </div>
 
     <form method="post" id="user_form">
-        <div class="my-4 mx-auto border relative py-5 rounded-lg">
+        <div
+            class="my-4 mx-auto border relative py-5 rounded-lg"
+            bind:this={formArea}
+        >
             <div class="text-center">
                 <div
                     class="my-4 w-full px-3 mx-auto grid grid-cols-1 md:grid-cols-2 gap-4"
@@ -185,6 +188,7 @@
                     <label class="flex items-center gap-2">
                         <input type="checkbox" class="personal_info" checked />
                         <span>개인정보 수집 동의</span>
+                        <!-- svelte-ignore event_directive_deprecated -->
                         <button
                             type="button"
                             on:click={() => {
@@ -200,6 +204,7 @@
                     <label class="flex items-center gap-2">
                         <input type="checkbox" class="ad_info" checked />
                         <span>광고성 정보수신 동의</span>
+                        <!-- svelte-ignore event_directive_deprecated -->
                         <button
                             type="button"
                             on:click={() => {
@@ -282,7 +287,9 @@
         </div>
 
         <div>
-            <div class="border rounded-lg p-4 mt-4 hy_features_area">
+            <div
+                class="border rounded-lg p-4 mt-4 hy_features_area whitespace-pre-line"
+            >
                 {@html minisiteData.hy_features}
             </div>
         </div>
@@ -299,39 +306,48 @@
 
 <!-- PC 우측 고정!!! -->
 <div class="fixed bottom-6 right-3 md:right-7 z-10 hidden md:block suit-font">
-    <a href="" target="_blank">
-        <button class="border rounded-full block w-28 mb-3">
-            <img src="/minisite/right_fix_katalk.png" alt="" />
-        </button>
-    </a>
+    {#if minisiteData.hy_kakao_link}
+        <a href={hy_kakao_link} target="_blank">
+            <button class="border rounded-full block w-28 mb-3">
+                <img src="/minisite/right_fix_katalk.png" alt="" />
+            </button>
+        </a>
+    {:else}
+        <a href="https://pf.kakao.com/_sxmHKxj/chat" target="_blank">
+            <button class="border rounded-full block w-28 mb-3">
+                <img src="/minisite/right_fix_katalk.png" alt="" />
+            </button>
+        </a>
+    {/if}
 
-    <a href="https://pf.kakao.com/_sxmHKxj/chat" target="_blank">
-        <button class="border rounded-full block w-28 mb-3">
-            <img src="/minisite/right_fix_katalk.png" alt="" />
-        </button>
-    </a>
-
-    <div
-        class="border rounded-full w-28 h-28 mb-3 bg-black text-white flex justify-center items-center"
-    >
-        <div class="text-center leading-none">
-            <p class="font-bold text-xl">대표번호</p>
-            <p class="font-extrabold text-xl"></p>
+    {#if minisiteData.hy_callnumber}
+        <div
+            class="border rounded-full w-28 h-28 mb-3 bg-black text-white flex justify-center items-center"
+        >
+            <div class="text-center leading-none">
+                <p class="font-bold text-xl">대표번호</p>
+                <p class="font-extrabold text-lg">
+                    {minisiteData.hy_callnumber}
+                </p>
+            </div>
         </div>
-    </div>
-
-    <div
-        class="border rounded-full w-28 h-28 mb-3 bg-black text-white flex justify-center items-center"
-    >
-        <div class="text-center leading-none">
-            <p class="font-bold text-xl">대표번호</p>
-            <p class="font-extrabold text-xl">1644</p>
-            <p class="font-extrabold text-xl">9714</p>
+    {:else}
+        <div
+            class="border rounded-full w-28 h-28 mb-3 bg-black text-white flex justify-center items-center"
+        >
+            <div class="text-center leading-none">
+                <p class="font-bold text-xl">대표번호</p>
+                <p class="font-extrabold text-lg">1644</p>
+                <p class="font-extrabold text-lg">9714</p>
+            </div>
         </div>
-    </div>
+    {/if}
 
     <button
-        class="border border-emerald-600 w-28 h-28 p-5 rounded-full bg-emerald-600 move-interest block"
+        class="border border-emerald-600 w-28 h-28 p-5 rounded-full bg-emerald-600 block"
+        on:click={() => {
+            formArea.scrollIntoView({ behavior: "smooth" });
+        }}
     >
         <span class="animate-pulse font-semibold text-lg text-white">
             관심고객<br />

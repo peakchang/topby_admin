@@ -344,10 +344,13 @@
                         </div>
                     </td>
                     <td class="in-td">
-                        <button
-                            class="btn btn-outline btn-accent btn-xs text-xs"
-                            >바로가기</button
-                        >
+                        <a href="/side/{minisiteData[idx].hy_num}" target="_blank">
+                            <button
+                                class="btn btn-outline btn-accent btn-xs text-xs"
+                            >
+                                바로가기
+                            </button>
+                        </a>
                     </td>
                     <td class="in-td"> {minisiteData[idx].hy_counter} </td>
                 </tr>
