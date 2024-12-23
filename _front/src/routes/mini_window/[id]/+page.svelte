@@ -13,7 +13,10 @@
     let modifyImgArr = $state([]);
 
     hyData = data.hyData;
-    modifyImgArr = data.hyData.hy_image_list.split(",");
+
+    if (data.hyData.hy_image_list) {
+        modifyImgArr = data.hyData.hy_image_list.split(",");
+    }
 
     $effect(() => {});
     function updateImg(e) {
