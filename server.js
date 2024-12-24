@@ -44,9 +44,12 @@ let originLink;
 
 
 if (process.env.NODE_ENV === 'production') {
+    let whiteListArr = [];
     const whiteListStr = process.env.SITE_LINK
     console.log(whiteListStr);
-    const whiteListArr = whiteListStr.split(',');
+    if (whiteListStr) {
+        whiteListArr = whiteListStr.split(',');
+    }
 } else {
     originLink = "http://localhost:5173";
 }
