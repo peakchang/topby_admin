@@ -131,11 +131,13 @@ authRouter.post("/login", async (req, res) => {
 
                 console.log(process.env.NODE_ENV);
 
-                if(process.env.NODE_ENV == 'production') {
-                    res.cookie("tk", refreshToken, { httpOnly: true, secure: true });
-                }else{
-                    res.cookie("tk", token, { httpOnly: true, secure: false, sameSite: 'lax' });
-                }
+                // if(process.env.NODE_ENV == 'production') {
+                //     res.cookie("tk", refreshToken, { httpOnly: true, secure: true });
+                // }else{
+                //     res.cookie("tk", token, { httpOnly: true, secure: false, sameSite: 'lax' });
+                // }
+
+                res.cookie("tk", token, { httpOnly: true, secure: false, sameSite: 'lax' });
                 
                 return res.json({});
 
