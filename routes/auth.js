@@ -130,9 +130,13 @@ authRouter.post("/login", async (req, res) => {
                 await sql_con.promise().query(updateQuery, [token, userInfo.id]);
 
                 console.log(process.env.NODE_ENV);
+
+                if(process.env.NODE_ENV == 'production') {
+                    res.cookie("tk", refreshToken, { httpOnly: true, secure: true });
+                }else{
+                    res.cookie("tk", token, { httpOnly: true, secure: false, sameSite: 'lax' });
+                }
                 
-                // res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true });
-                res.cookie("tk", token, { httpOnly: true, secure: false, sameSite: 'lax' });
                 return res.json({});
 
             } else {
