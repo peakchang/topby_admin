@@ -61,7 +61,10 @@ apiRouter.post('/upload_sort_img', img_upload.single('onimg'), (req, res, next) 
         fs.renameSync(tempPath, targetPath); // 파일 이동
 
         const origin = req.get('host');
-        baseUrl = req.protocol + '://' + origin + '/img/' + folderName + '/' + req.file.filename;
+        // baseUrl = req.protocol + '://' + origin + '/img/' + folderName + '/' + req.file.filename;
+        baseUrl = '/img/' + folderName + '/' + req.file.filename;
+        console.log(baseUrl);
+        
         
         console.log(baseUrl);
     } catch (err) {

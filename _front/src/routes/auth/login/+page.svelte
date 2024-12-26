@@ -6,6 +6,7 @@
     import { page } from "$app/stores";
 
     let userId = $state("");
+    let userIdInput = $state();
     let userPwd = $state("");
 
     let moveUrl = $state("");
@@ -17,6 +18,8 @@
         if ($user_info.id) {
             alert("이미 로그인 되어 있습니다.");
             goto("/");
+        }else{
+            userIdInput.focus();
         }
     });
 
@@ -76,6 +79,7 @@
                 type="text"
                 class="grow"
                 placeholder="아이디를 입력하세요"
+                bind:this={userIdInput}
                 bind:value={userId}
             />
         </label>

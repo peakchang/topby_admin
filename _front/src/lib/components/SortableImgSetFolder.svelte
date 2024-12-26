@@ -3,6 +3,11 @@
     import imageCompression from "browser-image-compression";
     import axios from "axios";
     import { back_api } from "$src/lib/const";
+    import { page } from "$app/stores";
+    console.log($page);
+
+    let imageOrigin = import.meta.env.VITE_SERVER_URL ? import.meta.env.VITE_SERVER_URL : $page.url.origin;
+    
 
     let {
         updateImg,
@@ -14,6 +19,8 @@
 
     let imgArr = $state([]);
     if (imgModifyList.length > 0) {
+        console.log(imgModifyList);
+        
         imgArr = imgModifyList;
     }
 
@@ -262,6 +269,7 @@
             class={hoveredIndex === index ? "hovered" : ""}
             style="--hover-color: {hoverColor}"
         >
+        
             <div class="w-full h-full flex items-center relative">
                 <!-- svelte-ignore a11y_consider_explicit_label -->
                 <button
@@ -271,7 +279,8 @@
                 >
                     <i class="fa fa-times-circle-o"></i>
                 </button>
-                <img src={img} alt="" />
+                
+                <img src={imageOrigin + img} alt="" />
             </div>
         </li>
     {/each}

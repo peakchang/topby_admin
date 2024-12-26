@@ -2,6 +2,7 @@
     import imageCompression from "browser-image-compression";
     import axios from "axios";
     import { back_api } from "$src/lib/const";
+    import { page } from "$app/stores";
 
     let {
         updateImg,
@@ -11,6 +12,9 @@
     } = $props();
 
     console.log(imageLink);
+
+    let imageOrigin = import.meta.env.VITE_SERVER_URL ? import.meta.env.VITE_SERVER_URL : $page.url.origin;
+    console.log(imageOrigin);
 
     // 이미지를 선택하면 사이즈 변경 (최대 1200px) 및 webp 변경 후 업로드
     const onFileSelected = (e) => {
@@ -98,7 +102,7 @@
 
 {#if imageLink}
     <div class=" max-w-[700px] w-full">
-        <img src={imageLink} alt="" />
+        <img src={imageOrigin + imageLink} alt="" />
     </div>
 {:else}
     <div></div>
