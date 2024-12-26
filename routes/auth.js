@@ -39,7 +39,6 @@ const authRouter = express.Router();
 
 authRouter.get("/token", async (req, res) => {
     const cookies = req.cookies
-    console.log(cookies);
 
     res.json({ status: true })
 })
@@ -47,9 +46,7 @@ authRouter.get("/token", async (req, res) => {
 
 authRouter.post("/logout", async (req, res) => {
     const token = req.cookies.tk;
-    console.log(token);
     const userid = req.body.userid;
-    console.log(userid);
 
 
 
@@ -75,13 +72,11 @@ authRouter.post("/register", async (req, res) => {
     console.log('회원가입 들어옴!!!');
 
     const { userid, user_email, user_phone, nick, password } = req.body;
-    console.log(userid);
 
     try {
         // 먼저 유저 아이디 중복 체크 (프론트에서 했지만 추가로 확인)
         const existingUserChkQuery = "SELECT * FROM users WHERE userid = ?";
         const [existUserRows] = await sql_con.promise().query(existingUserChkQuery, [userid]);
-        console.log(existUserRows);
 
         // 유저 아이디 있으면 리턴
         if (existUserRows.length > 0) {
@@ -91,7 +86,6 @@ authRouter.post("/register", async (req, res) => {
         // 이메일도 중복체크
         const existingEmailChkQuery = "SELECT * FROM users WHERE user_email = ?";
         const [existingEmail] = await sql_con.promise().query(existingEmailChkQuery, [user_email]);
-        console.log(existingEmail);
 
         if (existingEmail.length > 0) {
             return res.status(400).json({ message: "유저 이메일이 중복됩니다. 이메일을 확인 해주세요" });
@@ -102,7 +96,7 @@ authRouter.post("/register", async (req, res) => {
         await sql_con.promise().query(insertUserQuery, [userid, user_email, user_phone, nick, hashedPassword]);
         res.status(201).json({ message: "User registered successfully" });
     } catch (err) {
-        console.log(err.message);
+        console.error(err.message);
         return res.status(400).json({ message: "오류가 발생 했습니다." });
     }
 
@@ -113,13 +107,13 @@ authRouter.post("/register", async (req, res) => {
 authRouter.post("/login", async (req, res) => {
 
     const { userid, password } = req.body;
-    console.log(userid);
+
 
     try {
         // 유저 아이디 있는지 확인
         const getUserInfoQuery = "SELECT * FROM users WHERE userid = ?";
         const [userRows] = await sql_con.promise().query(getUserInfoQuery, [userid]);
-        console.log(userRows);
+
         // 있으면 작업 GO / 없으면 리턴~
         if (userRows.length > 0) {
 
@@ -134,7 +128,6 @@ authRouter.post("/login", async (req, res) => {
 
                 const updateQuery = "UPDATE users SET refresh_token = ? WHERE id = ?";
                 await sql_con.promise().query(updateQuery, [token, userInfo.id]);
-                console.log(token);
 
                 console.log(process.env);
                 
