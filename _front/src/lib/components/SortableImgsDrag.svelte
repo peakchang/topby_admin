@@ -33,6 +33,8 @@
     let hoveredIndex = $state(null); // 현재 마우스 오버 인덱스
     let draggedIndex = $state(null); // 드래그된 인덱스 (모바일용)
 
+    let imageInput = $state();
+
     function dragOverAction() {
         updateImg(imgArr);
     }
@@ -263,8 +265,8 @@
 
     function imageDrop(e) {
         e.preventDefault();
-        const file = e.dataTransfer.files[0];
-        console.log(file);
+        const files = e.dataTransfer.files;
+        console.log(files);
 
         // // 드래그된 것이 이미지가 맞는지 체크
         // if (file && file.type.startsWith("image/")) {
@@ -275,6 +277,31 @@
         //     console.error("이미지가 아닌 파일입니다.", file);
         // }
         // console.log("drop?!?!??!");
+    }
+
+    async function uploadImages(e) {
+        imageInput.click();
+    }
+
+    function uploadImageInput(e) {
+        const files = e.target.files;
+        console.log(files);
+        const options = {
+            maxSizeMB: 1, // 최대 파일 크기 (MB)
+            maxWidthOrHeight: 1024, // 최대 너비 또는 높이
+            useWebWorker: true, // 웹 워커 사용
+        };
+
+        const formData = new FormData();
+        files.forEach(async (file) => {
+            console.log(file);
+
+            // // 백엔드에서 multer.array('images') 로 받을 예정
+            // const compressedFile = await imageCompression(file, options);
+            // console.log("Compressed file:", compressedFile);
+            // console.log(compressedFile.name);
+            // formData.append("images", compressedFile);
+        })
     }
 </script>
 
@@ -310,9 +337,9 @@
     {/each}
 </ul>
 
-<div id="app" class="pretendard mt-3">
+<!-- <div id="app" class="pretendard mt-3">
     <div>
-        <!-- svelte-ignore event_directive_deprecated -->
+        svelte-ignore event_directive_deprecated
         <button
             class="flex justify-center items-center gap-2 bg-green-600 active:bg-green-700 py-2 w-1/2 rounded-md text-white"
             class:mx-auto={btnLocation == "center"}
@@ -323,10 +350,26 @@
             <span>이미지 업로드</span>
         </button>
     </div>
-</div>
+</div> -->
 
-<div class="dropzone mt-3" on:dragover={imageDragOver} on:drop={imageDrop}>
-    업로드 할 이미지를 드래그 하세요
+<input
+    type="file"
+    class="hidden"
+    bind:this={imageInput}
+    multiple
+    on:change={uploadImageInput}
+/>
+
+<div
+    class="dropzone mt-3 flex flex-col justify-center items-center"
+    on:dragover={imageDragOver}
+    on:drop={imageDrop}
+    on:click={uploadImages}
+>
+    <div class=" text-lg">업로드 할 이미지를 드래그 또는 클릭 하세요</div>
+    <div class="text-3xl">
+        <i class="fa fa-plus-square-o" aria-hidden="true"></i>
+    </div>
 </div>
 
 <!-- class:text-left={btnLocation == "left"}
@@ -339,9 +382,6 @@
         height: 100px;
         border: 2px dashed #ccc;
         border-radius: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         color: #aaa;
     }
     ul {

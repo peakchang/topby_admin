@@ -1,5 +1,5 @@
 <script>
-    import SortableImgSetFolder from "$src/lib/components/SortableImgSetFolder.svelte";
+    import SortableImgsDrag from "$src/lib/components/SortableImgsDrag.svelte";
     import OneImg from "$src/lib/components/OneImg.svelte";
     import { page } from "$app/stores";
     import axios from "axios";
@@ -275,12 +275,12 @@
     </table>
     <div class="mt-3 p-3 border rounded-md">
         <div class="mb-3 font-semibold">이미지 리스트</div>
-        <SortableImgSetFolder
+        <SortableImgsDrag
             {updateImg}
             imgFolder={hyData.hy_num}
             btnLocation="center"
             imgModifyList={modifyImgArr}
-        ></SortableImgSetFolder>
+        ></SortableImgsDrag>
     </div>
 
     <div class="my-5">
