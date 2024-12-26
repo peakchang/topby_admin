@@ -64,9 +64,9 @@
     <table class="w-full">
         <tbody>
             <tr>
-                <th class="in-th text-sm bg-slate-100 border-slate-300"
-                    >현장명</th
-                >
+                <th class="in-th text-sm bg-slate-100 border-slate-300">
+                    현장명
+                </th>
                 <td class="in-td">
                     <input
                         type="text"
@@ -294,9 +294,12 @@
             >
                 업데이트
             </button>
-            <button class="btn min-h-9 h-9" on:click={() =>{ 
-                window.close();
-            }}>닫기</button>
+            <button
+                class="btn min-h-9 h-9"
+                on:click={() => {
+                    window.close();
+                }}>닫기</button
+            >
         </div>
     </div>
 </div>

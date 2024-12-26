@@ -330,7 +330,11 @@
 
                         <div class="flex justify-between items-center px-2">
                             <div class="w-full text-center">
-                                <span class="cursor-pointer">
+                                <span
+                                    class="cursor-pointer"
+                                    data={minisiteData[idx].hy_id}
+                                    on:click={openEditWindow}
+                                >
                                     {minisiteData[idx].hy_title}
                                 </span>
                             </div>
@@ -344,7 +348,10 @@
                         </div>
                     </td>
                     <td class="in-td">
-                        <a href="/side/{minisiteData[idx].hy_num}" target="_blank">
+                        <a
+                            href="/side/{minisiteData[idx].hy_num}"
+                            target="_blank"
+                        >
                             <button
                                 class="btn btn-outline btn-accent btn-xs text-xs"
                             >

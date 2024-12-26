@@ -1,11 +1,25 @@
 <script>
+    import { page } from "$app/stores";
+    console.log($page);
+
+    let imageOrigin = import.meta.env.VITE_SERVER_URL
+        ? import.meta.env.VITE_SERVER_URL
+        : $page.url.origin;
+
+    console.log(imageOrigin);
+
     let { data } = $props();
 
-    let minisiteData = $derived(data.minisiteData);
+    let minisiteData = $state({});
     let imgList = $state([]);
+
+    minisiteData = data.minisiteData;
+    console.log(minisiteData);
+
     // svelte-ignore state_referenced_locally
-        if (minisiteData.hy_image_list) {
+    if (minisiteData.hy_image_list) {
         imgList = minisiteData.hy_image_list.split(",");
+        console.log(imgList);
     }
 
     let formArea = $state();
@@ -123,7 +137,7 @@
 
 <div class="container max-w-4xl px-1 mx-auto suit-font">
     <div>
-        <img src={minisiteData.hy_main_image} alt="" />
+        <img src={imageOrigin + minisiteData.hy_main_image} alt="" />
     </div>
 
     <form method="post" id="user_form">
@@ -298,7 +312,7 @@
     <div>
         {#each imgList as img}
             <div>
-                <img src={img} alt="" />
+                <img src={imageOrigin + img} alt="" />
             </div>
         {/each}
     </div>
