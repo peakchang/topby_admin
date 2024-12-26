@@ -27,7 +27,7 @@ apiRouter.post('/delete_sort_img', async (req, res, next) => {
     const body = req.body;
     console.log(body);
     
-    const delPath = `public\\uploads\\image\\${body.getFolder}\\${body.getImgName}`
+    const delPath = `public/uploads/image/${body.getFolder}/${body.getImgName}`
 
     console.log(delPath);
 
