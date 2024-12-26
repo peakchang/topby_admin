@@ -22,7 +22,11 @@ apiRouter.get('/', (req, res) => {
 
 
 apiRouter.post('/delete_sort_img', async (req, res, next) => {
+    console.log('들어는 오는거야?!?!?');
+    
     const body = req.body;
+    console.log(body);
+    
     const delPath = `public\\uploads\\image\\${body.getFolder}\\${body.getImgName}`
 
     console.log(delPath);
