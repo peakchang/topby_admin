@@ -44,6 +44,11 @@
         const getFolder = getImgSplit[getImgSplit.length - 2];
         const getImgName = getImgSplit[getImgSplit.length - 1];
 
+        console.log(getFolder);
+        console.log(getImgName);
+        
+        
+
         console.log(getImgName);
         try {
             const res = await axios.post(`${back_api}/delete_sort_img`, {

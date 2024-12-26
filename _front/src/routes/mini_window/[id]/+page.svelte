@@ -294,7 +294,9 @@
             >
                 업데이트
             </button>
-            <button class="btn min-h-9 h-9">닫기</button>
+            <button class="btn min-h-9 h-9" on:click={() =>{ 
+                window.close();
+            }}>닫기</button>
         </div>
     </div>
 </div>
