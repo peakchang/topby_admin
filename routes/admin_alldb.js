@@ -4,6 +4,18 @@ import { getQueryStr } from '../back-lib/lib.js';
 import moment from "moment-timezone";
 
 const adminAllDbRouter = express.Router();
+
+adminAllDbRouter.post('/update_status', async (req, res) => {
+    const data = req.body.data;
+    try {
+        const updateStatusQuery = "UPDATE application_form SET af_mb_status = ? WHERE af_id = ?";
+        await sql_con.promise().query(updateStatusQuery, [data.af_mb_status, data.af_id]);
+    } catch (error) {
+
+    }
+    res.json({})
+})
+
 adminAllDbRouter.post('/add_memo_content', async (req, res) => {
     const body = req.body;
     try {
@@ -113,28 +125,54 @@ adminAllDbRouter.post('/load_data', async (req, res) => {
         allPage = Math.ceil(allCount / onePageCount);
         const startCount = (nowPage - 1) * onePageCount
         // const formStatusDataQuery = `SELECT * FROM application_form ${addQuery} ORDER BY af_id DESC LIMIT 0, ${onePageCount};`
+        // const formStatusDataQuery = `SELECT 
+        //     t.af_id, 
+        //     t.af_form_name, 
+        //     t.af_mb_phone, 
+        //     t.af_mb_name, 
+        //     t.af_mb_status,
+        //     t.af_created_at
+        //     FROM application_form t
+        //     JOIN (
+        //         SELECT 
+        //         af_form_name, 
+        //         af_mb_phone, 
+        //         MAX(af_id) AS max_af_id
+        //         FROM application_form
+        //         ${addQuery}
+        //         GROUP BY af_form_name, af_mb_phone
+        //     ) AS g ON g.af_form_name = t.af_form_name
+        //         AND g.af_mb_phone = t.af_mb_phone
+        //         AND g.max_af_id = t.af_id
+        //     ORDER BY t.af_id DESC
+        //     LIMIT ${startCount},${onePageCount};`
+
         const formStatusDataQuery = `SELECT 
             t.af_id, 
             t.af_form_name, 
             t.af_mb_phone, 
             t.af_mb_name, 
             t.af_mb_status,
-            t.af_created_at
+            t.af_created_at,
+            GROUP_CONCAT(m.mo_memo ORDER BY m.mo_created_at DESC SEPARATOR ', ') AS memo_contents,
+            GROUP_CONCAT(m.mo_created_at ORDER BY m.mo_created_at DESC SEPARATOR ', ') AS memo_dates 
             FROM application_form t
             JOIN (
                 SELECT 
                 af_form_name, 
                 af_mb_phone, 
-                MAX(af_id) AS max_af_id
-                FROM application_form
+                MAX(af_id) AS max_af_id 
+                FROM application_form 
                 ${addQuery}
                 GROUP BY af_form_name, af_mb_phone
             ) AS g ON g.af_form_name = t.af_form_name
                 AND g.af_mb_phone = t.af_mb_phone
                 AND g.max_af_id = t.af_id
-            ORDER BY t.af_id DESC
-            LIMIT ${startCount},${onePageCount};`
-        
+                LEFT JOIN memos m ON m.mo_depend_id = t.af_id
+                GROUP BY t.af_id, t.af_form_name, t.af_mb_phone, t.af_mb_name, t.af_mb_status, t.af_created_at
+            ORDER BY t.af_id DESC LIMIT ${startCount},${onePageCount};`
+
+
         const [formStatusData] = await sql_con.promise().query(formStatusDataQuery);
         datas = formStatusData;
     } catch (err) {

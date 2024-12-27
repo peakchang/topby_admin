@@ -10,6 +10,8 @@
     import { invalidateAll } from "$app/navigation";
     let { data } = $props();
 
+    console.log(data);
+
     let datas = $state([]);
     let pages = $state([]);
     let reverseIdxArr = $state([]);
@@ -42,7 +44,7 @@
         site_list = data.site_list;
         status_list = data.statusArr;
 
-        allPageCount = data.allPage
+        allPageCount = data.allPage;
     });
 
     function searchFunc(e) {
@@ -71,20 +73,15 @@
         setParams(paramOption, true);
     }
 
-    function downloadExcel() {
-
-    }
+    function downloadExcel() {}
 
     async function openScheduleManageModal(load = false, id = 0) {
-
-
         let customer_id = 0;
         if (load == true) {
             customer_id = id;
         } else {
             customer_id = this.value;
         }
-
 
         try {
             const res = await axios.post(
@@ -99,8 +96,6 @@
                     customerInfo.managers &&
                     customerInfo.createds
                 ) {
-
-
                     const memos = customerInfo.memos.split("||");
                     const managers = customerInfo.managers.split(",");
                     const createds = customerInfo.createds.split(",");
@@ -121,7 +116,6 @@
     }
 
     async function addMemo() {
-
         if (!add_memo_content) {
             alert("메모 내용을 입력하세요.");
             return;
@@ -149,8 +143,6 @@
                             customerInfo.managers &&
                             customerInfo.createds
                         ) {
-
-
                             const memos = customerInfo.memos.split("||");
                             const managers = customerInfo.managers.split(",");
                             const createds = customerInfo.createds.split(",");
@@ -164,7 +156,6 @@
                                 };
                             });
                         }
-
                     }
                 } catch (err) {
                     console.error(err.message);
@@ -196,6 +187,21 @@
         }
 
         setParams({ page: setPage });
+    }
+
+    async function updateStatus() {
+        console.log(this.value);
+        const getIdx = this.value;
+        console.log(datas[getIdx]);
+        try {
+            const res = await axios.post(`${back_api}/alldb/update_status`, {
+                data: datas[getIdx],
+            });
+            if(res.status == 200){
+                alert('업데이트 완료')
+                invalidateAll();
+            }
+        } catch (error) {}
     }
 </script>
 
@@ -395,6 +401,16 @@
                     {data.af_form_name}
                 </td>
                 <td class="in-td p-2">
+                    {#if data.memo_contents}
+                        <div class="mb-1">
+                            <div>
+                                {data.memo_contents.split(",")[0]}
+                            </div>
+                            <div>
+                                {data.memo_contents.split(",")[1]}
+                            </div>
+                        </div>
+                    {/if}
                     <div>
                         <!-- class=" bg-green-600 px-3 py-1 text-xs rounded-md text-white active:bg-green-700" -->
                         <button
@@ -408,7 +424,25 @@
                     </div>
                 </td>
                 <td class="in-td p-2">
-                    {data.af_mb_status}
+                    <div>
+                        <select
+                            class="select select-bordered select-xs"
+                            bind:value={datas[idx]["af_mb_status"]}
+                        >
+                            {#each status_list as status}
+                                <option value={status}>
+                                    {status}
+                                </option>
+                            {/each}
+                        </select>
+                        <button
+                            class="btn btn-warning btn-xs"
+                            value={idx}
+                            on:click={updateStatus}
+                        >
+                            적용
+                        </button>
+                    </div>
                 </td>
                 <td class="in-td p-2">
                     {moment(data.af_created_at).format("YY-MM-DD HH:mm:ss")}
