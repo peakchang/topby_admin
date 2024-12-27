@@ -320,7 +320,7 @@
 
 <!-- PC 우측 고정!!! -->
 <div class="fixed bottom-6 right-3 md:right-7 z-10 hidden md:block suit-font">
-    <!-- {#if minisiteData.hy_kakao_link}
+    {#if minisiteData['hy_kakao_link']}
         <a href={hy_kakao_link} target="_blank">
             <button class="border rounded-full block w-28 mb-3">
                 <img src="/minisite/right_fix_katalk.png" alt="" />
@@ -332,7 +332,7 @@
                 <img src="/minisite/right_fix_katalk.png" alt="" />
             </button>
         </a>
-    {/if} -->
+    {/if}
 
     {#if minisiteData.hy_callnumber}
         <div
