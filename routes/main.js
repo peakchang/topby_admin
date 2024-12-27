@@ -24,8 +24,8 @@ mainRouter.post('/load_minisite_info', async (req, res) => {
             if (Number(minisite_data.hy_counter) > 0) {
                 count = Number(minisite_data.hy_counter) + 1
             }
-            // const updateCounerPage = `UPDATE hy_site SET hy_counter = ? WHERE hy_num = ?`;
-            // await sql_con.promise().query(updateCounerPage, [count, minisite_data.hy_num]);
+            const updateCounerPage = `UPDATE hy_site SET hy_counter = ? WHERE hy_num = ?`;
+            await sql_con.promise().query(updateCounerPage, [count, minisite_data.hy_num]);
 
         } else {
             console.log('안들어와?!');
