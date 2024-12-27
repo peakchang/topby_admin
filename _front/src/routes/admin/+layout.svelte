@@ -23,9 +23,7 @@
     }
 
     onMount(() => {
-        console.log($page);
 
-        console.log($user_info);
         if (Object.keys($user_info).length === 0) {
             alert("로그인이 필요합니다.");
             goto(`/auth/login?url=${$page.url.pathname}`);

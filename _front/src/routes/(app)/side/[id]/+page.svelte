@@ -1,12 +1,12 @@
 <script>
     import { page } from "$app/stores";
-    console.log($page);
+    
 
     let imageOrigin = import.meta.env.VITE_SERVER_URL
         ? import.meta.env.VITE_SERVER_URL
         : $page.url.origin;
 
-    console.log(imageOrigin);
+
 
     let { data } = $props();
 
@@ -14,12 +14,9 @@
     let imgList = $state([]);
 
     minisiteData = data.minisiteData;
-    console.log(minisiteData);
-
     // svelte-ignore state_referenced_locally
     if (minisiteData.hy_image_list) {
         imgList = minisiteData.hy_image_list.split(",");
-        console.log(imgList);
     }
 
     let formArea = $state();

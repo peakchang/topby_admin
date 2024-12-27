@@ -5,10 +5,8 @@
     import axios from "axios";
     import { back_api } from "$src/lib/const.js";
     import { invalidateAll } from "$app/navigation";
-    // console.log($page.params);
 
     let { data } = $props();
-    console.log(data);
     let hyData = $state({});
     let modifyImgArr = $state([]);
 
@@ -20,29 +18,24 @@
 
     $effect(() => {});
     function updateImg(e) {
-        console.log(e);
         hyData.hy_image_list = e.join(",");
     }
 
     function cardImageUpload(e) {
-        console.log(e);
         hyData.hy_card_image = e;
     }
 
     function mainImageUpload(e) {
-        console.log(e);
         hyData.hy_main_image = e;
     }
 
     async function updateHySite() {
-        console.log(hyData);
         try {
             const res = await axios.post(
                 `${back_api}/minisite/update_hy_data`,
                 hyData,
             );
 
-            console.log(res);
             if (res.status == 200) {
                 alert("수정이 완료 되었습니다.");
                 invalidateAll();

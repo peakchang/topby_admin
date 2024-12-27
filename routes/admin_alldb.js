@@ -39,7 +39,6 @@ adminAllDbRouter.post('/load_customer_info', async (req, res) => {
         `
         const [customerInfoRows] = await sql_con.promise().query(getCustomerInfoQuery);
         customer_info = customerInfoRows[0]
-        console.log(customer_info);
 
     } catch (error) {
 
@@ -135,7 +134,6 @@ adminAllDbRouter.post('/load_data', async (req, res) => {
                 AND g.max_af_id = t.af_id
             ORDER BY t.af_id DESC
             LIMIT ${startCount},${onePageCount};`
-        console.log(formStatusDataQuery);
         
         const [formStatusData] = await sql_con.promise().query(formStatusDataQuery);
         datas = formStatusData;

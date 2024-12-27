@@ -17,14 +17,9 @@ adminDbCount.use('/', async (req, res, next) => {
     let allPageCount = 0
 
     const query = req.query
-
     const body = req.body;
-    console.log(body);
-
-
     const nowPage = Number(body.now_page) || 1;
 
-    console.log(nowPage);
 
 
     // 기본 시작 날짜 구하기 (받은 sd 쿼리값 없으면)

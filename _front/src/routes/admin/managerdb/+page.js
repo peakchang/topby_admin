@@ -7,20 +7,14 @@ import { user_info } from "$src/lib/store.js";
 // 사이트 접속시 user_info store 값에 user 정보 넣기
 export const load = async ({ params, url, data }) => {
 
-    console.log(user_info);
-
     let manager_id = ""
     user_info.subscribe((e) => {
-        console.log(e);
-
         if (e.rate == '5') {
             manager_id = 'masters'
         } else {
             manager_id = e.id
         }
     })
-
-    console.log(manager_id);
 
 
 

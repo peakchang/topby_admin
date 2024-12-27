@@ -10,8 +10,6 @@
     import { invalidateAll } from "$app/navigation";
     let { data } = $props();
 
-    console.log(data);
-
     let datas = $state([]);
     let pages = $state([]);
     let reverseIdxArr = $state([]);
@@ -47,7 +45,6 @@
     });
 
     function searchFunc(e) {
-        console.log("이쪽으로는 안와?!?!");
         e.preventDefault();
 
         let paramOption = {};
@@ -74,7 +71,7 @@
     }
 
     function downloadExcel() {
-        console.log(pageCount);
+
     }
 
     async function openScheduleManageModal(load = false, id = 0) {
@@ -84,7 +81,6 @@
         } else {
             customer_id = this.value;
         }
-        console.log(customer_id);
 
         try {
             const res = await axios.post(
@@ -99,7 +95,7 @@
                     customerInfo.managers &&
                     customerInfo.createds
                 ) {
-                    console.log("들어는 와?!");
+
 
                     const memos = customerInfo.memos.split("||");
                     const managers = customerInfo.managers.split(",");
@@ -114,8 +110,6 @@
                         };
                     });
                 }
-
-                console.log(customerInfo);
             }
         } catch (error) {}
 
@@ -123,7 +117,6 @@
     }
 
     async function addMemo() {
-        console.log(this.value);
 
         if (!add_memo_content) {
             alert("메모 내용을 입력하세요.");
@@ -139,15 +132,12 @@
             });
 
             if (res.status == 200) {
-                console.log("일단 1차");
 
                 try {
                     const res = await axios.post(
                         `${back_api}/alldb/load_customer_info`,
                         { customer_id: af_id },
                     );
-
-                    console.log(res);
 
                     if (res.status == 200) {
                         customerInfo = res.data.customer_info;
@@ -156,7 +146,6 @@
                             customerInfo.managers &&
                             customerInfo.createds
                         ) {
-                            console.log("들어는 와?!");
 
                             const memos = customerInfo.memos.split("||");
                             const managers = customerInfo.managers.split(",");
@@ -171,8 +160,6 @@
                                 };
                             });
                         }
-
-                        console.log(customerInfo);
                     }
                 } catch (err) {
                     console.error(err.message);
@@ -182,12 +169,6 @@
     }
 
     function movePage() {
-        console.log(nowPage);
-
-        console.log(this.value);
-
-        console.log(allPageCount);
-
         let setPage = 0;
         if (this.value == "prev") {
             setPage = nowPage - 1;
@@ -208,8 +189,6 @@
         } else {
             setPage = parseInt(this.value);
         }
-
-        console.log(setPage);
 
         setParams({ page: setPage });
     }

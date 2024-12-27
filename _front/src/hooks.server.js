@@ -9,7 +9,6 @@ export async function handle({ event, resolve }) {
 
     let userInfo = {}
     const refreshToken = event.cookies.get('tk'); // 쿠키에서 Refresh Token 가져오기
-    console.log(refreshToken);
 
     if (refreshToken) {
         const getUserInfoQuery = "SELECT * FROM users WHERE refresh_token = ?";

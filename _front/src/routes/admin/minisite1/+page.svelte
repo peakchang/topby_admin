@@ -7,9 +7,6 @@
 
     // let loading = true;
     let { data } = $props();
-    console.log("이렇게 들어는 와?!?!?!");
-
-    console.log(data);
 
     let minisiteData = $state([]);
     let pageArr = $state([]);
@@ -40,7 +37,6 @@
     });
 
     function allCheckedChange() {
-        console.log(this.checked);
         if (this.checked) {
             checkedList = createArray(minisiteData.length);
         } else {
@@ -77,7 +73,6 @@
                 hy_site_name = "";
                 invalidateAll();
             } else {
-                console.log(res);
             }
         } catch (error) {}
     }
@@ -92,8 +87,6 @@
             alert("수정할 항목을 선택해주세요");
             return;
         }
-        console.log(checkedList);
-        console.log(minisiteData);
         const updateData = checkedList.map((index) =>
             JSON.parse(JSON.stringify(minisiteData[index])),
         );
@@ -102,7 +95,6 @@
             const res = await axios.post(`${back_api}/minisite/update_hy_raw`, {
                 updateData,
             });
-            console.log(res);
 
             if (res.status == 200) {
                 let addMessage = "";
@@ -114,7 +106,6 @@
                 invalidateAll();
             }
         } catch (error) {}
-        console.log(updateData);
     }
 
     async function deleteRaw() {
@@ -174,11 +165,6 @@
     }
 
     function movePage() {
-        console.log(this.value);
-
-        console.log(allPageCount);
-
-        console.log(nowPage);
         let setPage = 0;
         if (this.value == "prev") {
             setPage = nowPage - 1;
@@ -199,7 +185,6 @@
         } else {
             setPage = parseInt(this.value);
         }
-        console.log("340958309580934850");
 
         setParams({ page: setPage });
     }

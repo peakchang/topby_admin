@@ -145,15 +145,10 @@
                 invalidateAll();
             }
         } catch (error) {}
-        console.log(checkedList);
+           
     }
 
     function movePage() {
-        console.log(this.value);
-
-        console.log(allPageCount);
-
-        console.log(nowPage);
         let setPage = 0;
         if (this.value == "prev") {
             setPage = nowPage - 1;
@@ -174,7 +169,6 @@
         } else {
             setPage = parseInt(this.value);
         }
-        console.log("340958309580934850");
 
         setParams({ page: setPage });
     }

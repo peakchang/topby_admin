@@ -69,7 +69,6 @@ authRouter.post("/logout", async (req, res) => {
 // 회원가입 엔드포인트
 authRouter.post("/register", async (req, res) => {
 
-    console.log('회원가입 들어옴!!!');
 
     const { userid, user_email, user_phone, nick, password } = req.body;
 
@@ -128,8 +127,6 @@ authRouter.post("/login", async (req, res) => {
 
                 const updateQuery = "UPDATE users SET refresh_token = ? WHERE id = ?";
                 await sql_con.promise().query(updateQuery, [token, userInfo.id]);
-
-                console.log(process.env.NODE_ENV);
 
                 // if(process.env.NODE_ENV == 'production') {
                 //     res.cookie("tk", refreshToken, { httpOnly: true, secure: true });

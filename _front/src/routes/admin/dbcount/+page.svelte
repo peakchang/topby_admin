@@ -35,13 +35,6 @@
     }
 
     function movePage() {
-        console.log(nowPage);
-
-        console.log(this.value);
-
-        console.log(allPageCount);
-        
-
         let setPage = 0;
         if (this.value == "prev") {
             setPage = nowPage - 1;
@@ -62,8 +55,6 @@
         } else {
             setPage = parseInt(this.value);
         }
-
-        console.log(setPage);
 
         setParams({ page: setPage });
     }

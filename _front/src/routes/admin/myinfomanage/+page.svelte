@@ -2,7 +2,7 @@
     import { back_api } from "$src/lib/const.js";
     import { user_info } from "$src/lib/store.js";
     import axios from "axios";
-    console.log($user_info);
+
 
     let name = $state("");
     let email = $state("");
@@ -14,14 +14,11 @@
     email = $user_info.email || "";
 
     async function passwordChkSubmit() {
-        console.log(passwordChk);
         try {
             const res = await axios.post(`${back_api}/adminbase/password_chk`, {
                 id: $user_info.id,
                 passwordChk,
             });
-
-            console.log(res);
 
             if (res.status == 200) {
                 if (res.data.errorMessage) {

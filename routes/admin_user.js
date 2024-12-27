@@ -8,7 +8,6 @@ const userManageRouter = express.Router();
 
 userManageRouter.post('/delete_user_rows', async (req, res) => {
     const deleteList = req.body.deleteList;
-    console.log(deleteList);
 
     for (let i = 0; i < deleteList.length; i++) {
         const userId = deleteList[i];
@@ -72,7 +71,6 @@ userManageRouter.post('/load_users', async (req, res) => {
     const nowPage = req.body.nowPage || 1;
 
     const body = req.body;
-    console.log(body);
 
     let addQuery = "";
     if (body.userRate) {

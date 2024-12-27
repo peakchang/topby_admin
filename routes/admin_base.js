@@ -11,7 +11,6 @@ const adminBaseRouter = express.Router();
 
 adminBaseRouter.post('/update_user_info', async (req, res) => {
     const body = req.body;
-    console.log(body);
     try {
         let addQuery = ""
         if (body.newPassword) {
@@ -35,8 +34,6 @@ adminBaseRouter.post('/password_chk', async (req, res) => {
     const id = req.body.id;
     let errorMessage = ""
 
-    console.log(chkPwd);
-
     try {
         const getUserInfoQuery = "SELECT * FROM users WHERE userid =?";
         const [userInfoTemp] = await sql_con.promise().query(getUserInfoQuery, [id]);
@@ -51,8 +48,6 @@ adminBaseRouter.post('/password_chk', async (req, res) => {
         console.error(err.message);
     }
 
-    console.log(chkPwd);
-
     res.json({ errorMessage })
 })
 
@@ -63,11 +58,8 @@ adminBaseRouter.post('/upload_db_data', async (req, res) => {
     const setSite = req.body.setSite
     const now = moment().format('YYYY-MM-DD HH:mm:ss')
 
-    console.log(req.body);
-
     for (let i = 0; i < uploadDbData.length; i++) {
         const data = uploadDbData[i];
-        console.log(data);
         try {
             const updateDataQuery = "INSERT INTO application_form (af_mb_phone,af_mb_name,af_form_name,af_created_at) VALUES (?,?,?,?)";
             await sql_con.promise().query(updateDataQuery, [data.af_mb_phone, data.af_mb_name, setSite, now]);
@@ -81,7 +73,6 @@ adminBaseRouter.post('/upload_db_data', async (req, res) => {
 
 adminBaseRouter.post('/dbupload_site_list', async (req, res) => {
     const filterSiteVal = req.body.filterSiteVal;
-    console.log(filterSiteVal);
     let addQuery = ""
     if (filterSiteVal) {
         addQuery = `WHERE sl_site_name LIKE '%${filterSiteVal}%'`;
@@ -116,8 +107,6 @@ adminBaseRouter.post('/update_form_status', async (req, res) => {
 
 
 adminBaseRouter.post('/get_form_status', async (req, res) => {
-    console.log('wlifjlwijflwijef');
-
     let form_status_data = {}
     try {
         const formStatusDataQuery = "SELECT * FROM form_status;"

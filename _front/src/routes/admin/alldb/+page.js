@@ -40,7 +40,6 @@ export const load = async ({ params, url, data }) => {
             colorArr = res.data.status_color_list;
 
             site_list = res.data.site_list;
-            console.log(site_list);
 
         }
     } catch (error) {

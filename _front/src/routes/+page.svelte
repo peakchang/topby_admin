@@ -2,7 +2,6 @@
     import { user_info } from "$src/lib/store.js";
 
     let { data } = $props();
-    console.log(data);
 
     let loading = $state(true);
 

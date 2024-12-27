@@ -49,7 +49,6 @@ adminManagerDbRouter.post('/load_customer_info', async (req, res) => {
 adminManagerDbRouter.post('/load_data', async (req, res) => {
 
     const body = req.body;
-    console.log(body);
 
     let datas = [];
     let allCount = 0;
@@ -69,12 +68,10 @@ adminManagerDbRouter.post('/load_data', async (req, res) => {
     let addQuery = "";
     let getSiteAddQuery = "";
     if (body.manager_id != 'masters') {
-        console.log(body.manager_id);
 
         try {
             const getSiteDataQuery = "SELECT * FROM users WHERE userid = ?";
             const [siteRows] = await sql_con.promise().query(getSiteDataQuery, [body.manager_id]);
-            console.log(siteRows[0]);
             
             addQuery = `WHERE '${siteRows[0].manage_estate}' LIKE CONCAT('%', af_form_name, '%') AND af_form_name <> ''`
 
@@ -84,12 +81,6 @@ adminManagerDbRouter.post('/load_data', async (req, res) => {
 
         }
     }
-
-    console.log(addQuery);
-    
-
-
-
 
 
     if (startDate && endDate) {
@@ -121,8 +112,6 @@ adminManagerDbRouter.post('/load_data', async (req, res) => {
 
         // 사이트 리스트 구하기
         const getSiteListQuery = `SELECT sl_id, sl_site_name FROM site_list ${getSiteAddQuery} ORDER BY sl_id DESC;`;
-
-        console.log(getSiteListQuery);
         
         const [siteListRows] = await sql_con.promise().query(getSiteListQuery);
         site_list = siteListRows;

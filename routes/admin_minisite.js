@@ -15,7 +15,6 @@ const minisiteRouter = express.Router();
 
 minisiteRouter.post('/add_sub_domain', async (req, res) => {
     const body = req.body;
-    console.log(body);
 
     const now = moment().format('YYYY-MM-DD HH:mm:ss');
 
@@ -68,14 +67,12 @@ minisiteRouter.post('/load_site_list', async (req, res) => {
 
     try {
         const getSiteListQuery = `SELECT * FROM site_list ${addQuery}`;
-        console.log(getSiteListQuery);
 
         const [siteListRows] = await sql_con.promise().query(getSiteListQuery);
         site_list = siteListRows;
     } catch (error) {
 
     }
-    console.log(site_list);
     res.json({ site_list });
 })
 
@@ -90,7 +87,6 @@ minisiteRouter.post('/load_land_minisite', async (req, res) => {
         // const getLandMinisiteCountQuery = "SELECT count(*) AS m1Count FROM hy_site";
         // const [countRows] = await sql_con.promise().query(getLandMinisiteCountQuery);
         // allCount = countRows[0].m1Count;
-        // console.log(allCount);
         // allPage = Math.ceil(allCount / onePageCount);
         // const startCount = (nowPage - 1) * onePageCount;
 
@@ -102,7 +98,6 @@ minisiteRouter.post('/load_land_minisite', async (req, res) => {
         console.error(err.message);
     }
 
-    console.log(land_minisite_data);
 
 
     res.json({ land_minisite_data })
@@ -117,7 +112,6 @@ minisiteRouter.get('/', (req, res) => {
 
 minisiteRouter.post('/copy_hy_data', async (req, res) => {
     const body = req.body;
-    console.log(body);
 
     try {
         const getHyDataQuery = "SELECT * FROM hy_site WHERE hy_id = ?";
@@ -130,8 +124,6 @@ minisiteRouter.post('/copy_hy_data', async (req, res) => {
         let questions = "";
         let values = [];
         for (const key in getHyData) {
-            console.log(key);
-            console.log(getHyData[key]);
             keyStr += `${key},`;
             questions += `?,`;
 
@@ -160,10 +152,8 @@ minisiteRouter.post('/copy_hy_data', async (req, res) => {
         const getOldFolder = `./public/uploads/image/${body.copyData.hy_num}`
         const getNewFolder = `./public/uploads/image/${body.copyId}`;
         if (fs.existsSync(getOldFolder)) {
-            console.log('있다~~~~~~~~~~~~~~');
             fs.copySync(getOldFolder, getNewFolder);
         } else {
-            console.log('없다~~~~~~');
         }
 
         const addHyDataQuery = `INSERT INTO hy_site (${keyStr}) VALUES (${questions})`;
@@ -209,7 +199,6 @@ minisiteRouter.post('/update_hy_raw', async (req, res) => {
             duplication_num++
         }
     }
-    console.log(duplication_num);
 
     res.json({ duplication_num })
 })
@@ -217,7 +206,6 @@ minisiteRouter.post('/update_hy_raw', async (req, res) => {
 
 minisiteRouter.post('/update_hy_data', async (req, res) => {
     const hySiteData = req.body
-    console.log(hySiteData);
 
     const hyId = hySiteData.hy_id;
     delete hySiteData.hy_id;
@@ -239,8 +227,6 @@ minisiteRouter.post('/load_hy_data', async (req, res) => {
     let hyData = {}
     try {
         const getHyDattaQuery = "SELECT * FROM hy_site WHERE hy_id = ? ";
-        console.log(getHyDattaQuery);
-        console.log(hyId);
 
         const [hyDataRows] = await sql_con.promise().query(getHyDattaQuery, [hyId.id]);
         hyData = hyDataRows[0]
@@ -266,11 +252,9 @@ minisiteRouter.post('/load_minisite', async (req, res) => {
 
     try {
         const getMinisite1CountQuery = `SELECT count(*) AS m1Count FROM hy_site ${searchStr}`;
-        console.log(getMinisite1CountQuery);
 
         const [countRows] = await sql_con.promise().query(getMinisite1CountQuery);
         allCount = countRows[0].m1Count;
-        console.log(allCount);
         allPage = Math.ceil(allCount / onePageCount);
         const startCount = (nowPage - 1) * onePageCount;
 

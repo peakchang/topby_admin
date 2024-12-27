@@ -6,7 +6,6 @@ import { getPagination } from "$lib/lib.js"
 // 사이트 접속시 user_info store 값에 user 정보 넣기
 export const load = async ({ params, url, data }) => {
     const nowPage = url.searchParams.get('page') || 1;
-    console.log(`in pagejs : ${nowPage}`);
     
     let pageArr = []
     let user_datas = [];

@@ -6,14 +6,12 @@ export const load = async ({ params, url, data }) => {
 
     let hyData = {}
     const getHyId = params;
-    console.log(getHyId);
 
     try {
         const res = await axios.post(`${back_api}/minisite/load_hy_data`, {
             getHyId,
         });
         if (res.status == 200) {
-            console.log(res.data);
             hyData = res.data.hyData;
         }
     } catch (error) {

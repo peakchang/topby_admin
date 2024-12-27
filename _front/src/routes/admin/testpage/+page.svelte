@@ -7,15 +7,13 @@
     let users = $state(data.user_datas);
     let pageArr = $derived(data.pageArr);
     let nowPage = $state(1);
-    console.log(pageArr);
+
 
     $effect(() => {
-        console.log(data);
         users = data.user_datas
     });
 
     function changChk() {
-        console.log(users);
         users[0]["user_email"] = "gaildfjglijgierjg";
     }
 </script>

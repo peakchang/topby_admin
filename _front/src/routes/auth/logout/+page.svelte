@@ -5,7 +5,6 @@
     import { user_info } from "$lib/store.js";
 
     $effect(async () => {
-        console.log($user_info);
 
         if ($user_info.id) {
             try {
