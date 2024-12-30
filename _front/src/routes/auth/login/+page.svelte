@@ -110,4 +110,9 @@
             로그인
         </button>
     </form>
+
+    <div class="mt-3 text-xs text-center text-blue-600">
+        <a href="/auth/join">회원이 아니라면? 회원 가입 하기</a>
+    </div>
+    
 </div>

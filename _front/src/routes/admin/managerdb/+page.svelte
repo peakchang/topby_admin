@@ -10,6 +10,8 @@
     import { invalidateAll } from "$app/navigation";
     let { data } = $props();
 
+    console.log(data);
+
     let datas = $state([]);
     let pages = $state([]);
     let reverseIdxArr = $state([]);
@@ -25,6 +27,7 @@
 
     let allPageCount = $state(0);
 
+    let customer_id = $state(0);
     //
     let site_list = $state([]);
     let status_list = $state([]);
@@ -41,6 +44,7 @@
         reverseIdxArr = data.reverseIdxArr;
         site_list = data.site_list;
         status_list = data.statusArr;
+
         allPageCount = data.allPage;
     });
 
@@ -70,12 +74,9 @@
         setParams(paramOption, true);
     }
 
-    function downloadExcel() {
-
-    }
+    function downloadExcel() {}
 
     async function openScheduleManageModal(load = false, id = 0) {
-        let customer_id = 0;
         if (load == true) {
             customer_id = id;
         } else {
@@ -83,40 +84,14 @@
         }
 
         try {
-            const res = await axios.post(
-                `${back_api}/alldb/load_customer_info`,
-                { customer_id },
-            );
-
-            if (res.status == 200) {
-                customerInfo = res.data.customer_info;
-                if (
-                    customerInfo.memos &&
-                    customerInfo.managers &&
-                    customerInfo.createds
-                ) {
-
-
-                    const memos = customerInfo.memos.split("||");
-                    const managers = customerInfo.managers.split(",");
-                    const createds = customerInfo.createds.split(",");
-
-                    customerInfo.memo_list = memos.map((_, index) => {
-                        const reverseIndex = memos.length - 1 - index;
-                        return {
-                            memo: memos[reverseIndex],
-                            manager: managers[reverseIndex],
-                            created: createds[reverseIndex],
-                        };
-                    });
-                }
-            }
+            loadCustomerInfo(customer_id);
         } catch (error) {}
 
         schedule_manage_modal.showModal();
     }
 
     async function addMemo() {
+        console.log(customer_id);
 
         if (!add_memo_content) {
             alert("메모 내용을 입력하세요.");
@@ -125,47 +100,19 @@
         const af_id = this.value;
 
         try {
-            const res = await axios.post(`${back_api}/alldb/add_memo_content`, {
+            const res = await axios.post(`${back_api}/managerdb/add_memo_content`, {
                 af_id,
                 add_memo_content,
                 manager: $user_info.name,
             });
 
             if (res.status == 200) {
-
-                try {
-                    const res = await axios.post(
-                        `${back_api}/alldb/load_customer_info`,
-                        { customer_id: af_id },
-                    );
-
-                    if (res.status == 200) {
-                        customerInfo = res.data.customer_info;
-                        if (
-                            customerInfo.memos &&
-                            customerInfo.managers &&
-                            customerInfo.createds
-                        ) {
-
-                            const memos = customerInfo.memos.split("||");
-                            const managers = customerInfo.managers.split(",");
-                            const createds = customerInfo.createds.split(",");
-
-                            customerInfo.memo_list = memos.map((_, index) => {
-                                const reverseIndex = memos.length - 1 - index;
-                                return {
-                                    memo: memos[reverseIndex],
-                                    manager: managers[reverseIndex],
-                                    created: createds[reverseIndex],
-                                };
-                            });
-                        }
-                    }
-                } catch (err) {
-                    console.error(err.message);
-                }
+                console.log("아니 안들어오는거야?!?!?!??!");
+                loadCustomerInfo(customer_id);
             }
-        } catch (error) {}
+        } catch (err) {
+            console.error(err.message);
+        }
     }
 
     function movePage() {
@@ -191,6 +138,80 @@
         }
 
         setParams({ page: setPage });
+    }
+
+    async function updateStatus() {
+        console.log(this.value);
+        const getIdx = this.value;
+        console.log(datas[getIdx]);
+        try {
+            const res = await axios.post(`${back_api}/alldb/update_status`, {
+                data: datas[getIdx],
+            });
+            if (res.status == 200) {
+                alert("업데이트 완료");
+                invalidateAll();
+            }
+        } catch (error) {}
+    }
+
+    async function deleteMemo() {
+        if (!confirm("삭제한 메모는 복구가 불가합니다. 진행하시겠습니까?")) {
+            return;
+        }
+        const getIdx = this.value;
+        try {
+            const res = await axios.post(`${back_api}/alldb/delete_memo`, {
+                getIdx,
+            });
+
+            if (res.status == 200) {
+                loadCustomerInfo(customer_id);
+            }
+        } catch (error) {}
+    }
+
+    async function loadCustomerInfo(customer_id) {
+        console.log("들어는 오지?!?!");
+
+        try {
+            const res = await axios.post(
+                `${back_api}/alldb/load_customer_info`,
+                { customer_id },
+            );
+
+            console.log(res);
+
+            if (res.status == 200) {
+                customerInfo = res.data.customer_info;
+                if (
+                    customerInfo.memos &&
+                    customerInfo.managers &&
+                    customerInfo.createds
+                ) {
+                    const memos = customerInfo.memos.split("||");
+                    const managers = customerInfo.managers.split(",");
+                    const createds = customerInfo.createds.split(",");
+                    const ids = customerInfo.ids.split(",");
+
+                    customerInfo.memo_list = memos.map((_, index) => {
+                        const reverseIndex = memos.length - 1 - index;
+                        return {
+                            memo: memos[reverseIndex],
+                            idx: ids[reverseIndex],
+                            manager: managers[reverseIndex],
+                            created: createds[reverseIndex],
+                        };
+                    });
+
+                    console.log(customerInfo);
+                }
+                add_memo_content = "";
+                invalidateAll();
+            }
+        } catch (err) {
+            console.error(err.message);
+        }
     }
 </script>
 
@@ -253,16 +274,28 @@
                         메모 추가
                     </button>
                 </div>
-                <ul class="border-t border-r border-l mt-3 h-96 overflow-auto">
+                <ul class="border-t border-r border-l mt-3 h-80 overflow-auto">
                     {#each customerInfo.memo_list as memo}
                         <li class="border-b p-2">
                             <div
                                 class="flex justify-between gap-2 items-center"
                             >
                                 <span>{memo.memo}</span>
-                                <button class="btn btn-info btn-xs text-white"
-                                    >스케줄 추가</button
-                                >
+
+                                <div>
+                                    <!-- <button
+                                        class="btn btn-info btn-xs text-white"
+                                    >
+                                        스케줄 추가
+                                    </button> -->
+                                    <button
+                                        class="btn btn-error btn-xs text-white"
+                                        value={memo.idx}
+                                        on:click={deleteMemo}
+                                    >
+                                        삭제
+                                    </button>
+                                </div>
                             </div>
                             <div class="text-right text-xs mt-0.5">
                                 {memo.created}
@@ -275,7 +308,7 @@
         <div class="modal-action">
             <form method="dialog">
                 <!-- if there is a button in form, it will close the modal -->
-                <button class="btn">Close</button>
+                <button class="btn">닫기</button>
             </form>
         </div>
     </div>
@@ -295,6 +328,29 @@
                 class="border px-2 py-1 rounded-md"
                 bind:value={endDate}
             />
+
+            <!-- <label
+                class="input input-sm input-bordered flex items-center gap-2"
+            >
+                <input
+                    type="text"
+                    class="grow"
+                    placeholder="현장 1차 검색"
+                    bind:value={filterSite}
+                />
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                    class="h-4 w-4 opacity-70"
+                >
+                    <path
+                        fill-rule="evenodd"
+                        d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                        clip-rule="evenodd"
+                    />
+                </svg>
+            </label> -->
 
             <select
                 class="select select-sm select-bordered"
@@ -329,13 +385,13 @@
 
             <button class="btn btn-neutral btn-sm"> 검색 </button>
 
-            <button
+            <!-- <button
                 type="button"
                 class="btn btn-info btn-sm text-white"
                 on:click={downloadExcel}
             >
                 DB 엑셀 다운
-            </button>
+            </button> -->
         </div>
     </form>
 </div>
@@ -353,7 +409,7 @@
     </thead>
     <tbody>
         {#each datas as data, idx}
-            <tr class="text-center">
+            <tr class="text-center" style="background-color: {data.bg_color};">
                 <td class="in-td p-2 w-[70px]">
                     {reverseIdxArr[idx]}
                 </td>
@@ -367,6 +423,16 @@
                     {data.af_form_name}
                 </td>
                 <td class="in-td p-2">
+                    {#if data.memo_contents}
+                        <div class="mb-1">
+                            <div>
+                                {data.memo_contents.split(",")[0]}
+                            </div>
+                            <div>
+                                {data.memo_contents.split(",")[1]}
+                            </div>
+                        </div>
+                    {/if}
                     <div>
                         <!-- class=" bg-green-600 px-3 py-1 text-xs rounded-md text-white active:bg-green-700" -->
                         <button
@@ -380,7 +446,25 @@
                     </div>
                 </td>
                 <td class="in-td p-2">
-                    {data.af_mb_status}
+                    <div>
+                        <select
+                            class="select select-bordered select-xs"
+                            bind:value={datas[idx]["af_mb_status"]}
+                        >
+                            {#each status_list as status}
+                                <option value={status}>
+                                    {status}
+                                </option>
+                            {/each}
+                        </select>
+                        <button
+                            class="btn btn-warning btn-xs"
+                            value={idx}
+                            on:click={updateStatus}
+                        >
+                            적용
+                        </button>
+                    </div>
                 </td>
                 <td class="in-td p-2">
                     {moment(data.af_created_at).format("YY-MM-DD HH:mm:ss")}

@@ -72,7 +72,7 @@ adminManagerDbRouter.post('/load_data', async (req, res) => {
         try {
             const getSiteDataQuery = "SELECT * FROM users WHERE userid = ?";
             const [siteRows] = await sql_con.promise().query(getSiteDataQuery, [body.manager_id]);
-            
+
             addQuery = `WHERE '${siteRows[0].manage_estate}' LIKE CONCAT('%', af_form_name, '%') AND af_form_name <> ''`
 
             getSiteAddQuery = `WHERE '${siteRows[0].manage_estate}' LIKE CONCAT('%', sl_site_name , '%')`
@@ -99,7 +99,7 @@ adminManagerDbRouter.post('/load_data', async (req, res) => {
         addQuery += ` AND af_form_name = '${setSite}'`;
     }
 
-    
+
 
     try {
 
@@ -112,7 +112,7 @@ adminManagerDbRouter.post('/load_data', async (req, res) => {
 
         // 사이트 리스트 구하기
         const getSiteListQuery = `SELECT sl_id, sl_site_name FROM site_list ${getSiteAddQuery} ORDER BY sl_id DESC;`;
-        
+
         const [siteListRows] = await sql_con.promise().query(getSiteListQuery);
         site_list = siteListRows;
         // const getAllCountApFormQuery = `SELECT count(*) AS af_count FROM application_form`;
@@ -143,21 +143,24 @@ adminManagerDbRouter.post('/load_data', async (req, res) => {
             t.af_mb_phone, 
             t.af_mb_name, 
             t.af_mb_status,
-            t.af_created_at
+            t.af_created_at,
+            GROUP_CONCAT(m.mo_memo ORDER BY m.mo_created_at DESC SEPARATOR ', ') AS memo_contents,
+            GROUP_CONCAT(m.mo_created_at ORDER BY m.mo_created_at DESC SEPARATOR ', ') AS memo_dates 
             FROM application_form t
             JOIN (
                 SELECT 
                 af_form_name, 
                 af_mb_phone, 
-                MAX(af_id) AS max_af_id
-                FROM application_form
+                MAX(af_id) AS max_af_id 
+                FROM application_form 
                 ${addQuery}
                 GROUP BY af_form_name, af_mb_phone
             ) AS g ON g.af_form_name = t.af_form_name
                 AND g.af_mb_phone = t.af_mb_phone
                 AND g.max_af_id = t.af_id
-            ORDER BY t.af_id DESC
-            LIMIT ${startCount},${onePageCount};`
+                LEFT JOIN memos m ON m.mo_depend_id = t.af_id
+                GROUP BY t.af_id, t.af_form_name, t.af_mb_phone, t.af_mb_name, t.af_mb_status, t.af_created_at
+        ORDER BY t.af_id DESC LIMIT ${startCount},${onePageCount};`
 
 
 

@@ -5,6 +5,20 @@ import moment from "moment-timezone";
 
 const adminAllDbRouter = express.Router();
 
+
+
+
+adminAllDbRouter.post('/delete_memo', async (req, res) => {
+    const getIdx = req.body.getIdx;
+    try {
+        const deleteMemoQuery = "DELETE FROM memos WHERE mo_id = ?";
+        await sql_con.promise().query(deleteMemoQuery, [getIdx]);
+    } catch (error) {
+
+    }
+    res.json({})
+})
+
 adminAllDbRouter.post('/update_status', async (req, res) => {
     const data = req.body.data;
     try {
@@ -36,12 +50,14 @@ adminAllDbRouter.post('/load_customer_info', async (req, res) => {
             c.*,
             m_all.memos,
             m_all.managers,
+            m_all.ids,
             m_all.createds
         FROM application_form c
         LEFT JOIN (
             SELECT 
             mo_depend_id, 
             GROUP_CONCAT(mo_memo SEPARATOR '||') AS memos,
+            GROUP_CONCAT(mo_id SEPARATOR ',') AS ids,
             GROUP_CONCAT(mo_manager SEPARATOR ',') AS managers,
             GROUP_CONCAT(mo_created_at SEPARATOR ',') AS createds
             FROM memos
@@ -50,6 +66,8 @@ adminAllDbRouter.post('/load_customer_info', async (req, res) => {
         WHERE c.af_id = ${body.customer_id};
         `
         const [customerInfoRows] = await sql_con.promise().query(getCustomerInfoQuery);
+        console.log(customerInfoRows);
+
         customer_info = customerInfoRows[0]
 
     } catch (error) {

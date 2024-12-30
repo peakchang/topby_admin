@@ -27,6 +27,7 @@
 
     let allPageCount = $state(0);
 
+    let customer_id = $state(0);
     //
     let site_list = $state([]);
     let status_list = $state([]);
@@ -76,7 +77,6 @@
     function downloadExcel() {}
 
     async function openScheduleManageModal(load = false, id = 0) {
-        let customer_id = 0;
         if (load == true) {
             customer_id = id;
         } else {
@@ -84,38 +84,15 @@
         }
 
         try {
-            const res = await axios.post(
-                `${back_api}/alldb/load_customer_info`,
-                { customer_id },
-            );
-
-            if (res.status == 200) {
-                customerInfo = res.data.customer_info;
-                if (
-                    customerInfo.memos &&
-                    customerInfo.managers &&
-                    customerInfo.createds
-                ) {
-                    const memos = customerInfo.memos.split("||");
-                    const managers = customerInfo.managers.split(",");
-                    const createds = customerInfo.createds.split(",");
-
-                    customerInfo.memo_list = memos.map((_, index) => {
-                        const reverseIndex = memos.length - 1 - index;
-                        return {
-                            memo: memos[reverseIndex],
-                            manager: managers[reverseIndex],
-                            created: createds[reverseIndex],
-                        };
-                    });
-                }
-            }
+            loadCustomerInfo(customer_id);
         } catch (error) {}
 
         schedule_manage_modal.showModal();
     }
 
     async function addMemo() {
+        console.log(customer_id);
+
         if (!add_memo_content) {
             alert("메모 내용을 입력하세요.");
             return;
@@ -130,38 +107,12 @@
             });
 
             if (res.status == 200) {
-                try {
-                    const res = await axios.post(
-                        `${back_api}/alldb/load_customer_info`,
-                        { customer_id: af_id },
-                    );
-
-                    if (res.status == 200) {
-                        customerInfo = res.data.customer_info;
-                        if (
-                            customerInfo.memos &&
-                            customerInfo.managers &&
-                            customerInfo.createds
-                        ) {
-                            const memos = customerInfo.memos.split("||");
-                            const managers = customerInfo.managers.split(",");
-                            const createds = customerInfo.createds.split(",");
-
-                            customerInfo.memo_list = memos.map((_, index) => {
-                                const reverseIndex = memos.length - 1 - index;
-                                return {
-                                    memo: memos[reverseIndex],
-                                    manager: managers[reverseIndex],
-                                    created: createds[reverseIndex],
-                                };
-                            });
-                        }
-                    }
-                } catch (err) {
-                    console.error(err.message);
-                }
+                console.log("아니 안들어오는거야?!?!?!??!");
+                loadCustomerInfo(customer_id);
             }
-        } catch (error) {}
+        } catch (err) {
+            console.error(err.message);
+        }
     }
 
     function movePage() {
@@ -197,11 +148,70 @@
             const res = await axios.post(`${back_api}/alldb/update_status`, {
                 data: datas[getIdx],
             });
-            if(res.status == 200){
-                alert('업데이트 완료')
+            if (res.status == 200) {
+                alert("업데이트 완료");
                 invalidateAll();
             }
         } catch (error) {}
+    }
+
+    async function deleteMemo() {
+        if (!confirm("삭제한 메모는 복구가 불가합니다. 진행하시겠습니까?")) {
+            return;
+        }
+        const getIdx = this.value;
+        try {
+            const res = await axios.post(`${back_api}/alldb/delete_memo`, {
+                getIdx,
+            });
+
+            if (res.status == 200) {
+                loadCustomerInfo(customer_id);
+            }
+        } catch (error) {}
+    }
+
+    async function loadCustomerInfo(customer_id) {
+        console.log("들어는 오지?!?!");
+
+        try {
+            const res = await axios.post(
+                `${back_api}/alldb/load_customer_info`,
+                { customer_id },
+            );
+
+            console.log(res);
+
+            if (res.status == 200) {
+                customerInfo = res.data.customer_info;
+                if (
+                    customerInfo.memos &&
+                    customerInfo.managers &&
+                    customerInfo.createds
+                ) {
+                    const memos = customerInfo.memos.split("||");
+                    const managers = customerInfo.managers.split(",");
+                    const createds = customerInfo.createds.split(",");
+                    const ids = customerInfo.ids.split(",");
+
+                    customerInfo.memo_list = memos.map((_, index) => {
+                        const reverseIndex = memos.length - 1 - index;
+                        return {
+                            memo: memos[reverseIndex],
+                            idx: ids[reverseIndex],
+                            manager: managers[reverseIndex],
+                            created: createds[reverseIndex],
+                        };
+                    });
+
+                    console.log(customerInfo);
+                }
+                add_memo_content = "";
+                invalidateAll();
+            }
+        } catch (err) {
+            console.error(err.message);
+        }
     }
 </script>
 
@@ -264,16 +274,28 @@
                         메모 추가
                     </button>
                 </div>
-                <ul class="border-t border-r border-l mt-3 h-96 overflow-auto">
+                <ul class="border-t border-r border-l mt-3 h-80 overflow-auto">
                     {#each customerInfo.memo_list as memo}
                         <li class="border-b p-2">
                             <div
                                 class="flex justify-between gap-2 items-center"
                             >
                                 <span>{memo.memo}</span>
-                                <button class="btn btn-info btn-xs text-white"
-                                    >스케줄 추가</button
-                                >
+
+                                <div>
+                                    <!-- <button
+                                        class="btn btn-info btn-xs text-white"
+                                    >
+                                        스케줄 추가
+                                    </button> -->
+                                    <button
+                                        class="btn btn-error btn-xs text-white"
+                                        value={memo.idx}
+                                        on:click={deleteMemo}
+                                    >
+                                        삭제
+                                    </button>
+                                </div>
                             </div>
                             <div class="text-right text-xs mt-0.5">
                                 {memo.created}
@@ -286,7 +308,7 @@
         <div class="modal-action">
             <form method="dialog">
                 <!-- if there is a button in form, it will close the modal -->
-                <button class="btn">Close</button>
+                <button class="btn">닫기</button>
             </form>
         </div>
     </div>
@@ -387,7 +409,7 @@
     </thead>
     <tbody>
         {#each datas as data, idx}
-            <tr class="text-center">
+            <tr class="text-center" style="background-color: {data.bg_color};">
                 <td class="in-td p-2 w-[70px]">
                     {reverseIdxArr[idx]}
                 </td>
