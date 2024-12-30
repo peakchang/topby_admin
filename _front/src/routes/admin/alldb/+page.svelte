@@ -10,6 +10,13 @@
     import { invalidateAll } from "$app/navigation";
     let { data } = $props();
 
+    const timeString = "2024-12-30T22:20:34.000Z";
+    const formattedTime = moment.utc(timeString).format("YY-MM-DD HH:mm:ss");
+    console.log('설정 시간!!!');
+    
+    console.log(formattedTime);
+    
+
     console.log(data);
 
     let datas = $state([]);
@@ -410,7 +417,6 @@
     <tbody>
         {#each datas as data, idx}
             <tr class="text-center" style="background-color: {data.bg_color};">
-
                 <td class="in-td p-2 w-[70px]">
                     {reverseIdxArr[idx]}
                 </td>
@@ -424,20 +430,16 @@
                     {data.af_form_name}
                 </td>
                 <td class="in-td p-2">
-
-
-
-                        {#if data.memo_contents}
-                            <div class="mb-1 ">
-                                <div class="ellipsis">
-                                    {data.memo_contents.split(",")[0]}
-                                </div>
-                                <div class="ellipsis">
-                                    {data.memo_contents.split(",")[1]}
-                                </div>
+                    {#if data.memo_contents}
+                        <div class="mb-1">
+                            <div class="ellipsis">
+                                {data.memo_contents.split(",")[0]}
                             </div>
-                        {/if}
-
+                            <div class="ellipsis">
+                                {data.memo_contents.split(",")[1]}
+                            </div>
+                        </div>
+                    {/if}
 
                     <div>
                         <!-- class=" bg-green-600 px-3 py-1 text-xs rounded-md text-white active:bg-green-700" -->
