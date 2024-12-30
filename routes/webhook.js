@@ -24,14 +24,14 @@ var AuthData = {
 webhookRouter.get('/test', (req, res) => {
     console.log(token);
 
-    // mailSender('changyong112@naver.com', '테스트 제목!!!', '테스트 컨텐츠!!!')
+    mailSender('changyong112@naver.com', '테스트 제목!!!', '테스트 컨텐츠!!!')
     const customerInfo = {
         ciPhone: '010-2190-2197',
         ciSite: '테스트 사이트',
         ciName: '테스트 이름',
         ciReceiver: '테스트 고객 ㄱㄱㄱㄱ'
     }
-    
+
     aligoKakaoNotification_formanager(req, customerInfo)
 
     res.send('asldfjalisjdfliajsdf')
