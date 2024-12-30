@@ -215,6 +215,9 @@
     }
 </script>
 
+<div class="ellipsis">
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio, expedita ab saepe nemo accusantium distinctio magnam ipsa reiciendis laudantium facere enim facilis adipisci! Maxime, reiciendis repudiandae! Aperiam modi delectus doloremque.
+</div>
 <dialog id="schedule_manage_modal" class="modal">
     <div class="modal-box">
         <h3 class="text-lg font-bold">Hello!</h3>
@@ -410,6 +413,7 @@
     <tbody>
         {#each datas as data, idx}
             <tr class="text-center" style="background-color: {data.bg_color};">
+
                 <td class="in-td p-2 w-[70px]">
                     {reverseIdxArr[idx]}
                 </td>
@@ -423,16 +427,23 @@
                     {data.af_form_name}
                 </td>
                 <td class="in-td p-2">
-                    {#if data.memo_contents}
-                        <div class="mb-1">
-                            <div>
-                                {data.memo_contents.split(",")[0]}
+
+                    <!-- <div class="ellipsis">
+                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Possimus nobis earum, facere adipisci porro ipsam nam voluptas vel, excepturi, similique hic. Officia porro, quibusdam illum aspernatur excepturi necessitatibus vitae voluptatem.
+                    </div> -->
+
+                        {#if data.memo_contents}
+                            <div class="mb-1 ">
+                                <div class="ellipsis">
+                                    {data.memo_contents.split(",")[0]}
+                                </div>
+                                <div class="ellipsis">
+                                    {data.memo_contents.split(",")[1]}
+                                </div>
                             </div>
-                            <div>
-                                {data.memo_contents.split(",")[1]}
-                            </div>
-                        </div>
-                    {/if}
+                        {/if}
+
+
                     <div>
                         <!-- class=" bg-green-600 px-3 py-1 text-xs rounded-md text-white active:bg-green-700" -->
                         <button
@@ -526,3 +537,13 @@
         <i class="fa fa-angle-double-right" aria-hidden="true"></i>
     </button>
 </div>
+
+<style>
+    .ellipsis {
+        /* display: inline-block; 혹은 block, flex 등 원하는 요소 성격에 맞춰 사용 */
+        width: 300px; /* 원하는 너비 지정 */
+        white-space: nowrap; /* 텍스트가 줄바꿈되지 않도록 설정 */
+        overflow: hidden; /* 넘치는 텍스트는 숨김 */
+        text-overflow: ellipsis; /* 넘치는 텍스트의 끝에 ... 표시 */
+    }
+</style>
