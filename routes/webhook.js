@@ -8,7 +8,7 @@ import { sql_con } from '../back-lib/db.js'
 import axios from "axios";
 import aligoapi from 'aligoapi'
 
-var token = process.env.TOKEN || 'token';
+var token = process.env.TOKEN || 'whtoken';
 
 const webhookRouter = express.Router();
 
@@ -21,7 +21,9 @@ var AuthData = {
 }
 
 
-webhookRouter.get('/', (req, res) => {
+webhookRouter.get('/test', (req, res) => {
+    console.log(token);
+    
     res.send('asldfjalisjdfliajsdf')
 })
 
