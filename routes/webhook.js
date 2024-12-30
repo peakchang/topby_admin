@@ -2,7 +2,7 @@ import express from "express";
 import moment from "moment-timezone";
 import fs from "fs";
 import path from "path";
-import { mailSender } from '../back-lib/lib.js';
+import { mailSender, aligoKakaoNotification_formanager } from '../back-lib/lib.js';
 import request from "request"
 import { sql_con } from '../back-lib/db.js'
 import axios from "axios";
@@ -23,7 +23,17 @@ var AuthData = {
 
 webhookRouter.get('/test', (req, res) => {
     console.log(token);
+
+    // mailSender('changyong112@naver.com', '테스트 제목!!!', '테스트 컨텐츠!!!')
+    const customerInfo = {
+        ciPhone: '010-2190-2197',
+        ciSite: '테스트 사이트',
+        ciName: '테스트 이름',
+        ciReceiver: '테스트 고객 ㄱㄱㄱㄱ'
+    }
     
+    aligoKakaoNotification_formanager(req, customerInfo)
+
     res.send('asldfjalisjdfliajsdf')
 })
 
@@ -125,7 +135,7 @@ webhookRouter.get('/test_rich_send', async (req, res) => {
 webhookRouter.post('/', async (req, res) => {
 
     console.log('최초 진입!!!!');
-    
+
 
     var getData = req.body
 
@@ -137,8 +147,8 @@ webhookRouter.post('/', async (req, res) => {
 
         console.log(leadsId);
         console.log(formId);
-        
-        
+
+
 
 
         let leadsUrl = `https://graph.facebook.com/v15.0/${leadsId}?access_token=${process.env.ACCESS_TOKEN}`
@@ -187,7 +197,7 @@ webhookRouter.post('/', async (req, res) => {
         // 폰번호와 현장명 중복이 1달 이내에 있는경우 패스하기!!!
         try {
             const chkFor2WeeksDataQuery = "SELECT * FROM application_form WHERE af_mb_phone = ? AND af_form_name = ? AND af_created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH);"
-            const chkFor2WeeksData = await mysql_conn.promise().query(chkFor2WeeksDataQuery, [baseData.db_phone, reFormName, reFormName]);
+            const chkFor2WeeksData = await sql_con.promise().query(chkFor2WeeksDataQuery, [baseData.db_phone, reFormName, reFormName]);
 
             // 테스트 할때는 잠시 주석!!!
             if (chkFor2WeeksData[0].length > 0) {
@@ -201,11 +211,11 @@ webhookRouter.post('/', async (req, res) => {
         // 해당 폼 리스트의 site 이름 찾아서 있으면 쓰고~ 없으면 만들고~
         try {
             const chkFormInSiteListSql = `SELECT * FROM site_list WHERE sl_site_name = ?`;
-            const chkFormInSiteListData = await mysql_conn.promise().query(chkFormInSiteListSql, [reFormName]);
+            const chkFormInSiteListData = await sql_con.promise().query(chkFormInSiteListSql, [reFormName]);
             const chkFormInSiteList = chkFormInSiteListData[0][0]
             if (!chkFormInSiteList) {
                 const addFormInSiteList = `INSERT INTO site_list (sl_site_name, sl_created_at) VALUES (?, ?)`
-                await mysql_conn.promise().query(addFormInSiteList, [reFormName, nowDateTime]);
+                await sql_con.promise().query(addFormInSiteList, [reFormName, nowDateTime]);
             }
         } catch (error) {
 
@@ -230,14 +240,14 @@ webhookRouter.post('/', async (req, res) => {
             //  DB 집어넣기~~~!!
             getArr = [reFormName, form_type_in, 'FB', baseData.db_name, baseData.db_phone, "", leadsId, nowDateTime];
             formInertSql = `INSERT INTO application_form (af_form_name, af_form_type_in, af_form_location, af_mb_name, af_mb_phone, af_mb_status, af_lead_id ${etcInsertStr}, af_created_at) VALUES (?,?,?,?,?,?,? ${etcValuesStr},?);`;
-            await mysql_conn.promise().query(formInertSql, getArr)
+            await sql_con.promise().query(formInertSql, getArr)
 
         } catch (error) {
             try {
                 // let getArr = [reFormName, form_type_in, 'FB', get_name, get_phone, "", leadsId, nowDateTime];
                 getArr = [reFormName, form_type_in, 'FB', baseData.db_name, baseData.db_phone, "", leadsId, nowDateTime];
                 formInertSql = `INSERT INTO application_form (af_form_name, af_form_type_in, af_form_location, af_mb_name, af_mb_phone, af_mb_status, af_lead_id, af_created_at) VALUES (?,?,?,?,?,?,?,?);`;
-                await mysql_conn.promise().query(formInertSql, getArr)
+                await sql_con.promise().query(formInertSql, getArr)
             } catch (error) {
 
             }
@@ -250,7 +260,7 @@ webhookRouter.post('/', async (req, res) => {
 
         let siteList = ""
         const getSiteInfoSql = `SELECT * FROM site_list WHERE sl_site_name = ?`
-        const getSiteInfoData = await mysql_conn.promise().query(getSiteInfoSql, [reFormName])
+        const getSiteInfoData = await sql_con.promise().query(getSiteInfoSql, [reFormName])
         const getSiteInfo = getSiteInfoData[0][0];
 
         if (getSiteInfo.sl_site_link) {
@@ -261,21 +271,21 @@ webhookRouter.post('/', async (req, res) => {
 
         // 해당 폼네임에 저장된 담당자 리스트 찾기
         const userFindSql = `SELECT * FROM users WHERE manage_estate LIKE '%${reFormName}%';`;
-        const findUserData = await mysql_conn.promise().query(userFindSql);
+        const findUserData = await sql_con.promise().query(userFindSql);
         const findUser = findUserData[0];
 
         // 담당자들 에게 이메일 발송
         for await (const goUser of findUser) {
             const mailSubjectManager = `${reFormName} / ${baseData.db_name} 고객 DB 접수되었습니다.`;
             const mailContentManager = `현장 : ${reFormName} / 이름 : ${baseData.db_name} / 전화번호 : ${baseData.db_phone} ${addEtcMessage}`;
-            mailSender.sendEmail(goUser.user_email, mailSubjectManager, mailContentManager);
+            mailSender(goUser.user_email, mailSubjectManager, mailContentManager);
         }
 
         // 최고관리자에게 이메일 발송
         const mailSubject = `${reFormName} 고객명 ${baseData.db_name} 접수되었습니다.`;
         const mailContent = `현장: ${reFormName} / 이름 : ${baseData.db_name} / 전화번호 : ${baseData.db_phone} ${addEtcMessage}`;
-        mailSender.sendEmail('adpeak@naver.com', mailSubject, mailContent);
-        mailSender.sendEmail('changyong112@naver.com', mailSubject, mailContent);
+        mailSender('adpeak@naver.com', mailSubject, mailContent);
+        mailSender('changyong112@naver.com', mailSubject, mailContent);
 
         // 최종 메세지 및 이름 등 정리!!
         const receiverStr = `${baseData.db_phone} ${addEtcMessage}`
@@ -340,7 +350,7 @@ webhookRouter.post('/', async (req, res) => {
         try {
             const getDataStr = JSON.stringify(req.body)
             const insertAuditWhdataSql = `INSERT INTO audit_webhook (audit_webhookdata) VALUES (?);`;
-            await mysql_conn.promise().query(insertAuditWhdataSql, [getDataStr])
+            await sql_con.promise().query(insertAuditWhdataSql, [getDataStr])
         } catch (error) {
             console.log('audit_webhookdata error!!!!!!!!!!!');
 
