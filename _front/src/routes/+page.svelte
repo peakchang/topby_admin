@@ -1,5 +1,16 @@
 <script>
+    import Seo from "$src/lib/components/Seo.svelte";
     import { user_info } from "$src/lib/store.js";
+
+    const seoValue = {
+        title: "탑분양 - 부동산 분양 홍보의 기준",
+        description:
+            "부동산 현장 에서 1등하고 싶을땐 탑분양 아파트 오피스텔 지식산업센터 레지던스 분양 전문",
+        keywords:
+            "부동산 분양,아파트 분양,오피스텔 분양,지식산업센터 분양,레지던스 분양,부동산 분양 정보,아파트 분양 정보,오피스텔 분양 정보,지식산업센터 분양 정보,레지던스 분양 정보,아파트 청약,분양정보",
+        url: "https://adpeak.kr/",
+        main: true,
+    };
 
     let { data } = $props();
 
@@ -104,6 +115,9 @@
     }
 </script>
 
+<svelte:head>
+    <Seo {seoValue}></Seo>
+</svelte:head>
 <!-- <svelte:window bind:innerWidth /> -->
 {#if loading}
     <div class="text-center my-10">
