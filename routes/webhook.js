@@ -124,6 +124,9 @@ webhookRouter.get('/test_rich_send', async (req, res) => {
 
 webhookRouter.post('/', async (req, res) => {
 
+    console.log('최초 진입!!!!');
+    
+
     var getData = req.body
 
     try {
@@ -131,6 +134,13 @@ webhookRouter.post('/', async (req, res) => {
         // 핵심 부분!!! 페이스북에서 쏴주는거 제대로 받기!!!
         let leadsId = getData.entry[0].changes[0].value.leadgen_id
         let formId = getData.entry[0].changes[0].value.form_id
+
+        console.log(leadsId);
+        console.log(formId);
+        
+        
+
+
         let leadsUrl = `https://graph.facebook.com/v15.0/${leadsId}?access_token=${process.env.ACCESS_TOKEN}`
         let formUrl = `https://graph.facebook.com/v15.0/${formId}?access_token=${process.env.ACCESS_TOKEN}`
         let LeadsData = await doRequest({ uri: leadsUrl });
@@ -139,9 +149,9 @@ webhookRouter.post('/', async (req, res) => {
         let getLeadsData = JSON.parse(LeadsData)
         let getFormData = JSON.parse(formData)
 
-        // console.log(getLeadsData.field_data[0].values); // 1. 옵션
-        // console.log(getLeadsData.field_data[1].values); // 2. 이름
-        // console.log(getLeadsData.field_data[2].values); // 3. 전번
+        console.log(getLeadsData.field_data[0].values); // 1. 옵션
+        console.log(getLeadsData.field_data[1].values); // 2. 이름
+        console.log(getLeadsData.field_data[2].values); // 3. 전번
 
 
         // for문 돌려서 baseData 만들기!
