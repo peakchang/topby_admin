@@ -8,7 +8,6 @@ import { sql_con } from '../back-lib/db.js'
 import axios from "axios";
 import aligoapi from 'aligoapi'
 
-
 var token = process.env.TOKEN || 'token';
 
 const webhookRouter = express.Router();
