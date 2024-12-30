@@ -100,11 +100,14 @@
         const af_id = this.value;
 
         try {
-            const res = await axios.post(`${back_api}/managerdb/add_memo_content`, {
-                af_id,
-                add_memo_content,
-                manager: $user_info.name,
-            });
+            const res = await axios.post(
+                `${back_api}/managerdb/add_memo_content`,
+                {
+                    af_id,
+                    add_memo_content,
+                    manager: $user_info.name,
+                },
+            );
 
             if (res.status == 200) {
                 console.log("아니 안들어오는거야?!?!?!??!");
@@ -425,10 +428,10 @@
                 <td class="in-td p-2">
                     {#if data.memo_contents}
                         <div class="mb-1">
-                            <div>
+                            <div class="ellipsis">
                                 {data.memo_contents.split(",")[0]}
                             </div>
-                            <div>
+                            <div class="ellipsis">
                                 {data.memo_contents.split(",")[1]}
                             </div>
                         </div>
@@ -526,3 +529,13 @@
         <i class="fa fa-angle-double-right" aria-hidden="true"></i>
     </button>
 </div>
+
+<style>
+    .ellipsis {
+        /* display: inline-block; 혹은 block, flex 등 원하는 요소 성격에 맞춰 사용 */
+        width: 300px; /* 원하는 너비 지정 */
+        white-space: nowrap; /* 텍스트가 줄바꿈되지 않도록 설정 */
+        overflow: hidden; /* 넘치는 텍스트는 숨김 */
+        text-overflow: ellipsis; /* 넘치는 텍스트의 끝에 ... 표시 */
+    }
+</style>

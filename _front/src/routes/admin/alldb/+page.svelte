@@ -215,9 +215,6 @@
     }
 </script>
 
-<div class="ellipsis">
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio, expedita ab saepe nemo accusantium distinctio magnam ipsa reiciendis laudantium facere enim facilis adipisci! Maxime, reiciendis repudiandae! Aperiam modi delectus doloremque.
-</div>
 <dialog id="schedule_manage_modal" class="modal">
     <div class="modal-box">
         <h3 class="text-lg font-bold">Hello!</h3>
@@ -428,9 +425,7 @@
                 </td>
                 <td class="in-td p-2">
 
-                    <!-- <div class="ellipsis">
-                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Possimus nobis earum, facere adipisci porro ipsam nam voluptas vel, excepturi, similique hic. Officia porro, quibusdam illum aspernatur excepturi necessitatibus vitae voluptatem.
-                    </div> -->
+
 
                         {#if data.memo_contents}
                             <div class="mb-1 ">
