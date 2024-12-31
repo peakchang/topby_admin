@@ -5,6 +5,36 @@ import moment from "moment-timezone";
 import bcrypt from "bcrypt";
 const mainRouter = express.Router();
 
+
+
+
+mainRouter.post('/update_normal', async (req, res) => {
+    const updateList = req.body.copyList;
+    console.log(updateList);
+
+    let normalVal = "접수완료";
+    try {
+        const getStatusStr = "SELECT fs_estate_status FROM form_status;";
+        const [statusRows] = await sql_con.promise().query(getStatusStr);
+        normalVal = statusRows[0]['fs_estate_status'].split(',')[0]
+    } catch (error) {
+
+    }
+
+    console.log(normalVal);
+    for (let i = 0; i < updateList.length; i++) {
+        try {
+            const data = updateList[i];
+            const updateDateNormal = "UPDATE application_form SET af_mb_status = ? WHERE af_id = ?";
+            await sql_con.promise().query(updateDateNormal, [normalVal, data.af_id]);
+        } catch (err) {
+            console.error(err.message);
+
+        }
+    }
+
+    res.json({})
+})
 mainRouter.post('/load_minisite_info', async (req, res) => {
     const hyId = req.body.hy_id;
     const userStatus = req.body.user_status;

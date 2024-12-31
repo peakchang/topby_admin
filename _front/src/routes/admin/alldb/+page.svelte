@@ -23,6 +23,7 @@
     let endDate = $state(moment().format("YYYY-MM-DD"));
     let filterSite = $state("");
     let setSite = $state("base");
+    let setSiteStatus = $state(false);
     let setStatus = $state("base");
 
     let allPageCount = $state(0);
@@ -36,6 +37,9 @@
     let customerInfo = $state({});
 
     let add_memo_content = $state("");
+
+    let copyListStr = $state([]);
+    let copyList = $state([]);
 
     $effect(() => {
         datas = data.datas;
@@ -66,6 +70,7 @@
         }
         if (setSite != "base") {
             paramOption["setsite"] = setSite;
+            setSiteStatus = true;
         }
         if (setStatus != "base") {
             paramOption["setstatus"] = setStatus;
@@ -213,7 +218,77 @@
             console.error(err.message);
         }
     }
+
+    function selectDbChangeStatus() {
+        copyList = [];
+        for (let i = 0; i < datas.length; i++) {
+            const ele = datas[i];
+            if (!ele.af_mb_status) {
+                const addVal = JSON.parse(JSON.stringify(ele));
+                copyList.push(addVal);
+            }
+        }
+
+        copyListStr = copyList
+            .map((item) => {
+                // 각 요소를 "이름 // 전화번호" 형태로 만들고
+                // 전화번호는 formatPhone으로 포맷팅
+                return `${item.af_mb_name} // ${formatPhoneNumber(item.af_mb_phone)}`;
+            })
+            // 요소들을 개행으로 연결
+            .join("\n");
+
+        console.log(copyListStr);
+
+        copy_list_modal.showModal();
+    }
+
+    async function copyAndUpdateNormal() {
+        try {
+            navigator.clipboard.writeText(copyListStr);
+            const res = await axios.post(`${back_api}/main/update_normal`, {
+                copyList,
+            });
+
+            if (res.status == 200) {
+                alert("복사 완료 되었습니다.");
+                copyList = [];
+                copyListStr = "";
+                invalidateAll();
+            }
+        } catch (error) {
+            alert('복사 실패! 다시 시도해주세요!')
+        }
+    }
 </script>
+
+<dialog id="copy_list_modal" class="modal">
+    <div class="modal-box">
+        <form method="dialog">
+            <button
+                class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            >
+                ✕
+            </button>
+        </form>
+
+        <div class=" whitespace-pre-wrap text-center">
+            {copyListStr}
+        </div>
+
+        <div class="text-center mt-5">
+            <form method="dialog">
+                <button
+                class="btn btn-neutral btn-sm text-white"
+                on:click={copyAndUpdateNormal}
+            >
+                복사 및 업데이트 하기
+            </button>
+            </form>
+            
+        </div>
+    </div>
+</dialog>
 
 <dialog id="schedule_manage_modal" class="modal">
     <div class="modal-box">
@@ -385,6 +460,15 @@
 
             <button class="btn btn-neutral btn-sm"> 검색 </button>
 
+            {#if setSiteStatus}
+                <button
+                    type="button"
+                    class="btn btn-success btn-sm text-white"
+                    on:click={selectDbChangeStatus}
+                >
+                    DB선택 / 상태변경
+                </button>
+            {/if}
             <button
                 type="button"
                 class="btn btn-info btn-sm text-white"
@@ -410,7 +494,6 @@
     <tbody>
         {#each datas as data, idx}
             <tr class="text-center" style="background-color: {data.bg_color};">
-
                 <td class="in-td p-2 w-[70px]">
                     {reverseIdxArr[idx]}
                 </td>
@@ -424,20 +507,18 @@
                     {data.af_form_name}
                 </td>
                 <td class="in-td p-2">
-
-
-
-                        {#if data.memo_contents}
-                            <div class="mb-1 ">
-                                <div class="ellipsis">
-                                    {data.memo_contents.split(",")[0]}
-                                </div>
-                                <div class="ellipsis">
-                                    {data.memo_contents.split(",")[1]}
-                                </div>
+                    {#if data.memo_contents}
+                        <div
+                            class="mb-1 flex flex-col justify-center items-center"
+                        >
+                            <div class="ellipsis">
+                                {data.memo_contents.split(",")[0]}
                             </div>
-                        {/if}
-
+                            <div class="ellipsis">
+                                {data.memo_contents.split(",")[1]}
+                            </div>
+                        </div>
+                    {/if}
 
                     <div>
                         <!-- class=" bg-green-600 px-3 py-1 text-xs rounded-md text-white active:bg-green-700" -->
@@ -453,23 +534,7 @@
                 </td>
                 <td class="in-td p-2">
                     <div>
-                        <select
-                            class="select select-bordered select-xs"
-                            bind:value={datas[idx]["af_mb_status"]}
-                        >
-                            {#each status_list as status}
-                                <option value={status}>
-                                    {status}
-                                </option>
-                            {/each}
-                        </select>
-                        <button
-                            class="btn btn-warning btn-xs"
-                            value={idx}
-                            on:click={updateStatus}
-                        >
-                            적용
-                        </button>
+                        {datas[idx]["af_mb_status"]}
                     </div>
                 </td>
                 <td class="in-td p-2">
