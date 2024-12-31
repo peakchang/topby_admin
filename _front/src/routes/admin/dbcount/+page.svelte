@@ -12,8 +12,8 @@
     let allPageCount = $state(0);
 
     // 검색 관련!!
-    let startDate = $state(moment().subtract(4, "days").format("YYYY-MM-DD"));
-    let endDate = $state(moment().format("YYYY-MM-DD"));
+    let startDate = $state(moment.utc().subtract(4, "days").format("YYYY-MM-DD"));
+    let endDate = $state(moment.utc().format("YYYY-MM-DD"));
     let seachVal = $state("");
 
     $effect(() => {

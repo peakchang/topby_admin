@@ -21,6 +21,8 @@ import { adminDbCount } from './routes/admin_dbcount.js';
 import { apiRouter } from "./routes/api.js"
 import { authRouter } from "./routes/auth.js"
 
+import { webhookRouter } from './routes/webhook.js';
+
 
 // import { apiRouter } from "./routes/exapi.js"
 app.use(cookieParser());
@@ -72,7 +74,7 @@ app.use('/api/v3/alldb', adminAllDbRouter);
 app.use('/api/v3/managerdb', adminManagerDbRouter);
 app.use('/api/v3/dbcount', adminDbCount);
 
-
+app.use('/webhook', webhookRouter);
 
 
 app.use('/chk', (req, res) => {

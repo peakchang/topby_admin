@@ -10,6 +10,13 @@
     import { invalidateAll } from "$app/navigation";
     let { data } = $props();
 
+    const timeString = "2024-12-30T22:20:34.000Z";
+    const formattedTime = moment.utc(timeString).format("YY-MM-DD HH:mm:ss");
+    console.log('설정 시간!!!');
+    
+    console.log(formattedTime);
+    
+
     console.log(data);
 
     let datas = $state([]);
@@ -19,8 +26,8 @@
     // 쿼리 파라미터 연관 변수
     let pageCount = $state("30");
     let nowPage = $state(1);
-    let startDate = $state(moment().startOf("month").format("YYYY-MM-DD"));
-    let endDate = $state(moment().format("YYYY-MM-DD"));
+    let startDate = $state(moment.utc().startOf("month").format("YYYY-MM-DD"));
+    let endDate = $state(moment.utc().format("YYYY-MM-DD"));
     let filterSite = $state("");
     let setSite = $state("base");
     let setSiteStatus = $state(false);
@@ -278,6 +285,8 @@
 
         <div class="text-center mt-5">
             <form method="dialog">
+                <!-- svelte-ignore event_directive_deprecated -->
+                <!-- svelte-ignore event_directive_deprecated -->
                 <button
                 class="btn btn-neutral btn-sm text-white"
                 on:click={copyAndUpdateNormal}
@@ -326,7 +335,7 @@
                     <tr>
                         <th class="in-th bg-blue-100">접수시간</th>
                         <td class="in-td p-2">
-                            {moment(customerInfo.af_created_at).format(
+                            {moment.utc(customerInfo.af_created_at).format(
                                 "YY-MM-DD HH:mm:ss",
                             )}
                         </td>
@@ -341,6 +350,7 @@
                         class="input-base"
                         bind:value={add_memo_content}
                     />
+                    <!-- svelte-ignore event_directive_deprecated -->
                     <button
                         class="btn btn-primary btn-sm"
                         value={customerInfo.af_id}
@@ -363,6 +373,7 @@
                                     >
                                         스케줄 추가
                                     </button> -->
+                                    <!-- svelte-ignore event_directive_deprecated -->
                                     <button
                                         class="btn btn-error btn-xs text-white"
                                         value={memo.idx}
@@ -390,6 +401,7 @@
 </dialog>
 
 <div class="mb-4">
+    <!-- svelte-ignore event_directive_deprecated -->
     <form on:submit={searchFunc}>
         <div class="flex flex-wrap items-center gap-2">
             <input
@@ -522,6 +534,7 @@
 
                     <div>
                         <!-- class=" bg-green-600 px-3 py-1 text-xs rounded-md text-white active:bg-green-700" -->
+                        <!-- svelte-ignore event_directive_deprecated -->
                         <button
                             class="bg-green-600 hover:bg-green-700 text-white text-xs py-1 px-3 rounded-md transform transition-transform duration-150
     active:scale-95"
@@ -538,7 +551,7 @@
                     </div>
                 </td>
                 <td class="in-td p-2">
-                    {moment(data.af_created_at).format("YY-MM-DD HH:mm:ss")}
+                    {moment.utc(data.af_created_at).format("YY-MM-DD HH:mm:ss")}
                 </td>
             </tr>
         {/each}
@@ -547,6 +560,7 @@
 
 <div class="flex justify-center items-center my-5 gap-1">
     <!-- svelte-ignore a11y_consider_explicit_label -->
+    <!-- svelte-ignore event_directive_deprecated -->
     <button
         class="page-btn w-8 h-8 text-sm border rounded-md"
         value="first_page"
@@ -555,6 +569,7 @@
         <i class="fa fa-angle-double-left" aria-hidden="true"></i>
     </button>
     <!-- svelte-ignore a11y_consider_explicit_label -->
+    <!-- svelte-ignore event_directive_deprecated -->
     <button
         class="page-btn w-8 h-8 text-sm border rounded-md"
         value="prev"
@@ -581,6 +596,7 @@
         {/if}
     {/each}
     <!-- svelte-ignore a11y_consider_explicit_label -->
+    <!-- svelte-ignore event_directive_deprecated -->
     <button
         class="page-btn w-8 h-8 text-sm border rounded-md"
         value="next"
@@ -589,6 +605,7 @@
         <i class="fa fa-angle-right" aria-hidden="true"></i>
     </button>
     <!-- svelte-ignore a11y_consider_explicit_label -->
+    <!-- svelte-ignore event_directive_deprecated -->
     <button
         class="page-btn w-8 h-8 text-sm border rounded-md"
         value="last_page"

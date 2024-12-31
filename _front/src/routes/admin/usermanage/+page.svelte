@@ -375,7 +375,7 @@
                 </td>
 
                 <td class="in-td py-2 px-2">
-                    {moment(manager.created_at).format("YY-MM-DD HH:mm:ss")}
+                    {moment.utc(manager.created_at).format("YY-MM-DD HH:mm:ss")}
                 </td>
             </tr>
         {/each}
@@ -511,7 +511,7 @@
                 </td>
 
                 <td class="in-td py-2 px-2">
-                    {moment(user.created_at).format("YY-MM-DD HH:mm:ss")}
+                    {moment.utc(user.created_at).format("YY-MM-DD HH:mm:ss")}
                 </td>
             </tr>
         {/each}
