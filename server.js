@@ -29,6 +29,7 @@ import { subdomainRouter } from './routes/subdomain';
 // import { apiRouter } from "./routes/exapi.js"
 app.use(cookieParser());
 app.set('port', process.env.PORT || 3075);
+app.set('trust proxy', '127.0.0.1');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // ESM 오류 해결을 위해 __dirname, __filename 직접 변수 작성
@@ -60,12 +61,12 @@ app.use('/subimg', express.static(path.join(__dirname, 'subuploads/img')));
 let corsOptions = {
     // 여기는 svelte (프론트엔드) 가 돌아가는 주소
     origin: true,
+    // optionsSuccessStatus: 200,
     credentials: true
-  }
-  
-  app.use(cors(corsOptions));
+}
+app.use(cors(corsOptions));
 
-app.enable('trust proxy');
+// app.enable('trust proxy');
 
 app.use('/api/v3', apiRouter);
 
