@@ -23,6 +23,8 @@ import { authRouter } from "./routes/auth.js"
 
 import { webhookRouter } from './routes/webhook.js';
 
+import { subdomainRouter } from './routes/subdomain';
+
 
 // import { apiRouter } from "./routes/exapi.js"
 app.use(cookieParser());
@@ -40,6 +42,7 @@ app.use(express.static('public', { ignore: ['favicon.ico'] }));
 app.use('/editor', express.static(path.join(__dirname, 'public/uploads/editor')));
 app.use('/img', express.static(path.join(__dirname, 'public/uploads/image')));
 app.use('/py_img', express.static(path.join(__dirname, 'public/uploads/pyimg')));
+app.use('/subimg', express.static(path.join(__dirname, 'subuploads/img')));
 
 let originLink;
 
@@ -75,6 +78,8 @@ app.use('/api/v3/managerdb', adminManagerDbRouter);
 app.use('/api/v3/dbcount', adminDbCount);
 
 app.use('/webhook', webhookRouter);
+
+app.use('/api/subdomain', subdomainRouter);
 
 
 app.use('/chk', (req, res) => {

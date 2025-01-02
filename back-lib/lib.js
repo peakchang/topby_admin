@@ -102,7 +102,7 @@ export async function aligoKakaoNotification_formanager(req, customerInfo) {
     console.log(process.env.ALIGOKEY);
     console.log(process.env.ALIGOID);
     console.log(process.env.ALIGO_SENDERKEY);
-    
+
     try {
         const AuthData = {
             apikey: process.env.ALIGOKEY,
@@ -135,10 +135,10 @@ export async function aligoKakaoNotification_formanager(req, customerInfo) {
         })
 
         console.log(result);
-        
+
 
         console.log(customerInfo);
-        
+
         req.body = {
             senderkey: process.env.ALIGO_SENDERKEY,
             tpl_code: 'TX_0641',
@@ -181,5 +181,87 @@ export async function aligoKakaoNotification_formanager(req, customerInfo) {
         console.error(e.message);
         console.log('kakao send is error!!!! (in back lib) T.T');
 
+    }
+}
+
+
+export async function aligoKakaoNotification_detail(req, sendMessageObj) {
+    try {
+        const AuthData = {
+            apikey: process.env.ALIGOKEY,
+            // 이곳에 발급받으신 api key를 입력하세요
+            userid: process.env.ALIGOID,
+            // 이곳에 userid를 입력하세요
+        }
+
+        req.body = {
+            type: 'i',  // 유효시간 타입 코드 // y(년), m(월), d(일), h(시), i(분), s(초)
+            time: 1, // 유효시간
+        }
+        // console.log('req.body', req.body)
+
+        const result = await new Promise((resolve, reject) => {
+            if (true) {
+                aligoapi.token(req, AuthData)
+                    .then((r) => {
+                        // console.log('alligo', r);
+                        resolve(r);
+                    })
+                    .catch((e) => {
+                        // console.error('err', e)
+                        reject(e)
+                    })
+            } else {
+                // console.log(2)
+                resolve(true)
+            }
+        })
+
+        req.body = {
+            senderkey: process.env.ALIGO_SENDERKEY,
+            tpl_code: 'TQ_7435',
+            token: result.token,
+            sender: '010-4478-1127',
+            receiver_1: sendMessageObj.receiver,
+            subject_1: '분양정보 신청고객 알림톡',
+            message_1: `${sendMessageObj.customerName}님!
+  안녕하세요. [${sendMessageObj.company}] 입니다 !
+  ${sendMessageObj.siteRealName}에 문의 주셧네요!
+        
+  ${sendMessageObj.smsContent}
+        
+  현장 "무료상담"은 정상적으로 접수 되셧구요!
+  부동산 정보는 많이 알아두시는게 좋습니다!
+  잠시 후 연락드리겠습니다!
+  
+  `,
+        }
+
+        // console.log(req.body);
+
+        let resultSend = await new Promise((resolve, reject) => {
+            if (true) {
+                console.log('kakao send arrived~~!!');
+                console.log(req.body);
+                console.log(AuthData);
+                aligoapi.alimtalkSend(req, AuthData).then((r) => {
+                    // console.log('alligo', r);
+                    console.log('kakao send is success!!!!!!!!!!!!');
+                    resolve(true);
+                }).catch((e) => {
+                    console.error('err', e)
+                    console.log('kakao send is false T.T');
+                    reject(false);
+                })
+            } else {
+                console.log('kakao send is false T.T');
+                // console.log(2)
+                resolve(true)
+            }
+        })
+    } catch (e) {
+        // await db.rollback(connection);
+        // next(e);
+        console.error(e);
     }
 }
