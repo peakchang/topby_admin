@@ -44,25 +44,26 @@ app.use('/img', express.static(path.join(__dirname, 'public/uploads/image')));
 app.use('/py_img', express.static(path.join(__dirname, 'public/uploads/pyimg')));
 app.use('/subimg', express.static(path.join(__dirname, 'subuploads/img')));
 
-let originLink;
+// let originLink;
 
 
-if (process.env.NODE_ENV === 'production') {
-    let whiteListArr = [];
-    const whiteListStr = process.env.SITE_LINK
-    if (whiteListStr) {
-        whiteListArr = whiteListStr.split(',');
-    }
-} else {
-    originLink = "http://localhost:5173";
-}
+// if (process.env.NODE_ENV === 'production') {
+//     let whiteListArr = [];
+//     const whiteListStr = process.env.SITE_LINK
+//     if (whiteListStr) {
+//         whiteListArr = whiteListStr.split(',');
+//     }
+// } else {
+//     originLink = "http://localhost:5173";
+// }
 
 let corsOptions = {
     // 여기는 svelte (프론트엔드) 가 돌아가는 주소
-    origin: originLink,
+    origin: true,
     credentials: true
-}
-app.use(cors(corsOptions));
+  }
+  
+  app.use(cors(corsOptions));
 
 app.enable('trust proxy');
 
