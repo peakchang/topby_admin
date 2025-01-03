@@ -23,7 +23,7 @@ import { authRouter } from "./routes/auth.js"
 
 import { webhookRouter } from './routes/webhook.js';
 
-import { subdomainRouter } from './routes/subdomain';
+import { subdomainRouter } from './routes/subdomain.js';
 
 
 // import { apiRouter } from "./routes/exapi.js"
@@ -59,9 +59,7 @@ app.use('/subimg', express.static(path.join(__dirname, 'subuploads/img')));
 // }
 
 let corsOptions = {
-    // 여기는 svelte (프론트엔드) 가 돌아가는 주소
     origin: /\.adpeak\.kr$/,
-    // optionsSuccessStatus: 200,
     credentials: true
 }
 app.use(cors(corsOptions));

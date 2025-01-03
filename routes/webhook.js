@@ -159,6 +159,11 @@ webhookRouter.post('/', async (req, res) => {
         let getLeadsData = JSON.parse(LeadsData)
         let getFormData = JSON.parse(formData)
 
+
+        console.log(getLeadsData);
+        console.log(getFormData);
+        
+        
         console.log(getLeadsData.field_data[0].values); // 1. 옵션
         console.log(getLeadsData.field_data[1].values); // 2. 이름
         console.log(getLeadsData.field_data[2].values); // 3. 전번
