@@ -7,6 +7,9 @@ const mainRouter = express.Router();
 
 
 router.post('/chk_ex_file', async (req, res, next) => {
+
+    console.log('들어는 오는거니?!?!??!');
+    
     let status = true;
     let chkDbBool = true; // DB가 있으면 true, 없으면 false;
     const body = req.body;
