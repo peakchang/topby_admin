@@ -1,11 +1,9 @@
 import express from "express";
 import { sql_con } from '../back-lib/db.js'
-import { getQueryStr } from '../back-lib/lib.js';
-import moment from "moment-timezone";
-import bcrypt from "bcrypt";
+import { getQueryStr, aligoKakaoNotification_formanager } from '../back-lib/lib.js';
+
+
 const mainRouter = express.Router();
-
-
 
 
 mainRouter.post('/chk_ex_file', async (req, res, next) => {
@@ -74,7 +72,7 @@ mainRouter.post('/send_kakao_and_dbinput', async (req, res, next) => {
 
             var customerInfo = { ciPhone: managerPhone, ciSite: location, ciName: '추가DB', ciReceiver: userData }
             console.log(customerInfo);
-            aligoKakaoNotification_formanager_clean(req, customerInfo)
+            aligoKakaoNotification_formanager(req, customerInfo)
         } catch (error) {
             console.error(error.message);
         }
