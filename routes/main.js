@@ -6,7 +6,9 @@ import bcrypt from "bcrypt";
 const mainRouter = express.Router();
 
 
-router.post('/chk_ex_file', async (req, res, next) => {
+
+
+mainRouter.post('/chk_ex_file', async (req, res, next) => {
 
     console.log('들어는 오는거니?!?!??!');
     
@@ -30,7 +32,7 @@ router.post('/chk_ex_file', async (req, res, next) => {
 
 
 
-router.post('/send_kakao_and_dbinput', async (req, res, next) => {
+mainRouter.post('/send_kakao_and_dbinput', async (req, res, next) => {
     let status = true;
 
     const allData = JSON.parse(req.body.all_data_json);
