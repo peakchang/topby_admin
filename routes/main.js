@@ -6,6 +6,78 @@ import bcrypt from "bcrypt";
 const mainRouter = express.Router();
 
 
+router.post('/chk_ex_file', async (req, res, next) => {
+    let status = true;
+    let chkDbBool = true; // DB가 있으면 true, 없으면 false;
+    const body = req.body;
+    try {
+        const chkDbQuery = `SELECT * FROM application_form WHERE af_mb_phone = ? AND af_form_name LIKE '%${body.form_name}%'`;
+        const chkDb = await sql_con.promise().query(chkDbQuery, [body.ph_num])
+        if (!chkDb[0][0]) {
+            chkDbBool = false;
+            // const insertChkDb = "INSERT INTO application_form (af_form_name,af_form_type_in,af_mb_name,af_mb_phone) VALUES (?,?,?,?)";
+            // await sql_con.promise().query(insertChkDb, [body.form_name, 'fb', body.full_name, body.ph_num])
+        }
+    } catch (error) {
+        console.error(error.message);
+        status = false;
+    }
+    return res.json({ status, chkDbBool })
+});
+
+
+
+router.post('/send_kakao_and_dbinput', async (req, res, next) => {
+    let status = true;
+
+    const allData = JSON.parse(req.body.all_data_json);
+
+
+
+    for (let i = 0; i < allData.length; i++) {
+        const inData = allData[i];
+        const location = inData.location;
+        let userData = "\n"
+        let managerPhone = ""
+
+        for (let j = 0; j < inData.data.length; j++) {
+            const userDataInfo = inData.data[j];
+            let etc1Data = ""
+            if (userDataInfo['etc1'] && userDataInfo['etc1'] != 'None') {
+                etc1Data = ` / ${userDataInfo['etc1']}`
+            }
+            let etc2Data = ""
+            if (userDataInfo['etc2'] && userDataInfo['etc2'] != 'None') {
+                etc2Data = ` / ${userDataInfo['etc2']}`
+            }
+            const userDataInfoStr = `${userDataInfo['name']} / ${userDataInfo['phone']} ${etc1Data} ${etc2Data}`
+            userData = userData + userDataInfoStr + '\n'
+
+            try {
+                const insertDbQuery = "INSERT INTO application_form (af_form_name,af_form_type_in,af_mb_name,af_mb_phone) VALUES (?,?,?,?)";
+                await sql_con.promise().query(insertDbQuery, [location, 'fb', userDataInfo['name'], userDataInfo['phone']])
+            } catch (error) {
+                console.error(error.message);
+            }
+        }
+
+
+        try {
+            const getManagerPhoneQuery = `SELECT * FROM users WHERE manage_estate LIKE '%${location}%'`;
+            const getManagerPhone = await sql_con.promise().query(getManagerPhoneQuery)
+            managerPhone = getManagerPhone[0][0]['user_phone']
+
+            var customerInfo = { ciPhone: managerPhone, ciSite: location, ciName: '추가DB', ciReceiver: userData }
+            console.log(customerInfo);
+            aligoKakaoNotification_formanager_clean(req, customerInfo)
+        } catch (error) {
+            console.error(error.message);
+        }
+
+    }
+
+    return res.json({ status })
+});
 
 
 mainRouter.post('/update_normal', async (req, res) => {
