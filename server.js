@@ -59,7 +59,8 @@ app.use('/subimg', express.static(path.join(__dirname, 'subuploads/img')));
 // }
 
 let corsOptions = {
-    origin: /\.adpeak\.kr$/,
+    // origin: /\.adpeak\.kr$/,
+    origin: true,
     credentials: true
 }
 app.use(cors(corsOptions));
