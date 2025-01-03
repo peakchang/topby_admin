@@ -164,9 +164,9 @@ webhookRouter.post('/', async (req, res) => {
         console.log(getFormData);
         
         
-        console.log(getLeadsData.field_data[0].values); // 1. 옵션
-        console.log(getLeadsData.field_data[1].values); // 2. 이름
-        console.log(getLeadsData.field_data[2].values); // 3. 전번
+        // console.log(getLeadsData.field_data[0].values); // 1. 옵션
+        // console.log(getLeadsData.field_data[1].values); // 2. 이름
+        // console.log(getLeadsData.field_data[2].values); // 3. 전번
 
 
         // for문 돌려서 baseData 만들기!
