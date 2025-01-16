@@ -401,10 +401,7 @@
         align-items: center;
     }
 
-    .image {
-        width: 100%;
-        max-width: 600px;
-    }
+
 
     .video-wrapper {
         position: absolute;

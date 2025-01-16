@@ -1,14 +1,16 @@
 <script>
     import { page } from "$app/stores";
-    
+    import Seo from "$src/lib/components/Seo.svelte";
 
     let imageOrigin = import.meta.env.VITE_SERVER_URL
         ? import.meta.env.VITE_SERVER_URL
         : $page.url.origin;
 
-
-
     let { data } = $props();
+
+    let seoValue = $state({});
+
+    console.log(data);
 
     let minisiteData = $state({});
     let imgList = $state([]);
@@ -20,9 +22,19 @@
     }
 
     let formArea = $state();
+
+    seoValue = {
+        title: data.minisiteData.hy_site_name,
+        description: data.minisiteData.hy_features,
+        keywords: data.minisiteData.hy_keywords,
+        url: $page.url.href,
+        image : $page.url.origin + data.minisiteData.hy_card_image
+    };
 </script>
 
-<svelte:head></svelte:head>
+<svelte:head>
+    <Seo {seoValue}></Seo>
+</svelte:head>
 
 <dialog id="personal_info_modal" class="modal suit-font">
     <div class="modal-box">
