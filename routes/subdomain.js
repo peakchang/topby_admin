@@ -88,7 +88,7 @@ subdomainRouter.post('/add_sms_count', async (req, res, next) => {
 
 subdomainRouter.post('/subview', async (req, res, next) => {
     console.log('일단 들어오지?!?!?!');
-    
+
     let status = true;
     const subDomainName = req.body.subDomainName
     let subView = "";
@@ -101,7 +101,7 @@ subdomainRouter.post('/subview', async (req, res, next) => {
     }
 
     console.log(subView);
-    
+
 
     res.json({ status, subDomainName, subView })
 })
@@ -197,56 +197,23 @@ subdomainRouter.post('/img_upload', img_upload.single('onimg'), (req, res, next)
 
     res.json({ status, baseUrl, saveUrl })
 })
-subdomainRouter.post('/delete_logo', async (req, res, next) => {
+subdomainRouter.post('/delete_single_image', async (req, res, next) => {
 
-    let status = true;
-    const delPath = req.body.logoUrlPath;
+    const delPath = req.body.deleteImagePath;
+    const dbType = req.body.imgActType
     const ldId = req.body.ld_id;
     try {
         await fs.unlink(delPath, (err) => {
         })
-        const deleteLogoQuery = "UPDATE land SET ld_logo = '' WHERE ld_id = ?";
+        const deleteLogoQuery = `UPDATE land SET ${dbType} = '' WHERE ld_id = ?`;
         await sql_con.promise().query(deleteLogoQuery, [ldId]);
     } catch (error) {
-        status = false
         console.error(error);
     }
-    res.json({ status })
+    res.json({})
 })
 
-subdomainRouter.post('/delete_phimg', async (req, res, next) => {
 
-    let status = true;
-    const delPath = req.body.phimgUrlPath;
-    const ldId = req.body.ld_id;
-    try {
-        await fs.unlink(delPath, (err) => {
-        })
-        const deletePhimgQuery = "UPDATE land SET ld_ph_img = '' WHERE ld_id = ?";
-        await sql_con.promise().query(deletePhimgQuery, [ldId]);
-    } catch (error) {
-        status = false
-        console.error(error);
-    }
-    res.json({ status })
-})
-
-subdomainRouter.post('/delete_popupimg', async (req, res, next) => {
-
-    let status = true;
-    const delPath = req.body.phimgUrlPath;
-    const ldId = req.body.ld_id;
-    try {
-        await fs.unlink(delPath, (err) => {
-        })
-        const deletePopupimgQuery = "UPDATE land SET ld_popup_img = '' WHERE ld_id = ?";
-        await sql_con.promise().query(deletePopupimgQuery, [ldId]);
-    } catch (error) {
-        status = false
-        console.error(error);
-    }
-    res.json({ status })
-})
 
 
 subdomainRouter.post('/delete_img', async (req, res, next) => {
