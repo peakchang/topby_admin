@@ -4,6 +4,8 @@
     console.log("?????");
 
     console.log(seoValue);
+    console.log(seoValue.image);
+    
 
     // export let seoValue;
 </script>
@@ -33,10 +35,13 @@
     content="eac9d4ee9921a03f4f6dd6b674d702dab852a08f"
 />
 <meta name="keywords" content={seoValue.keywords} />
+
+
 <meta itemprop="image" content="/logo.png" />
 
+
 {#if seoValue.description}
-<meta itemprop="description" content={seoValue.description} />
+    <meta itemprop="description" content={seoValue.description} />
 {/if}
 
 <meta itemprop="url" content={seoValue.url} />
@@ -49,7 +54,11 @@
 <meta property="og:title" content={seoValue.title} />
 <meta property="og:description" content={seoValue.description} />
 <meta property="og:url" content={seoValue.url} />
-<meta property="og:image" content="/logo.png" />
+{#if seoValue.image}
+    <meta property="og:image" content={seoValue.image} />
+{:else}
+    <meta property="og:image" content="/logo.png" />
+{/if}
 <meta property="description" content={seoValue.description} />
 
 <!-- <meta property="og:url" content={seoValue.url} /> -->
