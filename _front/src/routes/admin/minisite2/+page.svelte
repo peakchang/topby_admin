@@ -51,6 +51,7 @@
     }
 
     async function addSubDomain() {
+        addSubDomainVal = addSubDomainVal.trim();
         try {
             const res = await axios.post(
                 `${back_api}/minisite/add_sub_domain`,
