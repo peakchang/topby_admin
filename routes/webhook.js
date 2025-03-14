@@ -135,6 +135,8 @@ webhookRouter.get('/test_rich_send', async (req, res) => {
 
 webhookRouter.get('/test_facebook', async (req, res) => {
 
+    console.log(process.env.ACCESS_TOKEN);
+    
     let leadsUrl = `https://graph.facebook.com/v22.0/662586119660203?access_token=${process.env.ACCESS_TOKEN}`
     let formUrl = `https://graph.facebook.com/v22.0/9383454068334404?access_token=${process.env.ACCESS_TOKEN}`
     try {
@@ -146,7 +148,7 @@ webhookRouter.get('/test_facebook', async (req, res) => {
 
 
     } catch (error) {
-        console.log(error.errors);
+        console.log(error);
         console.log('에러 발생!!!!');
 
     }
