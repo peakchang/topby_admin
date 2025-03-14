@@ -368,8 +368,6 @@ webhookRouter.post('/', async (req, res) => {
             console.log('audit_webhookdata error!!!!!!!!!!!');
 
         }
-
-
         return res.sendStatus(200);
     }
 })
