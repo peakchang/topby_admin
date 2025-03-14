@@ -159,6 +159,8 @@ webhookRouter.post('/', async (req, res) => {
             console.log('raidsed error?!?!?!?!?!?!??!?!');
             console.error(err.message);
         }
+
+
         let LeadsData = await doRequest({ uri: leadsUrl });
         let formData = await doRequest({ uri: formUrl });
 
@@ -368,11 +370,8 @@ webhookRouter.post('/', async (req, res) => {
         }
 
 
-        res.sendStatus(200);
+        return res.sendStatus(200);
     }
-
-    res.sendStatus(200);
-
 })
 
 
