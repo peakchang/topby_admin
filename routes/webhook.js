@@ -238,6 +238,8 @@ webhookRouter.post('/', async (req, res) => {
 
             getFormData = formRes.data
         } catch (error) {
+            console.log('에러남!! 재요청!!');
+            console.log(error.erros);
             return res.sendStatus(503);
         }
 
@@ -441,8 +443,6 @@ webhookRouter.post('/', async (req, res) => {
             console.log('audit_webhookdata error!!!!!!!!!!!');
 
         }
-
-
         return res.sendStatus(200);
     }
 
