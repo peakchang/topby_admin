@@ -212,38 +212,14 @@ webhookRouter.post('/', async (req, res) => {
 
 
 
-        let leadsUrl = `https://graph.facebook.com/v16.0/${leadsId}?access_token=${process.env.ACCESS_TOKEN}`
-        let formUrl = `https://graph.facebook.com/v16.0/${formId}?access_token=${process.env.ACCESS_TOKEN}`
+        let leadsUrl = `https://graph.facebook.com/v15.0/${leadsId}?access_token=${process.env.ACCESS_TOKEN}`
+        let formUrl = `https://graph.facebook.com/v15.0/${formId}?access_token=${process.env.ACCESS_TOKEN}`
+        let LeadsData = await doRequest({ uri: leadsUrl });
+        let formData = await doRequest({ uri: formUrl });
 
+        let getLeadsData = JSON.parse(LeadsData)
+        let getFormData = JSON.parse(formData)
 
-        let getLeadsData = {}
-        let getFormData = {}
-
-
-        try {
-            const agent = new https.Agent({
-                keepAlive: true,
-                rejectUnauthorized: false // SSL 인증서 검증 비활성화 (테스트용)
-            });
-
-            const leadsRes = await axios.get(leadsUrl, {
-                headers: {
-                    'User-Agent': 'Mozilla/5.0', // 필요하면 추가
-                }, httpsAgent: agent, timeout: 5000
-            })
-
-            getLeadsData = leadsRes.data
-
-            const formRes = await axios.get(formUrl, {
-                headers: {
-                    'User-Agent': 'Mozilla/5.0', // 필요하면 추가
-                }, httpsAgent: agent, timeout: 5000
-            })
-
-            getFormData = formRes.data
-        } catch (error) {
-
-        }
 
         console.log(getLeadsData);
         console.log(getFormData);
@@ -447,8 +423,10 @@ webhookRouter.post('/', async (req, res) => {
         }
 
 
-        return res.sendStatus(200);
+        res.sendStatus(200);
     }
+
+    res.sendStatus(200);
 
 })
 
