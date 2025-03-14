@@ -163,7 +163,7 @@ webhookRouter.post('/', async (req, res) => {
             getLeadsData = leadRes.data;
             console.log(getLeadsData);
         } catch (err) {
-            console.log(err.message);
+            console.log(err);
             console.log('raidsed error lead url?!?!?!?!?!?!??!?!');
         }
 
@@ -172,7 +172,7 @@ webhookRouter.post('/', async (req, res) => {
             getFormData = formRes.data;
             console.log(getFormData);
         } catch (err) {
-            console.log(err.message);
+            console.log(err);
             console.log('raidsed error form url?!?!?!?!?!?!??!?!');
         }
         console.log(getLeadsData);
@@ -185,8 +185,11 @@ webhookRouter.post('/', async (req, res) => {
 
 
         // for문 돌려서 baseData 만들기!
+        if(getLeadsData.field_data){
+
+        }
         const leadsData = getLeadsData.field_data;
-        
+
         
         let baseData = {};
         let etcCount = 0;
