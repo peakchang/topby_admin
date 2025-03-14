@@ -195,6 +195,9 @@ webhookRouter.post('/', async (req, res) => {
 
         // 이건 리치에 발송하는건데 일단 냅두기!!!
         if (get_form_name.includes('rich') || get_form_name.includes('리치')) {
+
+            console.log('send for rich~~~~~~~~~~~~');
+            
             try {
                 const result = await axios.post('https://richby.co.kr/webhook/richhook', { baseData, leadsId, getFormData })
                 return res.sendStatus(200);
