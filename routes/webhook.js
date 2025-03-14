@@ -149,8 +149,6 @@ webhookRouter.post('/', async (req, res) => {
         console.log(formId);
 
 
-
-
         let leadsUrl = `https://graph.facebook.com/v15.0/${leadsId}?access_token=${process.env.ACCESS_TOKEN}`
         let formUrl = `https://graph.facebook.com/v15.0/${formId}?access_token=${process.env.ACCESS_TOKEN}`
 
@@ -158,8 +156,8 @@ webhookRouter.post('/', async (req, res) => {
             const leadRes = await axios.get(leadsUrl);
             console.log(leadRes);
         } catch (err) {
+            console.log('raidsed error?!?!?!?!?!?!??!?!');
             console.error(err.message);
-
         }
         let LeadsData = await doRequest({ uri: leadsUrl });
         let formData = await doRequest({ uri: formUrl });
