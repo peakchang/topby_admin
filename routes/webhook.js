@@ -165,7 +165,7 @@ webhookRouter.post('/', async (req, res) => {
         }
 
 
-        
+
         let LeadsData = await doRequest({ uri: leadsUrl });
         let formData = await doRequest({ uri: formUrl });
 
@@ -375,10 +375,10 @@ webhookRouter.post('/', async (req, res) => {
         }
 
 
-        res.sendStatus(200);
+        return res.sendStatus(200);
     }
 
-    res.sendStatus(200);
+    // res.sendStatus(200);
 
 })
 
