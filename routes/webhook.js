@@ -152,24 +152,34 @@ webhookRouter.post('/', async (req, res) => {
         let leadsUrl = `https://graph.facebook.com/v15.0/${leadsId}?access_token=${process.env.ACCESS_TOKEN}`
         let formUrl = `https://graph.facebook.com/v15.0/${formId}?access_token=${process.env.ACCESS_TOKEN}`
 
-        // try {
-        //     const leadRes = await axios.get(leadsUrl);
-        //     console.log(leadRes);
-        // } catch (err) {
-        //     console.log('raidsed error?!?!?!?!?!?!??!?!');
-        //     console.error(err.message);
-        // }
-
         let leadsDataTemp = {}
         let formData = {}
+        
         try {
-            leadsDataTemp = await doRequest({ uri: leadsUrl });
-            formData = await doRequest({ uri: formUrl });
-        } catch (error) {
-            console.log('raidsed error?!?!?!?!?!?!??!?!');
-            console.log(error.message);
-            console.error(error.message);
+            const leadRes = await axios.get(leadsUrl);
+            leadsDataTemp = leadRes.data;
+        } catch (err) {
+            console.log('raidsed error lead url?!?!?!?!?!?!??!?!');
+            console.error(err.message);
         }
+
+        try {
+            const formRes = await axios.get(formUrl);
+            formData = formRes.data;
+        } catch (error) {
+            console.log('raidsed error form url?!?!?!?!?!?!??!?!');
+            console.error(err.message);
+        }
+
+
+        // try {
+        //     leadsDataTemp = await doRequest({ uri: leadsUrl });
+        //     formData = await doRequest({ uri: formUrl });
+        // } catch (error) {
+        //     console.log('raidsed error?!?!?!?!?!?!??!?!');
+        //     console.log(error.message);
+        //     console.error(error.message);
+        // }
 
         let getLeadsData = JSON.parse(leadsDataTemp)
         let getFormData = JSON.parse(formData)
