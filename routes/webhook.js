@@ -163,9 +163,8 @@ webhookRouter.post('/', async (req, res) => {
             getLeadsData = leadRes.data;
             console.log(getLeadsData);
         } catch (err) {
-            console.log(err);
+            console.log(err.message);
             console.log('raidsed error lead url?!?!?!?!?!?!??!?!');
-            console.error(err.message);
         }
 
         try {
@@ -173,10 +172,8 @@ webhookRouter.post('/', async (req, res) => {
             getFormData = formRes.data;
             console.log(getFormData);
         } catch (err) {
-            console.log(err);
-
+            console.log(err.message);
             console.log('raidsed error form url?!?!?!?!?!?!??!?!');
-            console.error(error.message);
         }
         console.log(getLeadsData);
         console.log(getFormData);
