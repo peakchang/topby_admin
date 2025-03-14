@@ -47,8 +47,8 @@ webhookRouter.get('/test_facebook', async (req, res) => {
     */
 
 
-    let leadsUrl = `https://graph.facebook.com/v16.0/482334394956129?access_token=${process.env.ACCESS_TOKEN}`
-    let formUrl = `https://graph.facebook.com/v16.0/9383454068334404?access_token=${process.env.ACCESS_TOKEN}`
+    let leadsUrl = `https://graph.facebook.com/v16.0/674181718467480?access_token=${process.env.ACCESS_TOKEN}`
+    let formUrl = `https://graph.facebook.com/v16.0/1872805683124676?access_token=${process.env.ACCESS_TOKEN}`
 
     console.log(leadsUrl);
     console.log(formUrl);
