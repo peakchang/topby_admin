@@ -157,7 +157,6 @@ webhookRouter.post('/', async (req, res) => {
         try {
             const leadRes = await axios.get(leadsUrl);
             console.log(leadRes);
-
         } catch (err) {
             console.error(err.message);
 
