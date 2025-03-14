@@ -10,8 +10,6 @@
 
     let seoValue = $state({});
 
-    console.log(data);
-
     let minisiteData = $state({});
     let imgList = $state([]);
 

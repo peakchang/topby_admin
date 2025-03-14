@@ -52,7 +52,6 @@
 
     async function addSubDomain() {
         addSubDomainVal = addSubDomainVal.replace(/\s/g, '');
-        console.log(addSubDomainVal);
         
         try {
             const res = await axios.post(

@@ -10,8 +10,6 @@
     import { invalidateAll } from "$app/navigation";
     let { data } = $props();
 
-    console.log(data);
-
     let datas = $state([]);
     let pages = $state([]);
     let reverseIdxArr = $state([]);
@@ -91,7 +89,6 @@
     }
 
     async function addMemo() {
-        console.log(customer_id);
 
         if (!add_memo_content) {
             alert("메모 내용을 입력하세요.");
@@ -110,7 +107,6 @@
             );
 
             if (res.status == 200) {
-                console.log("아니 안들어오는거야?!?!?!??!");
                 loadCustomerInfo(customer_id);
             }
         } catch (err) {
@@ -144,9 +140,7 @@
     }
 
     async function updateStatus() {
-        console.log(this.value);
         const getIdx = this.value;
-        console.log(datas[getIdx]);
         try {
             const res = await axios.post(`${back_api}/alldb/update_status`, {
                 data: datas[getIdx],
@@ -175,7 +169,6 @@
     }
 
     async function loadCustomerInfo(customer_id) {
-        console.log("들어는 오지?!?!");
 
         try {
             const res = await axios.post(
@@ -183,7 +176,6 @@
                 { customer_id },
             );
 
-            console.log(res);
 
             if (res.status == 200) {
                 customerInfo = res.data.customer_info;
@@ -207,7 +199,6 @@
                         };
                     });
 
-                    console.log(customerInfo);
                 }
                 add_memo_content = "";
                 invalidateAll();
