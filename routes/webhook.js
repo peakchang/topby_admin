@@ -21,6 +21,88 @@ var AuthData = {
 }
 
 
+webhookRouter.get('/test_facebook', async (req, res) => {
+
+    console.log(process.env.ACCESS_TOKEN);
+
+
+    /*
+    482334394956129
+    9383454068334404
+
+    674181718467480
+    1872805683124676
+
+    2046603895750956
+    1354597932633979
+    */
+
+
+    let leadsUrl = `https://graph.facebook.com/v16.0/2046603895750956?access_token=${process.env.ACCESS_TOKEN}`
+    let formUrl = `https://graph.facebook.com/v16.0/1354597932633979?access_token=${process.env.ACCESS_TOKEN}`
+
+    console.log(leadsUrl);
+    console.log(formUrl);
+
+
+    try {
+        exec(`curl -v "${apiUrl}"`, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`❌ curl 요청 실패: ${error.message}`);
+                return;
+            }
+            console.log(`✅ curl 응답: ${stdout}`);
+        });
+    } catch (error) {
+
+    }
+
+    try {
+        const proxyAgent = new HttpsProxyAgent(leadsUrl);
+        const response = await axios.get(apiUrl, {
+            httpsAgent: proxyAgent,
+            timeout: 10000
+        });
+        console.log(response.data);
+        
+    } catch (error) {
+        console.log('프록시도 에러야?!?!?!');
+        
+    }
+
+
+    try {
+
+        const agent = new https.Agent({
+            keepAlive: true,
+            rejectUnauthorized: false // SSL 인증서 검증 비활성화 (테스트용)
+        });
+
+        const leadsRes = await axios.get(leadsUrl, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0', // 필요하면 추가
+            }, httpsAgent: agent, timeout: 5000
+        })
+        console.log(leadsRes.data);
+
+        const formRes = await axios.get(formUrl, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0', // 필요하면 추가
+            }, httpsAgent: agent, timeout: 5000
+        })
+        console.log(formRes.data);
+
+
+    } catch (error) {
+        console.log(error.errors);
+        console.log('에러 발생!!!!');
+
+    }
+
+    res.json({ test: 'success!!!' })
+});
+
+
 webhookRouter.get('/test', (req, res) => {
     console.log(token);
 
