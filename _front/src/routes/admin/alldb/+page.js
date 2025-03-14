@@ -53,8 +53,6 @@ export const load = async ({ params, url, data }) => {
             datas[i]['bg_color'] = getColorByStatus(datas[i]['af_mb_status'], statusArr, colorArr)
         }
     }
-
-    console.log(datas);
     
     return { datas, pageArr, reverseIdxArr, site_list, statusArr, allPage }
 }
