@@ -162,8 +162,8 @@ webhookRouter.post('/', async (req, res) => {
 
         console.log(getLeadsData);
         console.log(getFormData);
-
-
+        
+        
         // console.log(getLeadsData.field_data[0].values); // 1. 옵션
         // console.log(getLeadsData.field_data[1].values); // 2. 이름
         // console.log(getLeadsData.field_data[2].values); // 3. 전번
@@ -192,16 +192,6 @@ webhookRouter.post('/', async (req, res) => {
         var get_form_name = getFormData.name
         var get_form_name = get_form_name.replace('분양', '')
         var get_form_name = get_form_name.replace('투자', '')
-
-        // 이건 리치에 발송하는건데 일단 냅두기!!!
-        if (get_form_name.includes('rich') || get_form_name.includes('RICH') || get_form_name.includes('리치')) {
-            try {
-                const result = await axios.post('https://richby.co.kr/webhook/richhook', { baseData, leadsId, getFormData })
-                return res.sendStatus(200);
-            } catch (error) {
-                return res.sendStatus(200);
-            }
-        }
 
 
         // 최종적으로 baseData와 함께 체크 / 입력 / 발송될 데이터!!!
@@ -371,8 +361,11 @@ webhookRouter.post('/', async (req, res) => {
 
         }
 
-        return res.sendStatus(200);
+
+        res.sendStatus(200);
     }
+
+    res.sendStatus(200);
 
 })
 
