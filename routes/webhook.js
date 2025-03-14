@@ -160,23 +160,19 @@ webhookRouter.post('/', async (req, res) => {
             console.error(err.message);
         }
 
+        let leadsData = {}
+        let formData = {}
         try {
-            let leadsData = await doRequest({ uri: leadsUrl });
-            console.log(leadsData);
+            leadsData = await doRequest({ uri: leadsUrl });
+            formData = await doRequest({ uri: formUrl });
         } catch (error) {
             console.error(error.message);
         }
 
-
-        // let LeadsData = await doRequest({ uri: leadsUrl });
-        // let formData = await doRequest({ uri: formUrl });
-
-        // let getLeadsData = JSON.parse(LeadsData)
-        // let getFormData = JSON.parse(formData)
-
-
-        // console.log(getLeadsData);
-        // console.log(getFormData);
+        let getLeadsData = JSON.parse(leadsData)
+        let getFormData = JSON.parse(formData)
+        console.log(getLeadsData);
+        console.log(getFormData);
 
 
         // // console.log(getLeadsData.field_data[0].values); // 1. 옵션
