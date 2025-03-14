@@ -29,7 +29,7 @@ let img_upload = multer({
 
 subdomainRouter.post('/get_visit_list', async (req, res, next) => {
     let status = true;
-    console.log(req.body.getId);
+
     let visit_list = [];
     try {
         const getVisitListQuery = "SELECT * FROM subdomain_visit WHERE sv_domain = ? ORDER BY sv_id DESC"
@@ -87,7 +87,7 @@ subdomainRouter.post('/add_sms_count', async (req, res, next) => {
 })
 
 subdomainRouter.post('/subview', async (req, res, next) => {
-    console.log('일단 들어오지?!?!?!');
+
 
     let status = true;
     const subDomainName = req.body.subDomainName
@@ -100,7 +100,6 @@ subdomainRouter.post('/subview', async (req, res, next) => {
 
     }
 
-    console.log(subView);
 
 
     res.json({ status, subDomainName, subView })
@@ -112,9 +111,7 @@ subdomainRouter.post('/update_visit_count', async (req, res, next) => {
     let status = true;
 
     const body = req.body;
-    console.log(body);
 
-    console.log(process.env.SERVER_IP);
 
     const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     console.log('going to chkeck~~~~~~~~~~~~~~~~~~~~~~!!!!!!!!!!!!!!!!!!!!!!!!!');
@@ -122,7 +119,7 @@ subdomainRouter.post('/update_visit_count', async (req, res, next) => {
     if (ipAddress != process.env.SERVER_IP) {
 
         const userAgent = req.get('user-agent');
-        console.log(userAgent);
+
 
         const ldVisitCount = body.ld_visit_count + 1;
         try {
@@ -233,9 +230,9 @@ subdomainRouter.post('/delete_img', async (req, res, next) => {
 
 subdomainRouter.post('/update_customer', async (req, res, next) => {
     let status = true;
-    console.log('update_customer!!!!!!!!!!!!!!!!!');
+
     const body = req.body;
-    console.log(body);
+
     const now = moment().format('YY/MM/DD HH:mm:ss');
     try {
         // DB 입력하기~~~
@@ -268,8 +265,7 @@ subdomainRouter.post('/update_customer', async (req, res, next) => {
         const getSiteInfoQuery = "SELECT * FROM site_list WHERE sl_site_name = ?";
         const getSiteInfo = await sql_con.promise().query(getSiteInfoQuery, [body.siteName]);
         const site_info = getSiteInfo[0][0]
-        console.log("get~~~~~~~~~~~ site~~~~~~~~~~ info~~~~~~~~~~~~");
-        console.log(site_info);
+
         if (site_info) {
             let sendMessageObj = {
                 receiver: body.phone,
@@ -278,7 +274,7 @@ subdomainRouter.post('/update_customer', async (req, res, next) => {
                 siteRealName: site_info['sl_site_realname'],
                 smsContent: site_info['sl_sms_content'],
             }
-            console.log(sendMessageObj);
+
             aligoKakaoNotification_detail(req, sendMessageObj)
         }
     } catch (error) {
