@@ -138,7 +138,7 @@ webhookRouter.get('/test_rich_send', async (req, res) => {
 webhookRouter.get('/test_facebook', async (req, res) => {
 
     console.log(process.env.ACCESS_TOKEN);
-    
+
     let leadsUrl = `https://graph.facebook.com/v22.0/662586119660203?access_token=${process.env.ACCESS_TOKEN}`
     let formUrl = `https://graph.facebook.com/v22.0/9383454068334404?access_token=${process.env.ACCESS_TOKEN}`
     try {
@@ -183,24 +183,22 @@ webhookRouter.post('/', async (req, res) => {
         let leadsUrl = `https://graph.facebook.com/v22.0/${leadsId}?access_token=${process.env.ACCESS_TOKEN}`
         let formUrl = `https://graph.facebook.com/v22.0/${formId}?access_token=${process.env.ACCESS_TOKEN}`
 
+        const agent = new https.Agent({ keepAlive: true });
 
+
+        let getLeadsData = {}
+        let getFormData = {}
 
         try {
-            const leadData = await axios.get(leadsUrl)
-            console.log(leadData.data);
+            const leadsRes = await axios.get(leadsUrl, { httpsAgent: agent, timeout: 5000 })
+            getLeadsData = leadsRes.data;
+
+            const formRes = await axios.get(formUrl, { httpsAgent: agent, timeout: 5000 })
+            getFormData = formRes.data;
         } catch (error) {
             // console.log(error.errors);
             console.log('에러가 생깁니다!!!!!!!!!!!!!!!!!');
         }
-
-
-
-        let LeadsData = await doRequest({ uri: leadsUrl });
-        let formData = await doRequest({ uri: formUrl });
-
-        let getLeadsData = JSON.parse(LeadsData)
-        let getFormData = JSON.parse(formData)
-
 
         console.log(getLeadsData);
         console.log(getFormData);
