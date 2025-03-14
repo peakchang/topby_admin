@@ -7,11 +7,6 @@ import request from "request"
 import { sql_con } from '../back-lib/db.js'
 import axios from "axios";
 import aligoapi from 'aligoapi'
-import https from 'https'
-import HttpsProxyAgent from 'https-proxy-agent';
-
-import { exec } from 'child_process';
-
 
 var token = process.env.TOKEN || 'whtoken';
 
@@ -137,88 +132,6 @@ webhookRouter.get('/test_rich_send', async (req, res) => {
     res.json({ test: 'success!!!' })
 });
 
-
-webhookRouter.get('/test_facebook', async (req, res) => {
-
-    console.log(process.env.ACCESS_TOKEN);
-
-
-    /*
-    482334394956129
-    9383454068334404
-
-    674181718467480
-    1872805683124676
-
-    2046603895750956
-    1354597932633979
-    */
-
-
-    let leadsUrl = `https://graph.facebook.com/v16.0/2046603895750956?access_token=${process.env.ACCESS_TOKEN}`
-    let formUrl = `https://graph.facebook.com/v16.0/1354597932633979?access_token=${process.env.ACCESS_TOKEN}`
-
-    console.log(leadsUrl);
-    console.log(formUrl);
-
-
-    try {
-        exec(`curl -v "${apiUrl}"`, (error, stdout, stderr) => {
-            if (error) {
-                console.error(`❌ curl 요청 실패: ${error.message}`);
-                return;
-            }
-            console.log(`✅ curl 응답: ${stdout}`);
-        });
-    } catch (error) {
-
-    }
-
-    try {
-        const proxyAgent = new HttpsProxyAgent(leadsUrl);
-        const response = await axios.get(apiUrl, {
-            httpsAgent: proxyAgent,
-            timeout: 10000
-        });
-        console.log(response.data);
-        
-    } catch (error) {
-        console.log('프록시도 에러야?!?!?!');
-        
-    }
-
-
-    try {
-
-        const agent = new https.Agent({
-            keepAlive: true,
-            rejectUnauthorized: false // SSL 인증서 검증 비활성화 (테스트용)
-        });
-
-        const leadsRes = await axios.get(leadsUrl, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0', // 필요하면 추가
-            }, httpsAgent: agent, timeout: 5000
-        })
-        console.log(leadsRes.data);
-
-        const formRes = await axios.get(formUrl, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0', // 필요하면 추가
-            }, httpsAgent: agent, timeout: 5000
-        })
-        console.log(formRes.data);
-
-
-    } catch (error) {
-        console.log(error.errors);
-        console.log('에러 발생!!!!');
-
-    }
-
-    res.json({ test: 'success!!!' })
-});
-
 webhookRouter.post('/', async (req, res) => {
 
     console.log('최초 진입!!!!');
@@ -238,30 +151,19 @@ webhookRouter.post('/', async (req, res) => {
 
 
 
-        let leadsUrl = `https://graph.facebook.com/v22.0/${leadsId}?access_token=${process.env.ACCESS_TOKEN}`
-        let formUrl = `https://graph.facebook.com/v22.0/${formId}?access_token=${process.env.ACCESS_TOKEN}`
+        let leadsUrl = `https://graph.facebook.com/v15.0/${leadsId}?access_token=${process.env.ACCESS_TOKEN}`
+        let formUrl = `https://graph.facebook.com/v15.0/${formId}?access_token=${process.env.ACCESS_TOKEN}`
+        let LeadsData = await doRequest({ uri: leadsUrl });
+        let formData = await doRequest({ uri: formUrl });
 
-        const agent = new https.Agent({ keepAlive: true });
+        let getLeadsData = JSON.parse(LeadsData)
+        let getFormData = JSON.parse(formData)
 
-
-        let getLeadsData = {}
-        let getFormData = {}
-
-        try {
-            const leadsRes = await axios.get(leadsUrl, { httpsAgent: agent, timeout: 5000 })
-            getLeadsData = leadsRes.data;
-
-            const formRes = await axios.get(formUrl, { httpsAgent: agent, timeout: 5000 })
-            getFormData = formRes.data;
-        } catch (error) {
-            // console.log(error.errors);
-            console.log('에러가 생깁니다!!!!!!!!!!!!!!!!!');
-        }
 
         console.log(getLeadsData);
         console.log(getFormData);
-
-
+        
+        
         // console.log(getLeadsData.field_data[0].values); // 1. 옵션
         // console.log(getLeadsData.field_data[1].values); // 2. 이름
         // console.log(getLeadsData.field_data[2].values); // 3. 전번
@@ -460,10 +362,10 @@ webhookRouter.post('/', async (req, res) => {
         }
 
 
-        return res.sendStatus(200);
+        res.sendStatus(200);
     }
 
-    // res.sendStatus(200);
+    res.sendStatus(200);
 
 })
 
