@@ -7,6 +7,8 @@ import request from "request"
 import { sql_con } from '../back-lib/db.js'
 import axios from "axios";
 import aligoapi from 'aligoapi'
+import https from 'https'
+
 
 var token = process.env.TOKEN || 'whtoken';
 
@@ -140,6 +142,9 @@ webhookRouter.get('/test_facebook', async (req, res) => {
     let leadsUrl = `https://graph.facebook.com/v22.0/662586119660203?access_token=${process.env.ACCESS_TOKEN}`
     let formUrl = `https://graph.facebook.com/v22.0/9383454068334404?access_token=${process.env.ACCESS_TOKEN}`
     try {
+
+        const agent = new https.Agent({ keepAlive: true });
+
         const leadsRes = await axios.get(leadsUrl, { httpsAgent: agent, timeout: 5000 })
         console.log(leadsRes.data);
 
