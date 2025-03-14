@@ -11,6 +11,7 @@ import aligoapi from 'aligoapi'
 // ---------
 
 import HttpsProxyAgent from 'https-proxy-agent';
+import https from 'https'
 import { exec } from 'child_process';
 
 var token = process.env.TOKEN || 'whtoken';
@@ -69,10 +70,10 @@ webhookRouter.get('/test_facebook', async (req, res) => {
             timeout: 10000
         });
         console.log(response.data);
-        
+
     } catch (error) {
         console.log('프록시도 에러야?!?!?!');
-        
+
     }
 
 
@@ -249,8 +250,8 @@ webhookRouter.post('/', async (req, res) => {
 
         console.log(getLeadsData);
         console.log(getFormData);
-        
-        
+
+
         // console.log(getLeadsData.field_data[0].values); // 1. 옵션
         // console.log(getLeadsData.field_data[1].values); // 2. 이름
         // console.log(getLeadsData.field_data[2].values); // 3. 전번
