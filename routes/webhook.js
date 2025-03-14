@@ -153,6 +153,19 @@ webhookRouter.post('/', async (req, res) => {
 
         let leadsUrl = `https://graph.facebook.com/v15.0/${leadsId}?access_token=${process.env.ACCESS_TOKEN}`
         let formUrl = `https://graph.facebook.com/v15.0/${formId}?access_token=${process.env.ACCESS_TOKEN}`
+
+
+
+        try {
+            const leadData = await axios.get(leadsUrl)
+            console.log(leadData.data);
+        } catch (error) {
+            console.log(error.errors);
+            console.log('에러가 생깁니다!!!!!!!!!!!!!!!!!');
+        }
+
+
+        
         let LeadsData = await doRequest({ uri: leadsUrl });
         let formData = await doRequest({ uri: formUrl });
 
