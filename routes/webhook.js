@@ -158,12 +158,12 @@ webhookRouter.post('/', async (req, res) => {
         try {
             const leadRes = await axios.get(leadsUrl);
             leadsDataTemp = leadRes.data;
-
             console.log(leadsDataTemp);
+            console.log(typeof (leadsDataTemp));
+
 
         } catch (err) {
             console.log(err);
-
             console.log('raidsed error lead url?!?!?!?!?!?!??!?!');
             console.error(err.message);
         }
@@ -172,6 +172,8 @@ webhookRouter.post('/', async (req, res) => {
             const formRes = await axios.get(formUrl);
             formData = formRes.data;
             console.log(formData);
+            console.log(typeof (formData));
+
 
         } catch (err) {
             console.log(err);
