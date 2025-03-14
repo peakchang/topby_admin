@@ -238,7 +238,7 @@ webhookRouter.post('/', async (req, res) => {
 
             getFormData = formRes.data
         } catch (error) {
-
+            return res.sendStatus(503);
         }
 
         console.log(getLeadsData);
