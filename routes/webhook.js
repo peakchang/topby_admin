@@ -132,6 +132,27 @@ webhookRouter.get('/test_rich_send', async (req, res) => {
     res.json({ test: 'success!!!' })
 });
 
+
+webhookRouter.get('/test_facebook', async (req, res) => {
+
+    let leadsUrl = `https://graph.facebook.com/v22.0/662586119660203?access_token=${process.env.ACCESS_TOKEN}`
+    let formUrl = `https://graph.facebook.com/v22.0/9383454068334404?access_token=${process.env.ACCESS_TOKEN}`
+    try {
+        const leadsRes = await axios.get(leadsUrl)
+        console.log(leadsRes.data);
+
+        const formRes = await axios.get(formUrl)
+        console.log(formRes.data);
+        
+
+    } catch (error) {
+        console.log('에러 발생!!!!');
+        
+    }
+
+    res.json({ test: 'success!!!' })
+});
+
 webhookRouter.post('/', async (req, res) => {
 
     console.log('최초 진입!!!!');
@@ -175,8 +196,8 @@ webhookRouter.post('/', async (req, res) => {
 
         console.log(getLeadsData);
         console.log(getFormData);
-        
-        
+
+
         // console.log(getLeadsData.field_data[0].values); // 1. 옵션
         // console.log(getLeadsData.field_data[1].values); // 2. 이름
         // console.log(getLeadsData.field_data[2].values); // 3. 전번
