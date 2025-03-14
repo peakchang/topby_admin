@@ -71,6 +71,7 @@ apiRouter.post('/upload_sort_img', img_upload.single('onimg'), (req, res, next) 
 
 
 apiRouter.post('/err_ip_chk', async (req, res, next) => {
+    
     const get_ip = req.body.ip;
     console.log(get_ip);
     res.json({})

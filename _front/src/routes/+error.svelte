@@ -1,4 +1,5 @@
 <script>
+    import axios from "$node_modules/axios/index.js";
     import { back_api } from "$src/lib/const.js";
 
     $effect(async () => {
@@ -7,20 +8,17 @@
             const res = await fetch("https://api64.ipify.org?format=json");
             const data = await res.json();
             ip = data.ip;
+            console.log(ip);
         } catch (error) {
             console.error("IP 가져오기 실패:", error);
         }
-
         try {
-            const res = await fetch(`${back_api}/api/v3/err_ip_chk`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json", // JSON 데이터 전송
-                },
-                body: JSON.stringify({
-                    ip,
-                }),
+            console.log(`${back_api}/api/v3/err_ip_chk`);
+
+            const res = await axios.post(`${back_api}/api/v3/err_ip_chk`, {
+                ip,
             });
+            console.log(res.data);
         } catch (error) {}
     });
 </script>
