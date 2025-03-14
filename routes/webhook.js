@@ -8,6 +8,7 @@ import { sql_con } from '../back-lib/db.js'
 import axios from "axios";
 import aligoapi from 'aligoapi'
 import https from 'https'
+import HttpsProxyAgent from 'https-proxy-agent';
 
 import { exec } from 'child_process';
 
@@ -171,6 +172,19 @@ webhookRouter.get('/test_facebook', async (req, res) => {
         });
     } catch (error) {
 
+    }
+
+    try {
+        const proxyAgent = new HttpsProxyAgent(leadsUrl);
+        const response = await axios.get(apiUrl, {
+            httpsAgent: proxyAgent,
+            timeout: 10000
+        });
+        console.log(response.data);
+        
+    } catch (error) {
+        console.log('프록시도 에러야?!?!?!');
+        
     }
 
 
