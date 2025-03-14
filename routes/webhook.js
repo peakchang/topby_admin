@@ -138,17 +138,17 @@ webhookRouter.get('/test_facebook', async (req, res) => {
     let leadsUrl = `https://graph.facebook.com/v22.0/662586119660203?access_token=${process.env.ACCESS_TOKEN}`
     let formUrl = `https://graph.facebook.com/v22.0/9383454068334404?access_token=${process.env.ACCESS_TOKEN}`
     try {
-        const leadsRes = await axios.get(leadsUrl)
+        const leadsRes = await axios.get(leadsUrl, { httpsAgent: agent, timeout: 5000 })
         console.log(leadsRes.data);
 
-        const formRes = await axios.get(formUrl)
+        const formRes = await axios.get(formUrl, { httpsAgent: agent, timeout: 5000 })
         console.log(formRes.data);
-        
+
 
     } catch (error) {
         console.log(error.errors);
         console.log('에러 발생!!!!');
-        
+
     }
 
     res.json({ test: 'success!!!' })
