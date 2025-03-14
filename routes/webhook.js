@@ -160,7 +160,7 @@ webhookRouter.post('/', async (req, res) => {
             const leadData = await axios.get(leadsUrl)
             console.log(leadData.data);
         } catch (error) {
-            console.log(error.errors);
+            // console.log(error.errors);
             console.log('에러가 생깁니다!!!!!!!!!!!!!!!!!');
         }
 
