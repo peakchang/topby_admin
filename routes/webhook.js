@@ -167,6 +167,7 @@ webhookRouter.post('/', async (req, res) => {
             formData = await doRequest({ uri: formUrl });
         } catch (error) {
             console.log('raidsed error?!?!?!?!?!?!??!?!');
+            console.log(error.message);
             console.error(error.message);
         }
 
