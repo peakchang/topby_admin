@@ -155,13 +155,13 @@ webhookRouter.post('/', async (req, res) => {
         let leadsDataTemp = {}
         let formData = {}
 
+        let getLeadsData = {}
+        let getFormData = {}
+
         try {
             const leadRes = await axios.get(leadsUrl);
-            leadsDataTemp = leadRes.data;
-            console.log(leadsDataTemp);
-            console.log(typeof (leadsDataTemp));
-
-
+            getLeadsData = leadRes.data;
+            console.log(getLeadsData);
         } catch (err) {
             console.log(err);
             console.log('raidsed error lead url?!?!?!?!?!?!??!?!');
@@ -170,30 +170,14 @@ webhookRouter.post('/', async (req, res) => {
 
         try {
             const formRes = await axios.get(formUrl);
-            formData = formRes.data;
-            console.log(formData);
-            console.log(typeof (formData));
-
-
+            getFormData = formRes.data;
+            console.log(getFormData);
         } catch (err) {
             console.log(err);
 
             console.log('raidsed error form url?!?!?!?!?!?!??!?!');
             console.error(error.message);
         }
-
-
-        // try {
-        //     leadsDataTemp = await doRequest({ uri: leadsUrl });
-        //     formData = await doRequest({ uri: formUrl });
-        // } catch (error) {
-        //     console.log('raidsed error?!?!?!?!?!?!??!?!');
-        //     console.log(error.message);
-        //     console.error(error.message);
-        // }
-
-        let getLeadsData = JSON.parse(leadsDataTemp)
-        let getFormData = JSON.parse(formData)
         console.log(getLeadsData);
         console.log(getFormData);
 
