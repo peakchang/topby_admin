@@ -166,7 +166,7 @@ webhookRouter.get('/test_facebook', async (req, res) => {
 
 
     } catch (error) {
-        console.log(error);
+        console.log(error.errors);
         console.log('에러 발생!!!!');
 
     }
