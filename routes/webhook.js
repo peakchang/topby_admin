@@ -209,12 +209,8 @@ webhookRouter.post('/', async (req, res) => {
         console.log(leadsId);
         console.log(formId);
 
-
-
-
         let leadsUrl = `https://graph.facebook.com/v16.0/${leadsId}?access_token=${process.env.ACCESS_TOKEN}`
         let formUrl = `https://graph.facebook.com/v16.0/${formId}?access_token=${process.env.ACCESS_TOKEN}`
-
 
         let getLeadsData = {}
         let getFormData = {}
