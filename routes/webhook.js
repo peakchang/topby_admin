@@ -186,6 +186,8 @@ webhookRouter.post('/', async (req, res) => {
 
         // for문 돌려서 baseData 만들기!
         const leadsData = getLeadsData.field_data;
+        
+        
         let baseData = {};
         let etcCount = 0;
         for (let i = 0; i < leadsData.length; i++) {
