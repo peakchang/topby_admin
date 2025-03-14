@@ -44,38 +44,11 @@ webhookRouter.get('/test_facebook', async (req, res) => {
     */
 
 
-    let leadsUrl = `https://graph.facebook.com/v16.0/2046603895750956?access_token=${process.env.ACCESS_TOKEN}`
-    let formUrl = `https://graph.facebook.com/v16.0/1354597932633979?access_token=${process.env.ACCESS_TOKEN}`
+    let leadsUrl = `https://graph.facebook.com/v16.0/674181718467480?access_token=${process.env.ACCESS_TOKEN}`
+    let formUrl = `https://graph.facebook.com/v16.0/1872805683124676?access_token=${process.env.ACCESS_TOKEN}`
 
     console.log(leadsUrl);
     console.log(formUrl);
-
-
-    try {
-        exec(`curl -v "${apiUrl}"`, (error, stdout, stderr) => {
-            if (error) {
-                console.error(`❌ curl 요청 실패: ${error.message}`);
-                return;
-            }
-            console.log(`✅ curl 응답: ${stdout}`);
-        });
-    } catch (error) {
-
-    }
-
-    try {
-        const proxyAgent = new HttpsProxyAgent(leadsUrl);
-        const response = await axios.get(apiUrl, {
-            httpsAgent: proxyAgent,
-            timeout: 10000
-        });
-        console.log(response.data);
-
-    } catch (error) {
-        console.log('프록시도 에러야?!?!?!');
-
-    }
-
 
     try {
 
