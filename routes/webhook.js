@@ -59,7 +59,7 @@ webhookRouter.get('/test_facebook', async (req, res) => {
         const leadsData = await leadsRes.json();
         console.log(leadsData);
 
-        const formRes = await fetch(leadsUrl);
+        const formRes = await fetch(formUrl);
         const formData = await formRes.json();
         console.log(formData);
 
