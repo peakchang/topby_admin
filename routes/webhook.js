@@ -149,45 +149,28 @@ webhookRouter.post('/', async (req, res) => {
         console.log(formId);
 
 
+
+
         let leadsUrl = `https://graph.facebook.com/v15.0/${leadsId}?access_token=${process.env.ACCESS_TOKEN}`
         let formUrl = `https://graph.facebook.com/v15.0/${formId}?access_token=${process.env.ACCESS_TOKEN}`
+        let LeadsData = await doRequest({ uri: leadsUrl });
+        let formData = await doRequest({ uri: formUrl });
 
-        let getLeadsData = {}
-        let getFormData = {}
+        let getLeadsData = JSON.parse(LeadsData)
+        let getFormData = JSON.parse(formData)
 
-        try {
-            const leadRes = await axios.get(leadsUrl);
-            getLeadsData = leadRes.data;
-            console.log(getLeadsData);
-        } catch (err) {
-            console.log(err.errors);
-            console.log('raidsed error lead url?!?!?!?!?!?!??!?!');
-        }
 
-        try {
-            const formRes = await axios.get(formUrl);
-            getFormData = formRes.data;
-            console.log(getFormData);
-        } catch (err) {
-            // console.log(err);
-            console.log('raidsed error form url?!?!?!?!?!?!??!?!');
-        }
         console.log(getLeadsData);
         console.log(getFormData);
-
-
-        // // console.log(getLeadsData.field_data[0].values); // 1. 옵션
-        // // console.log(getLeadsData.field_data[1].values); // 2. 이름
-        // // console.log(getLeadsData.field_data[2].values); // 3. 전번
+        
+        
+        // console.log(getLeadsData.field_data[0].values); // 1. 옵션
+        // console.log(getLeadsData.field_data[1].values); // 2. 이름
+        // console.log(getLeadsData.field_data[2].values); // 3. 전번
 
 
         // for문 돌려서 baseData 만들기!
-        if (getLeadsData.field_data) {
-
-        }
         const leadsData = getLeadsData.field_data;
-
-
         let baseData = {};
         let etcCount = 0;
         for (let i = 0; i < leadsData.length; i++) {
@@ -224,7 +207,7 @@ webhookRouter.post('/', async (req, res) => {
             // 테스트 할때는 잠시 주석!!!
             if (chkFor2WeeksData[0].length > 0) {
                 console.log('중복DB 패스!!');
-                return
+                return res.sendStatus(200);
             }
         } catch (error) {
 
@@ -369,15 +352,21 @@ webhookRouter.post('/', async (req, res) => {
     } catch (error) {
         console.error(error);
 
-        // try {
-        //     const getDataStr = JSON.stringify(req.body)
-        //     const insertAuditWhdataSql = `INSERT INTO audit_webhook (audit_webhookdata) VALUES (?);`;
-        //     await sql_con.promise().query(insertAuditWhdataSql, [getDataStr])
-        // } catch (error) {
-        //     console.log('audit_webhookdata error!!!!!!!!!!!');
-        // }
-        // return res.sendStatus(200);
+        try {
+            const getDataStr = JSON.stringify(req.body)
+            const insertAuditWhdataSql = `INSERT INTO audit_webhook (audit_webhookdata) VALUES (?);`;
+            await sql_con.promise().query(insertAuditWhdataSql, [getDataStr])
+        } catch (error) {
+            console.log('audit_webhookdata error!!!!!!!!!!!');
+
+        }
+
+
+        res.sendStatus(200);
     }
+
+    res.sendStatus(200);
+
 })
 
 
