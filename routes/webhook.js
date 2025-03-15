@@ -207,41 +207,28 @@ webhookRouter.post('/', async (req, res) => {
         console.log(leadsId);
         console.log(formId);
 
-        let leadsUrl = `https://graph.facebook.com/v16.0/${leadsId}?access_token=${process.env.ACCESS_TOKEN}`
-        let formUrl = `https://graph.facebook.com/v16.0/${formId}?access_token=${process.env.ACCESS_TOKEN}`
+        // let leadsUrl = `https://graph.facebook.com/v16.0/${leadsId}?access_token=${process.env.ACCESS_TOKEN}`
+        // let formUrl = `https://graph.facebook.com/v16.0/${formId}?access_token=${process.env.ACCESS_TOKEN}`
 
         let getLeadsData = {}
         let getFormData = {}
 
 
+
+
         try {
-            // const agent = new https.Agent({
-            //     keepAlive: true,
-            //     rejectUnauthorized: false // SSL 인증서 검증 비활성화 (테스트용)
-            // });
+            const fbDataRes = await axios.post(`https://happy-toad1.shop/api/v7/fbchk`, {
+                leadsId, formId
+            })
+            console.log(fbDataRes.status);
+            if (fbDataRes.status == 200) {
+                console.log(fbDataRes.data);
+                getLeadsData = fbDataRes.data.getLeadsData
+                getFormData = fbDataRes.data.getFormData
+            } else {
+                throw new Error(`Request failed with status: ${res.status}`);
+            }
 
-            // const leadsRes = await axios.get(leadsUrl, {
-            //     headers: {
-            //         'User-Agent': 'Mozilla/5.0', // 필요하면 추가
-            //     }, httpsAgent: agent, timeout: 5000
-            // })
-
-            // getLeadsData = leadsRes.data
-
-            // const formRes = await axios.get(formUrl, {
-            //     headers: {
-            //         'User-Agent': 'Mozilla/5.0', // 필요하면 추가
-            //     }, httpsAgent: agent, timeout: 5000
-            // })
-
-            // getFormData = formRes.data
-
-
-            const leadsRes = await fetch(leadsUrl);
-            getLeadsData = await leadsRes.json();
-
-            const formRes = await fetch(formUrl);
-            getFormData = await formRes.json();
         } catch (error) {
             console.log('에러남!! 재요청!!');
             console.log(error.erros);
