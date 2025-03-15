@@ -51,41 +51,24 @@ webhookRouter.get('/test_facebook', async (req, res) => {
     */
 
 
-    let leadsUrl = `https://graph.facebook.com/v16.0/668280238882626?access_token=${process.env.ACCESS_TOKEN}`
-    let formUrl = `https://graph.facebook.com/v16.0/2299124010466462?access_token=${process.env.ACCESS_TOKEN}`
+    // let leadsUrl = `https://graph.facebook.com/v16.0/668280238882626?access_token=${process.env.ACCESS_TOKEN}`
+    // let formUrl = `https://graph.facebook.com/v16.0/2299124010466462?access_token=${process.env.ACCESS_TOKEN}`
 
-    console.log(leadsUrl);
-    console.log(formUrl);
+    // console.log(leadsUrl);
+    // console.log(formUrl);
+
+    const leadsId = '626379286857812'
+    const formId = '1354597932633979'
 
     try {
 
-        const leadsRes = await fetch(leadsUrl);
-        const leadsData = await leadsRes.json();
-        console.log(leadsData);
-
-        const formRes = await fetch(formUrl);
-        const formData = await formRes.json();
-        console.log(formData);
-
-        // const agent = new https.Agent({
-        //     keepAlive: true,
-        //     rejectUnauthorized: false // SSL 인증서 검증 비활성화 (테스트용)
-        // });
-
-        // const leadsRes = await axios.get(leadsUrl, {
-        //     headers: {
-        //         'User-Agent': 'Mozilla/5.0', // 필요하면 추가
-        //     }, httpsAgent: agent, timeout: 5000
-        // })
-        // console.log(leadsRes.data);
-
-        // const formRes = await axios.get(formUrl, {
-        //     headers: {
-        //         'User-Agent': 'Mozilla/5.0', // 필요하면 추가
-        //     }, httpsAgent: agent, timeout: 5000
-        // })
-        // console.log(formRes.data);
-
+        const fbDataRes = await axios.post(`https://happy-toad1.shop/api/v7/fbchk`, {
+            leadsId, formId
+        })
+        console.log(fbDataRes.status);
+        if (fbDataRes.status == 200) {
+            console.log(fbDataRes.data);
+        }
 
     } catch (error) {
         console.log(error.errors);
