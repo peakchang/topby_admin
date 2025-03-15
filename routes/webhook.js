@@ -222,7 +222,6 @@ webhookRouter.post('/', async (req, res) => {
             })
             console.log(fbDataRes.status);
             if (fbDataRes.status == 200) {
-                console.log(fbDataRes.data);
                 getLeadsData = fbDataRes.data.getLeadsData
                 getFormData = fbDataRes.data.getFormData
             } else {
@@ -231,7 +230,6 @@ webhookRouter.post('/', async (req, res) => {
 
         } catch (error) {
             console.log('에러남!! 재요청!!');
-            console.log(error.erros);
             return res.sendStatus(503);
         }
 
