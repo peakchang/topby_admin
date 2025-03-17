@@ -8,6 +8,8 @@
     import { back_api } from "$src/lib/const.js";
     import { user_info } from "$src/lib/store.js";
     import { invalidateAll } from "$app/navigation";
+    import * as XLSX from "xlsx";
+
     let { data } = $props();
 
     const timeString = "2024-12-30T22:20:34.000Z";
@@ -42,6 +44,9 @@
     let copyListStr = $state([]);
     let copyList = $state([]);
 
+    // DB 삭제 관련
+    let chkList = $state([]);
+
     $effect(() => {
         datas = data.datas;
         pages = data.pageArr;
@@ -52,6 +57,48 @@
 
         allPageCount = data.allPage;
     });
+
+    async function deleteRow() {
+        console.log(chkList);
+
+        if (!confirm("삭제한 데이터는 복구가 불가합니다. 삭제 하시겠습니까?")) {
+            return;
+        }
+        const res = await axios.post(`${back_api}/alldb/delete_list`, {
+            delete_list: chkList,
+        });
+        if (res.status === 200) {
+            invalidateAll();
+        }
+    }
+
+    function downloadExcel() {
+        console.log(datas);
+
+        const exData = datas.map((obj) => {
+            const setObj = {
+                "폼 네임": obj.af_form_name,
+                전화번호: obj.af_mb_phone,
+                이름: obj.af_mb_name,
+                상태: obj.af_mb_status,
+                유입시간: moment(obj.af_created_at).format(
+                    "YYYY-MM-DD hh:mm:ss",
+                ),
+            };
+            return setObj;
+        });
+
+        console.log(exData);
+
+        const nowDate = moment().format("YYYY-MM-DD");
+        // 워크북 생성
+        const worksheet = XLSX.utils.json_to_sheet(exData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+        // 파일 저장
+        XLSX.writeFile(workbook, `${nowDate} data.xlsx`);
+    }
 
     function searchFunc(e) {
         e.preventDefault();
@@ -80,8 +127,6 @@
         setParams(paramOption, true);
     }
 
-    function downloadExcel() {}
-
     async function openScheduleManageModal(load = false, id = 0) {
         if (load == true) {
             customer_id = id;
@@ -97,7 +142,6 @@
     }
 
     async function addMemo() {
-
         if (!add_memo_content) {
             alert("메모 내용을 입력하세요.");
             return;
@@ -112,7 +156,6 @@
             });
 
             if (res.status == 200) {
-
                 loadCustomerInfo(customer_id);
             }
         } catch (err) {
@@ -181,7 +224,6 @@
                 { customer_id },
             );
 
-
             if (res.status == 200) {
                 customerInfo = res.data.customer_info;
                 if (
@@ -203,7 +245,6 @@
                             created: createds[reverseIndex],
                         };
                     });
-
                 }
                 add_memo_content = "";
                 invalidateAll();
@@ -232,7 +273,6 @@
             // 요소들을 개행으로 연결
             .join("\n");
 
-
         copy_list_modal.showModal();
     }
 
@@ -250,7 +290,7 @@
                 invalidateAll();
             }
         } catch (error) {
-            alert('복사 실패! 다시 시도해주세요!')
+            alert("복사 실패! 다시 시도해주세요!");
         }
     }
 </script>
@@ -274,13 +314,12 @@
                 <!-- svelte-ignore event_directive_deprecated -->
                 <!-- svelte-ignore event_directive_deprecated -->
                 <button
-                class="btn btn-neutral btn-sm text-white"
-                on:click={copyAndUpdateNormal}
-            >
-                복사 및 업데이트 하기
-            </button>
+                    class="btn btn-neutral btn-sm text-white"
+                    on:click={copyAndUpdateNormal}
+                >
+                    복사 및 업데이트 하기
+                </button>
             </form>
-            
         </div>
     </div>
 </dialog>
@@ -321,9 +360,9 @@
                     <tr>
                         <th class="in-th bg-blue-100">접수시간</th>
                         <td class="in-td p-2">
-                            {moment.utc(customerInfo.af_created_at).format(
-                                "YY-MM-DD HH:mm:ss",
-                            )}
+                            {moment
+                                .utc(customerInfo.af_created_at)
+                                .format("YY-MM-DD HH:mm:ss")}
                         </td>
                     </tr>
                 </tbody>
@@ -458,6 +497,14 @@
 
             <button class="btn btn-neutral btn-sm"> 검색 </button>
 
+            <button
+                type="button"
+                class="btn btn-error btn-sm text-white"
+                on:click={deleteRow}
+            >
+                삭제
+            </button>
+
             {#if setSiteStatus}
                 <button
                     type="button"
@@ -480,6 +527,24 @@
 <table class="w-full">
     <thead>
         <tr class="text-center">
+            {#if $user_info["rate"] == "5"}
+                <th class="in-th w-10">
+                    <input
+                        type="checkbox"
+                        class="checkbox checkbox-sm checkbox-neutral bg-white"
+                        on:change={(e) => {
+                            console.log(e.target.checked);
+
+                            if (e.target.checked) {
+                                console.log(datas);
+                                chkList = datas.map((item) => item["af_id"]);
+                            } else {
+                                chkList = [];
+                            }
+                        }}
+                    />
+                </th>
+            {/if}
             <th class="in-th"> 접수번호 </th>
             <th class="in-th"> 고객명 </th>
             <th class="in-th"> 전화번호 </th>
@@ -492,6 +557,16 @@
     <tbody>
         {#each datas as data, idx}
             <tr class="text-center" style="background-color: {data.bg_color};">
+                {#if $user_info["rate"] == "5"}
+                    <td class="in-th">
+                        <input
+                            type="checkbox"
+                            class="checkbox checkbox-sm checkbox-neutral bg-white"
+                            value={data["af_id"]}
+                            bind:group={chkList}
+                        />
+                    </td>
+                {/if}
                 <td class="in-td p-2 w-[70px]">
                     {reverseIdxArr[idx]}
                 </td>

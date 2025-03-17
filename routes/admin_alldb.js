@@ -6,7 +6,26 @@ import moment from "moment-timezone";
 const adminAllDbRouter = express.Router();
 
 
+adminAllDbRouter.post('/delete_list', async (req, res) => {
+    const deleteList = req.body.delete_list;
+    console.log(deleteList);
 
+    for (let i = 0; i < deleteList.length; i++) {
+        const data = deleteList[i];
+        console.log(data);
+
+        try {
+            const deleteQuery = "DELETE FROM application_form WHERE af_id = ?";
+            await sql_con.promise().query(deleteQuery, [data]);
+        } catch (error) {
+            console.error(error.message);
+
+        }
+
+
+    }
+    res.json({})
+})
 
 adminAllDbRouter.post('/delete_memo', async (req, res) => {
     const getIdx = req.body.getIdx;
