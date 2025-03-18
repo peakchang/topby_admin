@@ -6,6 +6,28 @@ import moment from "moment-timezone";
 const adminAllDbRouter = express.Router();
 
 
+adminAllDbRouter.post('/load_ex_data', async (req, res) => {
+    const body = req.body;
+    let queryStr = ''
+
+    `
+    WITH ranked AS (
+    SELECT *, 
+           ROW_NUMBER() OVER (
+               PARTITION BY af_mb_name, af_mb_phone 
+          
+           ) AS rn
+    FROM application_form
+    WHERE af_created_at BETWEEN '2024-12-13 00:00:00' AND '2024-12-14 23:59:59'
+)
+SELECT * FROM ranked WHERE rn = 1 ORDER BY af_created_at DESC;
+`
+
+    
+
+    res.json({})
+})
+
 adminAllDbRouter.post('/delete_list', async (req, res) => {
     const deleteList = req.body.delete_list;
     console.log(deleteList);

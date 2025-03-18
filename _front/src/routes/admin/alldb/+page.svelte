@@ -72,32 +72,45 @@
         }
     }
 
-    function downloadExcel() {
-        console.log(datas);
+    async function downloadExcel() {
+        console.log(startDate);
+        console.log(endDate);
+        console.log(setSite);
+        console.log(setStatus);
 
-        const exData = datas.map((obj) => {
-            const setObj = {
-                "폼 네임": obj.af_form_name,
-                전화번호: obj.af_mb_phone,
-                이름: obj.af_mb_name,
-                상태: obj.af_mb_status,
-                유입시간: moment(obj.af_created_at).format(
-                    "YYYY-MM-DD hh:mm:ss",
-                ),
-            };
-            return setObj;
+        const res = await axios.post(`${back_api}/alldb/load_ex_data`, {
+            startDate,
+            endDate,
+            setSite,
+            setStatus,
         });
+        if (res.status === 200) {
+            invalidateAll();
+        }
 
-        console.log(exData);
+        // const exData = datas.map((obj) => {
+        //     const setObj = {
+        //         "폼 네임": obj.af_form_name,
+        //         전화번호: obj.af_mb_phone,
+        //         이름: obj.af_mb_name,
+        //         상태: obj.af_mb_status,
+        //         유입시간: moment(obj.af_created_at).format(
+        //             "YYYY-MM-DD hh:mm:ss",
+        //         ),
+        //     };
+        //     return setObj;
+        // });
 
-        const nowDate = moment().format("YYYY-MM-DD");
-        // 워크북 생성
-        const worksheet = XLSX.utils.json_to_sheet(exData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+        // console.log(exData);
 
-        // 파일 저장
-        XLSX.writeFile(workbook, `${nowDate} data.xlsx`);
+        // const nowDate = moment().format("YYYY-MM-DD");
+        // // 워크북 생성
+        // const worksheet = XLSX.utils.json_to_sheet(exData);
+        // const workbook = XLSX.utils.book_new();
+        // XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+        // // 파일 저장
+        // XLSX.writeFile(workbook, `${nowDate} data.xlsx`);
     }
 
     function searchFunc(e) {
