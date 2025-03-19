@@ -56,6 +56,16 @@
         status_list = data.statusArr;
 
         allPageCount = data.allPage;
+
+        console.log($page);
+
+        if ($page.url.searchParams.get("sd")) {
+            startDate = $page.url.searchParams.get("sd");
+        }
+
+        if ($page.url.searchParams.get("ed")) {
+            endDate = $page.url.searchParams.get("ed");
+        }
     });
 
     async function deleteRow() {
@@ -78,6 +88,8 @@
         console.log(setSite);
         console.log(setStatus);
 
+        let ex_data = [];
+
         const res = await axios.post(`${back_api}/alldb/load_ex_data`, {
             startDate,
             endDate,
@@ -85,32 +97,33 @@
             setStatus,
         });
         if (res.status === 200) {
-            invalidateAll();
+            ex_data = res.data.ex_data;
+            console.log(ex_data);
         }
 
-        // const exData = datas.map((obj) => {
-        //     const setObj = {
-        //         "폼 네임": obj.af_form_name,
-        //         전화번호: obj.af_mb_phone,
-        //         이름: obj.af_mb_name,
-        //         상태: obj.af_mb_status,
-        //         유입시간: moment(obj.af_created_at).format(
-        //             "YYYY-MM-DD hh:mm:ss",
-        //         ),
-        //     };
-        //     return setObj;
-        // });
+        const exData = ex_data.map((obj) => {
+            const setObj = {
+                "폼 네임": obj.af_form_name,
+                전화번호: obj.af_mb_phone,
+                이름: obj.af_mb_name,
+                상태: obj.af_mb_status,
+                유입시간: moment(obj.af_created_at).format(
+                    "YYYY-MM-DD hh:mm:ss",
+                ),
+            };
+            return setObj;
+        });
 
         // console.log(exData);
 
-        // const nowDate = moment().format("YYYY-MM-DD");
-        // // 워크북 생성
-        // const worksheet = XLSX.utils.json_to_sheet(exData);
-        // const workbook = XLSX.utils.book_new();
-        // XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+        const nowDate = moment().format("YYYY-MM-DD");
+        // 워크북 생성
+        const worksheet = XLSX.utils.json_to_sheet(exData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
 
-        // // 파일 저장
-        // XLSX.writeFile(workbook, `${nowDate} data.xlsx`);
+        // 파일 저장
+        XLSX.writeFile(workbook, `${nowDate} data.xlsx`);
     }
 
     function searchFunc(e) {

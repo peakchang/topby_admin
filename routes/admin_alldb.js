@@ -10,22 +10,44 @@ adminAllDbRouter.post('/load_ex_data', async (req, res) => {
     const body = req.body;
     let queryStr = ''
 
-    `
-    WITH ranked AS (
-    SELECT *, 
-           ROW_NUMBER() OVER (
-               PARTITION BY af_mb_name, af_mb_phone 
-          
-           ) AS rn
-    FROM application_form
-    WHERE af_created_at BETWEEN '2024-12-13 00:00:00' AND '2024-12-14 23:59:59'
-)
-SELECT * FROM ranked WHERE rn = 1 ORDER BY af_created_at DESC;
-`
+    const startData = `${body.startDate} 00:00:00`;
+    const endData = `${body.endDate} 23:59:59`;
 
+    let ex_data = [];
+
+    queryStr = `WHERE af_created_at BETWEEN '${startData}' AND '${endData}'`
+    if(body.setSite != 'base'){
+        queryStr += ` AND af_form_name = '${body.setSite}'`
+    }
+    if(body.setStatus!= 'base'){
+        queryStr += ` AND af_mb_status = '${body.setStatus}'`
+    }
+
+    try {
+        const loadDataQuery = `WITH ranked AS (
+            SELECT *, 
+            ROW_NUMBER() OVER (
+                PARTITION BY af_mb_name, af_mb_phone         
+            ) AS rn
+        FROM application_form
+        ${queryStr})
+        SELECT af_form_name, af_mb_name, af_mb_phone, af_mb_status, af_created_at FROM ranked WHERE rn = 1 ORDER BY af_created_at DESC;
+        `
+        const result = await sql_con.promise().query(loadDataQuery);
+
+        console.log(result);
+        
+        ex_data = result[0];
+        console.log(ex_data.length);
+        
+    } catch (error) {
+        
+    }
+    
     
 
-    res.json({})
+
+    res.json({ex_data})
 })
 
 adminAllDbRouter.post('/delete_list', async (req, res) => {
