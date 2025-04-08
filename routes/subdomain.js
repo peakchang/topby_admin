@@ -200,6 +200,7 @@ subdomainRouter.post('/img_upload', img_upload.single('onimg'), (req, res, next)
 })
 
 
+// ------------------------------------------ 시자악~
 
 subdomainRouter.post('/load_site_set', async (req, res, next) => {
     const body = req.body;
@@ -248,6 +249,24 @@ subdomainRouter.post('/delete_single_image_only', async (req, res, next) => {
     res.json({})
 })
 
+subdomainRouter.post('/delete_many_image', async (req, res, next) => {
+    const deleteImgArr = req.body.deleteImgArr;
+    deleteImgArr.forEach(delPath => {
+        try {
+            fs.unlink(delPath, (err) => {
+                console.log(err);
+            })
+        } catch (error) {
+            console.error(error);
+        }
+    });
+
+
+    res.json({})
+})
+
+
+// ------------------------------------------ 끄읕~~~
 
 subdomainRouter.post('/delete_single_image', async (req, res, next) => {
 
