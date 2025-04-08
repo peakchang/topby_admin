@@ -176,6 +176,10 @@ subdomainRouter.post('/upload_data', async (req, res, next) => {
     res.json({ status })
 })
 
+
+
+
+
 subdomainRouter.post('/img_upload', img_upload.single('onimg'), (req, res, next) => {
     let status = true;
     let baseUrl
@@ -194,6 +198,57 @@ subdomainRouter.post('/img_upload', img_upload.single('onimg'), (req, res, next)
 
     res.json({ status, baseUrl, saveUrl })
 })
+
+
+
+subdomainRouter.post('/load_site_set', async (req, res, next) => {
+    const body = req.body;
+    console.log(body);
+
+    let siteSetData = {}
+
+    try {
+        const loadSiteSetQuery = `SELECT ld_json_header,ld_json_main,ld_json_menus FROM land WHERE ld_domain = ?`;
+        const [loadSiteSet] = await sql_con.promise().query(loadSiteSetQuery, [body.getId]);
+        console.log(loadSiteSet);
+        siteSetData = loadSiteSet[0]
+
+    } catch (error) {
+
+    }
+    res.json({ siteSetData })
+})
+
+subdomainRouter.post('/update_site_set', async (req, res, next) => {
+    const body = req.body;
+    console.log(body);
+
+    try {
+        const updateSiteSetQuery = `UPDATE land SET ld_json_header = ?, ld_json_main = ?, ld_json_menus = ? WHERE ld_domain = ?`;
+        await sql_con.promise().query(updateSiteSetQuery, [body.ld_json_header, body.ld_json_main, body.ld_json_menus, body.get_id]);
+    } catch (error) {
+
+    }
+    res.json({})
+})
+
+
+subdomainRouter.post('/delete_single_image_only', async (req, res, next) => {
+
+    const delPath = req.body.deleteImagePath;
+    console.log(delPath);
+
+    try {
+        fs.unlink(delPath, (err) => {
+            console.log(err);
+        })
+    } catch (error) {
+        console.error(error);
+    }
+    res.json({})
+})
+
+
 subdomainRouter.post('/delete_single_image', async (req, res, next) => {
 
     const delPath = req.body.deleteImagePath;
@@ -219,7 +274,7 @@ subdomainRouter.post('/delete_img', async (req, res, next) => {
     const delPath = `subuploads/img/${body.getFolder}/${body.getImgName}`
     try {
         await fs.unlink(delPath, (err) => {
-            console.error(err.message);
+            console.error(err);
         })
     } catch (error) {
         status = false
