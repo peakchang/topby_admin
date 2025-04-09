@@ -31,4 +31,6 @@ ALTER TABLE land ADD COLUMN ld_json_main TEXT AFTER ld_ft_address;
 ALTER TABLE land ADD COLUMN ld_json_header TEXT AFTER ld_ft_address;
 
 ALTER TABLE land ADD COLUMN ld_personal_info_view VARCHAR(10) AFTER ld_json_menus;
+
+ALTER TABLE land ADD COLUMN ld_view_type VARCHAR(10) AFTER ld_personal_info_view;
 */
