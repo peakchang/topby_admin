@@ -13,6 +13,20 @@ const __dirname = dirname(__filename);
 
 const minisiteRouter = express.Router();
 
+// 여기 0409 추가한 부분!!!! 사이트 타입 조절!!!
+minisiteRouter.post('/update_site_type', async (req, res) => {
+    const body = req.body;
+    try {
+        const updateTypeQuery = "UPDATE land SET ld_view_type = ? WHERE ld_id = ?";
+        await sql_con.promise().query(updateTypeQuery, [body.ld_view_type, body.ld_id]);
+    } catch (error) {
+
+    }
+    res.json({})
+
+})
+// 끝!!!
+
 minisiteRouter.post('/add_sub_domain', async (req, res) => {
     const body = req.body;
 

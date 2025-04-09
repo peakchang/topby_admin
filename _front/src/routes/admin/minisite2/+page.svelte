@@ -19,6 +19,8 @@
     let addSubDomainVal = $state("");
     let addSubDomainBool = $state(true);
 
+    //
+
     async function searchSiteList() {
         try {
             const res = await axios.post(
@@ -51,8 +53,8 @@
     }
 
     async function addSubDomain() {
-        addSubDomainVal = addSubDomainVal.replace(/\s/g, '');
-        
+        addSubDomainVal = addSubDomainVal.replace(/\s/g, "");
+
         try {
             const res = await axios.post(
                 `${back_api}/minisite/add_sub_domain`,
@@ -66,10 +68,35 @@
             }
         } catch (error) {}
     }
+
+    async function changeTypeFunc() {
+        const idx = this.value;
+        const ld_view_type = mDatas[idx]["ld_view_type"];
+        const ld_id = mDatas[idx]["ld_id"];
+        if (!ld_view_type) {
+            alert("타입을 선택해주세요~");
+            return;
+        }
+
+        try {
+            const res = await axios.post(
+                `${back_api}/minisite/update_site_type`,
+                {
+                    ld_view_type,
+                    ld_id,
+                },
+            );
+            if (res.status == 200) {
+                invalidateAll();
+                alert("업데이트 완료!");
+            }
+        } catch (error) {}
+    }
 </script>
 
 <div>
     <div class="mb-2">
+        <!-- svelte-ignore event_directive_deprecated -->
         <button
             class="btn btn-success btn-sm text-white"
             on:click={() => {
@@ -84,6 +111,7 @@
         class:hidden={addSubDomainBool}
     >
         <input type="text" class="input-base" bind:value={addSubDomainVal} />
+        <!-- svelte-ignore event_directive_deprecated -->
         <button class="btn btn-info btn-sm text-white" on:click={addSubDomain}>
             도메인 추가
         </button>
@@ -105,6 +133,12 @@
                 <th class="in-th text-xs md:text-sm">사이트 이름</th>
                 <th class="in-th text-xs md:text-sm">서브도메인</th>
                 <th class="in-th text-xs md:text-sm">관리</th>
+                <th class="in-th text-xs md:text-sm">
+                    타입
+                    <span class=" font-normal text-xs">
+                        (없으면 자동으로 옛날거)
+                    </span>
+                </th>
                 <th class="in-th text-xs md:text-sm">현장</th>
                 <th class="in-th text-xs md:text-sm">조회수</th>
                 <th class="in-th text-xs md:text-sm">콜카운트</th>
@@ -148,14 +182,56 @@
                                 <span>방문자수</span>
                             </a>
 
-                            <a
-                                href={`https://${mDatas[idx]["ld_domain"]}.adpeak.kr/setting`}
-                                class="btn btn-success btn-xs text-white"
-                                target="_blank"
+                            {#if mDatas[idx]["ld_view_type"] == "old"}
+                                <a
+                                    href={`https://${mDatas[idx]["ld_domain"]}.adpeak.kr/setting`}
+                                    class="btn btn-success btn-xs text-white"
+                                    target="_blank"
+                                >
+                                    <i class="fa fa-cog" aria-hidden="true"></i>
+                                    <span>관리</span>
+                                </a>
+                            {:else}
+                                <a
+                                    href={`https://${mDatas[idx]["ld_domain"]}.adpeak.kr/site_set`}
+                                    class="btn btn-success btn-xs text-white"
+                                    target="_blank"
+                                >
+                                    <i class="fa fa-cog" aria-hidden="true"></i>
+                                    <span>관리</span>
+                                </a>
+                            {/if}
+                        </div>
+                    </td>
+                    <td class="in-td text-center">
+                        <div class="p-2 flex items-center gap-2 justify-center">
+                            <label class="flex items-center gap-1.5">
+                                <input
+                                    type="radio"
+                                    value="old"
+                                    class="radio radio-secondary radio-xs"
+                                    bind:group={mDatas[idx]["ld_view_type"]}
+                                />
+                                <span>옛날거</span>
+                            </label>
+
+                            <label class="flex items-center gap-1.5">
+                                <input
+                                    type="radio"
+                                    value="new"
+                                    class="radio radio-secondary radio-xs"
+                                    bind:group={mDatas[idx]["ld_view_type"]}
+                                />
+                                <span>새거</span>
+                            </label>
+                            <!-- svelte-ignore event_directive_deprecated -->
+                            <button
+                                class="btn btn-secondary btn-xs"
+                                value={idx}
+                                on:click={changeTypeFunc}
                             >
-                                <i class="fa fa-cog" aria-hidden="true"></i>
-                                <span>관리</span>
-                            </a>
+                                변경
+                            </button>
                         </div>
                     </td>
                     <td class="in-td text-center">
@@ -202,6 +278,7 @@
                                     class="input-base"
                                     bind:value={filterKeyword}
                                 />
+                                <!-- svelte-ignore event_directive_deprecated -->
                                 <button
                                     class="btn btn-outline btn-info btn-xs h-8"
                                     value={mDatas[idx]["ld_id"]}
@@ -225,6 +302,7 @@
                                         </option>
                                     {/each}
                                 </select>
+                                <!-- svelte-ignore event_directive_deprecated -->
                                 <button
                                     class="btn btn-outline btn-info btn-xs h-8"
                                     value={mDatas[idx]["ld_id"]}
