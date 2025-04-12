@@ -223,16 +223,18 @@ subdomainRouter.post('/load_site_set', async (req, res, next) => {
 
 subdomainRouter.post('/update_site_set', async (req, res, next) => {
     console.log('들어와써?!?!');
-    
+
     const body = req.body;
     console.log(body);
-
     try {
-        const updateSiteSetQuery = `UPDATE land SET ld_json_header = ?, ld_json_main = ?, ld_json_menus = ?, ld_popup_img = ?, ld_event_img = ?, ld_phone_num = ?, ld_sms_num = ?, ld_sms_content = ?, ld_personal_info_view = ?, ld_footer = ?, ld_name = ?, ld_mobile_bt_phone_img = ?, ld_mobile_bt_event_img = ? WHERE ld_domain = ?`;
-        await sql_con.promise().query(updateSiteSetQuery, [body.ld_json_header, body.ld_json_main, body.ld_json_menus, body.popupImg, body.eventImg, body.phoneNumber, body.smsNumber, body.smsContent, body.personalInfoView, body.footer, body.siteName, body.phoneBottomImg, body.eventBottomImg, body.get_id]);
+        const queryData = getQueryStr(body.uploadDataObj, 'update')
+        console.log(queryData);
+        const updateSiteSetQuery = `UPDATE land SET ${queryData.str} WHERE ld_domain = ?`
+        queryData.values.push(body.get_id)
+        await sql_con.promise().query(updateSiteSetQuery, queryData.values);
+
     } catch (error) {
         console.error(error.message);
-
     }
     res.json({})
 })
