@@ -230,6 +230,9 @@ subdomainRouter.post('/update_site_set', async (req, res, next) => {
         const queryData = getQueryStr(body.uploadDataObj, 'update')
         console.log(queryData);
         const updateSiteSetQuery = `UPDATE land SET ${queryData.str} WHERE ld_domain = ?`
+
+        console.log(updateSiteSetQuery);
+        
         queryData.values.push(body.get_id)
         await sql_con.promise().query(updateSiteSetQuery, queryData.values);
 
