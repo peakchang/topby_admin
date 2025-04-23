@@ -38,7 +38,7 @@
     $effect(() => {
 
         console.log($user_info);
-        if($user_info.rate != "5"){
+        if(!$user_info.rate){
             goto('/')
         }
         
