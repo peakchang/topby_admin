@@ -38,17 +38,25 @@ userManageRouter.post('/update_user_site_list', async (req, res) => {
 
 userManageRouter.post('/update_user_info', async (req, res) => {
 
+    console.log('들어오는지 췍췍!!!');
+    
     const userInfo = req.body.user_info;
+    const type = req.body.type
     const userId = userInfo.id;
+    console.log(userInfo.work_type);
+    
+    
     delete userInfo.id;
     let hashedPassword = ""
     userInfo.created_at = moment(userInfo.created_at).format('YYYY-MM-DD HH:mm:ss');
-    if (userInfo.type == 'password') {
-        hashedPassword = await bcrypt.hash(password, 10);
+    if (type == 'password') {
+        hashedPassword = await bcrypt.hash(userInfo.password, 10);
         userInfo.password = hashedPassword;
     } else {
         delete userInfo.password;
     }
+
+    console.log(userInfo);
 
     try {
         const queryStr = getQueryStr(userInfo, 'update');
