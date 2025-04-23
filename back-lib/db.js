@@ -41,5 +41,8 @@ ALTER TABLE land ADD COLUMN ld_card_image TEXT AFTER ld_main_img;
 
 
 ALTER TABLE land ADD COLUMN ld_invite_message TEXT AFTER ld_db_input_subject;
+ALTER TABLE land MODIFY COLUMN ld_db_input_subject VARCHAR(100);
+
+ALTER TABLE land ADD COLUMN ld_invite_image VARCHAR(250) AFTER ld_card_image;
  
 */

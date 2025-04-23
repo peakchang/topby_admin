@@ -16,6 +16,9 @@ export const load = async ({ params, url, data }) => {
         }
     })
 
+    console.log(manager_id);
+    
+
 
 
 

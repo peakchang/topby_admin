@@ -7,7 +7,7 @@
     import { backIn } from "svelte/easing";
     import { back_api } from "$src/lib/const.js";
     import { user_info } from "$src/lib/store.js";
-    import { invalidateAll } from "$app/navigation";
+    import { goto, invalidateAll } from "$app/navigation";
     let { data } = $props();
 
     let datas = $state([]);
@@ -36,6 +36,12 @@
     let add_memo_content = $state("");
 
     $effect(() => {
+
+        console.log($user_info);
+        if($user_info.rate != "5"){
+            goto('/')
+        }
+        
         datas = data.datas;
         pages = data.pageArr;
         nowPage = $page.url.searchParams.get("page") || 1;
