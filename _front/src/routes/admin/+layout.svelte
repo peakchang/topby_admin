@@ -82,6 +82,15 @@
             </div>
         </a>
 
+        <a data-sveltekit-preload-data="tap" href="/admin/minisite_one">
+            <div class="p-2 hover:bg-gray-100 rounded-md mb-1 text-sm">
+                <span class="mr-1">
+                    <i class="fa fa-home" aria-hidden="true"></i>
+                </span>
+                <span> 미니사이트 원 </span>
+            </div>
+        </a>
+
         <a data-sveltekit-preload-data="tap" href="/admin/minisite1">
             <div class="p-2 hover:bg-gray-100 rounded-md mb-1 text-sm">
                 <span class="mr-1">

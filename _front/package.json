@@ -49,6 +49,7 @@
 		"lodash": "^4.17.21",
 		"mysql2": "^3.11.4",
 		"sortablejs": "^1.15.3",
+		"svelte-dnd-action": "^0.9.61",
 		"swiper": "^11.1.15",
 		"xlsx": "^0.18.5"
 	}

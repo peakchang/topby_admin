@@ -21,7 +21,7 @@
     let imgArr = $state([]);
     if (imgModifyList.length > 0) {
         console.log(imgModifyList);
-
+        
         imgArr = imgModifyList;
     }
 
@@ -47,10 +47,6 @@
         const getFolder = getImgSplit[getImgSplit.length - 2];
         const getImgName = getImgSplit[getImgSplit.length - 1];
 
-        console.log(getFolder);
-        console.log(getImgName);
-
-        console.log(getImgName);
         try {
             const res = await axios.post(`${back_api}/delete_sort_img`, {
                 getImgName,
@@ -262,13 +258,11 @@
 
     function imageDragOver(e) {
         e.preventDefault();
-        console.log("drag over?!?!??!");
     }
 
     async function imageDrop(e) {
         e.preventDefault();
         const files = e.dataTransfer.files;
-        console.log(files);
 
         const options = {
             maxSizeMB: 1, // 최대 파일 크기 (MB)
@@ -278,8 +272,6 @@
 
         for await (const file of files) {
             const compressedFile = await imageCompression(file, options);
-            // console.log("Compressed file:", compressedFile);
-            // console.log(compressedFile.name);
             let imgForm = new FormData();
 
             const timestamp = new Date().getTime();
@@ -324,7 +316,6 @@
 
     async function uploadImageInput(e) {
         const files = e.target.files;
-        console.log(files);
         const options = {
             maxSizeMB: 1, // 최대 파일 크기 (MB)
             maxWidthOrHeight: 1024, // 최대 너비 또는 높이

@@ -1,4 +1,4 @@
-import mysql, {} from "mysql2"
+import mysql, { } from "mysql2"
 import dotenv from "dotenv"
 dotenv.config();
 
@@ -35,4 +35,31 @@ ALTER TABLE land ADD COLUMN ld_personal_info_view VARCHAR(10) AFTER ld_json_menu
 ALTER TABLE land ADD COLUMN ld_view_type VARCHAR(10) AFTER ld_personal_info_view;
 
 ALTER TABLE land ADD COLUMN ld_db_input_subject VARCHAR(10) AFTER ld_add_scripts;
+
+
+CREATE TABLE IF NOT EXISTS hy_site_one(
+    hy_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    hy_page_id VARCHAR(100) UNIQUE,
+    hy_site VARCHAR(100),
+    hy_title VARCHAR(100),
+    hy_description VARCHAR(255),
+    hy_add_script TEXT,
+    hy_main_image VARCHAR(255),
+    hy_image_list TEXT,
+    hy_form_img VARCHAR(255),
+    hy_form_ment VARCHAR(255),
+    hy_form_btn_img VARCHAR(255),
+    hy_card_image VARCHAR(255),
+    hy_callnumber VARCHAR(50),
+    hy_sms VARCHAR(50),
+    hy_sms_content VARCHAR(255),
+    hy_ft_phone_img VARCHAR(255),
+    hy_ft_sms_img VARCHAR(255),
+    hy_counter INT NOT NULL DEFAULT 0,
+    hy_call_count INT NOT NULL DEFAULT 0,
+    hy_sms_count INT NOT NULL DEFAULT 0,
+    hy_footer VARCHAR(255),
+    hy_creted_at DATETIME 
+);
+
 */
