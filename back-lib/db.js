@@ -25,7 +25,6 @@ ld_event_img
 
 ALTER TABLE land ADD COLUMN ld_sms_content VARCHAR(255) AFTER ld_sms_clickcount;
 
-
 ALTER TABLE land ADD COLUMN ld_json_menus TEXT AFTER ld_ft_address;
 ALTER TABLE land ADD COLUMN ld_json_main TEXT AFTER ld_ft_address;
 ALTER TABLE land ADD COLUMN ld_json_header TEXT AFTER ld_ft_address;
@@ -37,6 +36,16 @@ ALTER TABLE land ADD COLUMN ld_view_type VARCHAR(10) AFTER ld_personal_info_view
 ALTER TABLE land ADD COLUMN ld_db_input_subject VARCHAR(10) AFTER ld_add_scripts;
 
 
+ALTER TABLE land ADD COLUMN ld_card_image TEXT AFTER ld_main_img;
+
+ALTER TABLE land ADD COLUMN ld_card_image TEXT AFTER ld_main_img;
+
+
+ALTER TABLE land ADD COLUMN ld_invite_message TEXT AFTER ld_db_input_subject;
+ALTER TABLE land MODIFY COLUMN ld_db_input_subject VARCHAR(100);
+
+ALTER TABLE land ADD COLUMN ld_invite_image VARCHAR(250) AFTER ld_card_image;
+ 
 CREATE TABLE IF NOT EXISTS hy_site_one(
     hy_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     hy_page_id VARCHAR(100) UNIQUE,

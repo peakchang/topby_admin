@@ -82,9 +82,9 @@
 
     async function updateUserInfo() {
         const getIdx = this.value;
-        const type = this.getAttribute("data-type");
-
+        let type = this.getAttribute("data-type");
         if (type == "password") {
+            
             if (
                 isHashedPassword(users[getIdx]["password"]) ||
                 !users[getIdx]["password"]
@@ -93,11 +93,10 @@
                 return;
             }
         }
-
         try {
             const res = await axios.post(
                 `${back_api}/usermanage/update_user_info`,
-                { user_info: users[getIdx], type },
+                { type, user_info: users[getIdx] },
             );
             if (res.status == 200) {
                 alert("업데이트가 완료 되었습니다.");
