@@ -24,7 +24,7 @@ apiRouter.get('/', (req, res) => {
 apiRouter.post('/delete_sort_img', async (req, res, next) => {
 
     const body = req.body;
-    const delPath = `public/uploads/image/${body.getFolder}/${body.getImgName}`
+    const delPath = `public/uploads/image/${body.delFolder}/${body.delFile}`
 
     try {
         await fs.unlink(delPath, (err) => {
@@ -58,7 +58,7 @@ apiRouter.post('/upload_sort_img', img_upload.single('onimg'), (req, res, next) 
         const origin = req.get('host');
         // baseUrl = req.protocol + '://' + origin + '/img/' + folderName + '/' + req.file.filename;
         baseUrl = '/img/' + folderName + '/' + req.file.filename;
-        
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: err });
@@ -71,7 +71,7 @@ apiRouter.post('/upload_sort_img', img_upload.single('onimg'), (req, res, next) 
 
 
 apiRouter.post('/err_ip_chk', async (req, res, next) => {
-    
+
     const get_ip = req.body.ip;
     console.log(get_ip);
     res.json({})

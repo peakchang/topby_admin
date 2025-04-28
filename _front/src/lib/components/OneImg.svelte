@@ -8,19 +8,21 @@
         updateImg,
         imgFolder = "",
         imageLink = "",
+        btnSize = "",
+        value = "",
         btnLocation = "center",
     } = $props();
 
-    console.log(imageLink);
+    let imageOrigin = import.meta.env.VITE_SERVER_URL
+        ? import.meta.env.VITE_SERVER_URL
+        : $page.url.origin;
 
-    let imageOrigin = import.meta.env.VITE_SERVER_URL ? import.meta.env.VITE_SERVER_URL : $page.url.origin;
-    console.log(imageOrigin);
 
     // 이미지를 선택하면 사이즈 변경 (최대 1200px) 및 webp 변경 후 업로드
     const onFileSelected = (e) => {
         const input = document.createElement("input");
         input.setAttribute("type", "file");
-        input.setAttribute("accept", ".png,.jpg,.jpeg");
+        input.setAttribute("accept", ".png,.jpg,.jpeg,.webp");
         input.click();
 
         // input change
@@ -37,8 +39,8 @@
                     imageFile,
                     options,
                 );
-                console.log("Compressed file:", compressedFile);
-                console.log(compressedFile.name);
+                // console.log("Compressed file:", compressedFile);
+                // console.log(compressedFile.name);
 
                 let imgForm = new FormData();
 
@@ -62,7 +64,7 @@
                     );
                     if (res.status == 200) {
                         imageLink = res.data.baseUrl;
-                        updateImg(res.data.baseUrl);
+                        updateImg({ baseUrl: res.data.baseUrl, value });
                     }
                 } catch (error) {
                     console.error("Error during image upload:", error.message);
@@ -80,8 +82,6 @@
         const getImgSplit = imageLink.split("/");
         const getFolder = getImgSplit[getImgSplit.length - 2];
         const getImgName = getImgSplit[getImgSplit.length - 1];
-
-        console.log(getImgName);
         try {
             const res = await axios.post(`${back_api}/delete_sort_img`, {
                 getImgName,
@@ -117,7 +117,9 @@
 >
     {#if imageLink}
         <button
-            class="btn btn-error min-h-8 h-8 text-white mt-3"
+            class="btn btn-error text-white mt-3"
+            class:btn-sm={btnSize == "sm"}
+            class:btn-xs={btnSize == "xs"}
             on:click={deleteImg}
         >
             <i class="fa fa-trash" aria-hidden="true"></i>
@@ -125,7 +127,9 @@
         </button>
     {:else}
         <button
-            class="btn btn-info min-h-8 h-8 text-white mt-3"
+            class="btn btn-info text-white mt-3"
+            class:btn-sm={btnSize == "sm"}
+            class:btn-xs={btnSize == "xs"}
             on:click={onFileSelected}
         >
             <i class="fa fa-upload" aria-hidden="true"></i>

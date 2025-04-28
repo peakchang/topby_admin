@@ -11,7 +11,7 @@ export const load = async ({ params, url, data }) => {
     let minisiteData = [];
     let allPageCount = 0;
     try {
-        const res = await axios.post(`${back_api}/minisite/load_minisite`, { nowPage, search })
+        const res = await axios.post(`${back_api}/minisite/load_minisite_one`, { nowPage, search })
         if (res.status == 200) {
             minisiteData = res.data.minisiteData;
             allPageCount = res.data.allPage;

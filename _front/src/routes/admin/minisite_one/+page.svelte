@@ -22,8 +22,11 @@
     let searchVal = $state("");
 
     // 현장 추가 변수
-    let hy_num = $state("");
-    let hy_site_name = $state("");
+    let hy_page_id = $state("");
+    let hy_title = $state("");
+    let hy_site = $state("");
+    let searchSite = $state("");
+    let siteList = $state([]);
 
     // 수정 / 삭제 / 복사 체크 리스트
     let checkedList = $state([]);
@@ -54,23 +57,29 @@
     }
 
     async function addHySite() {
-        if (!hy_num || !hy_site_name) {
+        if (!hy_page_id || !hy_title || !hy_site) {
             alert("모든 값을 입력하세요.");
             return;
         }
+
         try {
-            const res = await axios.post(`${back_api}/minisite/add_hy_site`, {
-                hy_num,
-                hy_site_name,
-            });
+            const res = await axios.post(
+                `${back_api}/minisite/add_hy_site_one`,
+                {
+                    hy_page_id,
+                    hy_title,
+                    hy_site,
+                },
+            );
             if (res.status == 200) {
                 if (res.data.err_message) {
                     alert("아이디 값이 중복됩니다.");
                     return;
                 }
                 alert("현장 추가가 완료 되었습니다.");
-                hy_num = "";
-                hy_site_name = "";
+                hy_page_id = "";
+                hy_title = "";
+                hy_site = "";
                 invalidateAll();
             } else {
             }
@@ -194,15 +203,53 @@
     <div class="modal-box">
         <div class="mb-3">
             고유번호(아이디)를 입력하세요
-            <input type="text" class="input-base" bind:value={hy_num} />
+            <input type="text" class="input-base" bind:value={hy_page_id} />
         </div>
         <div class="mb-3">
             현장명을 입력하세요
-            <input type="text" class="input-base" bind:value={hy_site_name} />
+            <input type="text" class="input-base" bind:value={hy_title} />
+        </div>
+
+        <div>
+            연결한 현장을 선택하세요 (DB 입력시 필요)
+
+            <div class="flex gap-2 mb-3">
+                <input
+                    type="text"
+                    class="w-full py-1.5 px-2 border border-gray-300 bg-gray-100 focus:outline-none focus:bg-white focus:border-blue-500 rounded-md"
+                    placeholder="현장 1차 검색, 필요할시에만"
+                    bind:value={searchSite}
+                />
+                <!-- svelte-ignore event_directive_deprecated -->
+                <button
+                    class="btn btn-xs md:btn-sm btn-success text-white"
+                    on:click={async () => {
+                        try {
+                            const res = await axios.post(
+                                `${back_api}/minisite/get_site_list`,
+                                { search_site: searchSite },
+                            );
+                            if (res.status == 200) {
+                                siteList = res.data.site_list;
+                                console.log(siteList);
+                            }
+                        } catch (error) {}
+                    }}
+                >
+                    검색
+                </button>
+            </div>
+
+            <select class="input-base" bind:value={hy_site}>
+                {#each siteList as site}
+                    <option value={site.sl_id}>{site.sl_site_name}</option>
+                {/each}
+            </select>
         </div>
         <div class="modal-action">
             <form method="dialog">
                 <!-- if there is a button in form, it will close the modal -->
+                <!-- svelte-ignore event_directive_deprecated -->
                 <button class="btn" on:click={addHySite}>적용</button>
             </form>
         </div>
@@ -222,20 +269,33 @@
             </button>
         </div>
         <div class="flex justify-center items-center gap-2">
+            <!-- svelte-ignore event_directive_deprecated -->
             <button
                 class="btn btn-xs md:btn-sm btn-success"
-                on:click={() => {
+                on:click={async () => {
+                    try {
+                        const res = await axios.post(
+                            `${back_api}/minisite/get_site_list`,
+                        );
+                        if (res.status == 200) {
+                            siteList = res.data.site_list;
+                            console.log(siteList);
+                        }
+                    } catch (error) {}
                     add_hy_modal.showModal();
                 }}
             >
                 현장추가
             </button>
+            <!-- svelte-ignore event_directive_deprecated -->
             <button class="btn btn-xs md:btn-sm btn-info" on:click={updateRaw}>
                 수정
             </button>
+            <!-- svelte-ignore event_directive_deprecated -->
             <button class="btn btn-xs md:btn-sm btn-error" on:click={deleteRaw}>
                 삭제
             </button>
+            <!-- svelte-ignore event_directive_deprecated -->
             <button
                 class="btn btn-xs md:btn-sm btn-warning"
                 on:click={() => {
@@ -252,6 +312,7 @@
                     placeholder="아이디값을 입력하세요"
                     bind:value={copyId}
                 />
+                <!-- svelte-ignore event_directive_deprecated -->
                 <button
                     class="btn btn-xs md:btn-sm btn-success text-white"
                     on:click={copyHyData}
@@ -266,6 +327,7 @@
             <tr>
                 <th class="in-th w-14">
                     <div class="flex justify-center items-center">
+                        <!-- svelte-ignore event_directive_deprecated -->
                         <input
                             type="checkbox"
                             class="checkbox checkbox-xs md:checkbox-sm"
@@ -285,6 +347,7 @@
                 <tr>
                     <td class="in-td py-3">
                         <div class="flex justify-center items-center">
+                            <!-- svelte-ignore event_directive_deprecated -->
                             <input
                                 type="checkbox"
                                 value={idx}
@@ -305,7 +368,7 @@
                         <input
                             type="text"
                             class="input-base"
-                            bind:value={minisiteData[idx].hy_num}
+                            bind:value={minisiteData[idx].hy_page_id}
                         />
                     </td>
                     <td class="in-td">
@@ -334,7 +397,7 @@
                     </td>
                     <td class="in-td">
                         <a
-                            href="/side/{minisiteData[idx].hy_num}"
+                            href="/siteview/{minisiteData[idx].hy_page_id}"
                             target="_blank"
                         >
                             <button
@@ -353,6 +416,7 @@
 
 <div class="flex justify-center items-center my-5 gap-1">
     <!-- svelte-ignore a11y_consider_explicit_label -->
+    <!-- svelte-ignore event_directive_deprecated -->
     <button
         class="page-btn w-8 h-8 text-sm border rounded-md"
         value="first_page"
@@ -361,6 +425,7 @@
         <i class="fa fa-angle-double-left" aria-hidden="true"></i>
     </button>
     <!-- svelte-ignore a11y_consider_explicit_label -->
+    <!-- svelte-ignore event_directive_deprecated -->
     <button
         class="page-btn w-8 h-8 text-sm border rounded-md"
         value="prev"
@@ -387,6 +452,7 @@
         {/if}
     {/each}
     <!-- svelte-ignore a11y_consider_explicit_label -->
+    <!-- svelte-ignore event_directive_deprecated -->
     <button
         class="page-btn w-8 h-8 text-sm border rounded-md"
         value="next"
@@ -395,6 +461,7 @@
         <i class="fa fa-angle-right" aria-hidden="true"></i>
     </button>
     <!-- svelte-ignore a11y_consider_explicit_label -->
+    <!-- svelte-ignore event_directive_deprecated -->
     <button
         class="page-btn w-8 h-8 text-sm border rounded-md"
         value="last_page"

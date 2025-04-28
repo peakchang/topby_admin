@@ -6,17 +6,15 @@
     import { page } from "$app/stores";
 
     let {
+        updateImg,
         imgModifyList = [],
         maxImgCount = 999999,
         detailShow = true,
-        imgFolder,
+        imgFolder = "test",
+        btnLocation = "center",
     } = $props();
 
-    let imgArr = $state([
-        { id: 1, href: "/testimg/1.jpg" },
-        { id: 2, href: "/testimg/2.jpg" },
-        { id: 3, href: "/testimg/3.jpg" },
-    ]);
+    let imgArr = $state([]);
 
     let imageOrigin = import.meta.env.VITE_SERVER_URL
         ? import.meta.env.VITE_SERVER_URL
@@ -25,9 +23,16 @@
     let sortable = $state(null);
     let setDetailImgCount = $state(0);
 
-    imgFolder = "test";
-
     console.log(imgModifyList);
+    if (imgModifyList && imgModifyList.length > 0) {
+        const tempImgArr = [];
+        for (let i = 0; i < imgModifyList.length; i++) {
+            const con = imgModifyList[i];
+            const imgObj = { id: i + 1, href: con };
+            tempImgArr.push(imgObj);
+        }
+        imgArr = tempImgArr;
+    }
 
     function addVal(getHerf) {
         const newId =
@@ -39,10 +44,6 @@
             href: getHerf, // 새로운 text 값
         };
         imgArr = [...imgArr, newObj];
-    }
-
-    function updateImg() {
-        console.log(imgArr);
     }
 
     async function deleteImg() {
@@ -77,7 +78,7 @@
 
         const input = document.createElement("input");
         input.setAttribute("type", "file");
-        input.setAttribute("accept", ".png,.jpg,.jpeg");
+        input.setAttribute("accept", ".png,.jpg,.jpeg,.webp");
         input.click();
 
         // input change
@@ -140,6 +141,7 @@
                 console.log(res);
 
                 if (res.status == 200) {
+                    console.log("여기는 일단 들어 오는거지?!?!?!?");
                     addVal(res.data.baseUrl);
                     setDetailImgCount = imgArr.length - 1;
                     updateImg(imgArr);
@@ -162,6 +164,7 @@
             console.log(evt);
 
             imgArr = reorder(imgArr, evt);
+            console.log(imgArr);
 
             updateImg(imgArr);
         },
@@ -208,10 +211,6 @@
     //     const liElement = event.currentTarget;
     //     setDetailImgCount = Number(liElement.getAttribute("data-idx"));
     // }
-
-    function gogofunc() {
-        console.log(back_api);
-    }
 </script>
 
 <div class="hidden opacity-0"></div>
@@ -243,12 +242,12 @@
 </ul>
 
 <!-- svelte-ignore event_directive_deprecated -->
-<button
-    class="btn btn-info btn-sm text-white pretendard"
-    type="button"
-    on:click={onFileSelected}
->
-    이미지 추가하기
-</button>
-
-<button on:click={gogofunc}> gogo </button>
+<div class:text-center={btnLocation == "center"}>
+    <button
+        class="btn btn-info btn-sm text-white pretendard"
+        type="button"
+        on:click={onFileSelected}
+    >
+        이미지 추가하기
+    </button>
+</div>

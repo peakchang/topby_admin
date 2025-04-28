@@ -45,6 +45,7 @@ minisiteRouter.post('/add_sub_domain', async (req, res) => {
 minisiteRouter.post('/add_hy_site', async (req, res) => {
     const hy_num = req.body.hy_num;
     const hy_site_name = req.body.hy_site_name;
+
     const now = moment().format('YYYY-MM-DD HH:mm:ss');
     let err_message = "";
     try {
@@ -282,6 +283,143 @@ minisiteRouter.post('/load_minisite', async (req, res) => {
 
     res.json({ minisiteData, allPage })
 })
+
+
+
+
+// 미니사이트 ONE 단일 페이지!!!!!!!!!!!!!!!!!
+
+
+minisiteRouter.post('/load_minisite_one', async (req, res) => {
+
+    let minisiteData = [];
+    let allCount = 0;
+    let allPage = 0;
+    let onePageCount = 10;
+    const nowPage = req.body.nowPage || 1;
+    const search = req.body.search || "";
+    let searchStr = "";
+    if (search) {
+        searchStr = `WHERE hy_title LIKE '%${search}%'`;
+    }
+
+    try {
+        const getMinisite1CountQuery = `SELECT count(*) AS m1Count FROM hy_site_one ${searchStr}`;
+
+        const [countRows] = await sql_con.promise().query(getMinisite1CountQuery);
+        allCount = countRows[0].m1Count;
+        allPage = Math.ceil(allCount / onePageCount);
+        const startCount = (nowPage - 1) * onePageCount;
+
+
+        const getMinisite1Query = `SELECT hy_id,hy_page_id,hy_title,hy_counter FROM hy_site_one ${searchStr} ORDER BY hy_id DESC LIMIT ${startCount}, ${onePageCount}`;
+        const [miniSiteRows] = await sql_con.promise().query(getMinisite1Query);
+        minisiteData = miniSiteRows;
+    } catch (err) {
+        console.error(err.message);
+    }
+
+    res.json({ minisiteData, allPage })
+})
+
+
+
+// 현장 추가 (뒤에 주소 추가하기)
+minisiteRouter.post('/add_hy_site_one', async (req, res) => {
+    const hy_page_id = req.body.hy_page_id;
+    const hy_title = req.body.hy_title;
+    const hy_site = req.body.hy_site
+    const now = moment().format('YYYY-MM-DD HH:mm:ss');
+
+    console.log(hy_page_id);
+    console.log(hy_title);
+    console.log(hy_site);
+    console.log(now);
+    
+    let err_message = "";
+    try {
+        const addHySiteQuery = `INSERT INTO hy_site_one (hy_page_id, hy_title, hy_site, hy_creted_at) VALUES (?,?,?,?)`;
+        await sql_con.promise().query(addHySiteQuery, [hy_page_id, hy_title, hy_site, now]);
+    } catch (err) {
+        err_message = err.message;
+        console.error(err_message);
+    }
+
+    res.json({ err_message })
+})
+
+
+minisiteRouter.post('/get_site_list', async (req, res) => {
+    console.log('일단 들어오니?!?!?!');
+    let site_list = [];
+    const searchSite = req.body.search_site
+    let addQuery = ""
+    if (searchSite) {
+        addQuery = `WHERE sl_site_name LIKE '%${searchSite}%'`
+    }
+    try {
+        const getSiteListQuery = `SELECT sl_id,sl_site_name FROM site_list ${addQuery} ORDER BY sl_id DESC`;
+        [site_list] = await sql_con.promise().query(getSiteListQuery);
+
+    } catch (error) {
+
+    }
+
+    res.json({ site_list })
+})
+
+
+minisiteRouter.post('/load_hy_data_one', async (req, res) => {
+    const hyId = req.body.getHyId;
+    let hyData = {}
+    let con_site = ""
+    try {
+        const getHyDattaQuery = "SELECT * FROM hy_site_one WHERE hy_id = ? ";
+        const [hyDataRows] = await sql_con.promise().query(getHyDattaQuery, [hyId.id]);
+        hyData = hyDataRows[0]
+
+        const getConSite = "SELECT sl_site_name FROM site_list WHERE sl_id = ?"
+        const [conSite] = await sql_con.promise().query(getConSite, [hyData.hy_site]);
+        con_site = conSite[0]
+        console.log(con_site);
+        
+    } catch (err) {
+        console.error(err.message);
+    }
+
+    res.json({ hyData, con_site })
+})
+
+
+
+minisiteRouter.post('/update_hy_data_one', async (req, res) => {
+    const hySiteData = req.body
+
+    console.log(hySiteData);
+    
+
+    const hyId = hySiteData.hy_id;
+    delete hySiteData.hy_id;
+    hySiteData.hy_creted_at = moment(hySiteData.hy_creted_at).format('YYYY-MM-DD HH:mm:ss');
+    const queryStr = getQueryStr(hySiteData, 'update');
+    queryStr.values.push(hyId)
+
+    try {
+        const hySiteUpdateQuery = `UPDATE hy_site_one SET ${queryStr.str} WHERE hy_id = ?`;
+        await sql_con.promise().query(hySiteUpdateQuery, queryStr.values);
+    } catch (err) {
+        console.error(err.message);
+    }
+    res.json({})
+})
+
+
+
+
+
+
+
+
 
 minisiteRouter.get('/', (req, res) => {
     res.send('asldfjalisjdfliajsdf')

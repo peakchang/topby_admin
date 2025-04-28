@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS hy_site_one(
     hy_main_image VARCHAR(255),
     hy_image_list TEXT,
     hy_form_img VARCHAR(255),
-    hy_form_ment VARCHAR(255),
+    hy_form_follow_img VARCHAR(255),
     hy_form_btn_img VARCHAR(255),
     hy_card_image VARCHAR(255),
     hy_callnumber VARCHAR(50),
@@ -70,5 +70,10 @@ CREATE TABLE IF NOT EXISTS hy_site_one(
     hy_footer VARCHAR(255),
     hy_creted_at DATETIME 
 );
+
+
+
+ALTER TABLE hy_site_one DROP COLUMN hy_form_ment;
+ALTER TABLE hy_site_one ADD COLUMN hy_form_follow_img VARCHAR(255) AFTER hy_form_img;
 
 */

@@ -7,7 +7,7 @@ const mainRouter = express.Router();
 
 
 mainRouter.post('/chk_ex_file', async (req, res, next) => {
-    
+
     let status = true;
     let chkDbBool = true; // DB가 있으면 true, 없으면 false;
     const body = req.body;
@@ -152,5 +152,36 @@ mainRouter.get('/load_footer', async (req, res) => {
     res.json({ footerData })
 })
 
+
+// minisiteone 불러오기!!
+mainRouter.post('/load_minisite_one_info', async (req, res) => {
+    const hyId = req.body.hy_id;
+    const userStatus = req.body.user_status;
+
+    let minisite_data = {};
+
+    res.cookie('visit', 'ok')
+
+    try {
+        const getMinisiteDataQuery = "SELECT * FROM hy_site_one WHERE hy_page_id = ?"
+        const [minisiteDataRows] = await sql_con.promise().query(getMinisiteDataQuery, [hyId]);
+        minisite_data = minisiteDataRows[0]
+        if (!userStatus && !req.cookies.visit) {
+            let count = 1;
+            if (Number(minisite_data.hy_counter) > 0) {
+                count = Number(minisite_data.hy_counter) + 1
+            }
+            const updateCounerPage = `UPDATE hy_site SET hy_counter = ? WHERE hy_page_id = ?`;
+            await sql_con.promise().query(updateCounerPage, [count, minisite_data.hy_num]);
+
+        } else {
+
+        }
+    } catch (err) {
+        console.error(err.message);
+    }
+
+    res.json({ minisite_data })
+})
 
 export { mainRouter }
