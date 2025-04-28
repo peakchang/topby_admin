@@ -76,4 +76,8 @@ CREATE TABLE IF NOT EXISTS hy_site_one(
 ALTER TABLE hy_site_one DROP COLUMN hy_form_ment;
 ALTER TABLE hy_site_one ADD COLUMN hy_form_follow_img VARCHAR(255) AFTER hy_form_img;
 
+
+
+ALTER TABLE hy_site ADD COLUMN hy_manage_site VARCHAR(100) AFTER hy_title;
+
 */

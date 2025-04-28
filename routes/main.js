@@ -139,6 +139,42 @@ mainRouter.post('/load_minisite_info', async (req, res) => {
     res.json({ minisite_data })
 })
 
+mainRouter.post('/upload_minisite1_db', async (req, res) => {
+    const body = req.body
+    console.log(body);
+    console.log("********************************");
+
+
+    try {
+        const getQuery = getQueryStr(body, "insert")
+
+        const siteDbInsertQuery = `INSERT INTO application_form (${getQuery.str}) VALUES (${getQuery.question})`;
+        await sql_con.promise().query(siteDbInsertQuery, [siteDbInsertQuery, getQuery.values]);
+
+        const getManagerQuery = `SELECT * FROM users WHERE manage_estate LIKE '%${body.af_form_name}%'`
+        const [getManager] = await sql_con.promise().query(getManagerQuery);
+
+        const kakaoObj = {
+            ciReceiver: body.af_mb_phone,
+            ciSite: body.af_form_name,
+            ciName: body.af_mb_name,
+        }
+
+        for (let i = 0; i < getManager.length; i++) {
+            const m = getManager[i];
+            kakaoObj['ciPhone'] = m.user_phone;
+            console.log(kakaoObj);
+            aligoKakaoNotification_formanager(req, kakaoObj)
+        }
+
+
+    } catch (error) {
+        console.error(error.message);
+    }
+
+    res.json({})
+})
+
 mainRouter.get('/load_footer', async (req, res) => {
     let footerData = {};
     try {

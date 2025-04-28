@@ -45,12 +45,13 @@ minisiteRouter.post('/add_sub_domain', async (req, res) => {
 minisiteRouter.post('/add_hy_site', async (req, res) => {
     const hy_num = req.body.hy_num;
     const hy_site_name = req.body.hy_site_name;
+    const hy_site_id = req.body.hy_site_id
 
     const now = moment().format('YYYY-MM-DD HH:mm:ss');
     let err_message = "";
     try {
-        const addHySiteQuery = `INSERT INTO hy_site (hy_num, hy_title, hy_creted_at) VALUES (?,?,?)`;
-        await sql_con.promise().query(addHySiteQuery, [hy_num, hy_site_name, now]);
+        const addHySiteQuery = `INSERT INTO hy_site (hy_num, hy_title,hy_site_id, hy_creted_at) VALUES (?,?,?)`;
+        await sql_con.promise().query(addHySiteQuery, [hy_num, hy_site_name, hy_site_id, now]);
     } catch (err) {
         err_message = err.message;
         console.error(err_message);
@@ -242,9 +243,9 @@ minisiteRouter.post('/load_hy_data', async (req, res) => {
     let hyData = {}
     try {
         const getHyDattaQuery = "SELECT * FROM hy_site WHERE hy_id = ? ";
-
         const [hyDataRows] = await sql_con.promise().query(getHyDattaQuery, [hyId.id]);
         hyData = hyDataRows[0]
+
     } catch (err) {
         console.error(err.message);
     }
@@ -261,6 +262,8 @@ minisiteRouter.post('/load_minisite', async (req, res) => {
     const nowPage = req.body.nowPage || 1;
     const search = req.body.search || "";
     let searchStr = "";
+
+    let site_list = [];
     if (search) {
         searchStr = `WHERE hy_title LIKE '%${search}%'`;
     }
@@ -274,14 +277,33 @@ minisiteRouter.post('/load_minisite', async (req, res) => {
         const startCount = (nowPage - 1) * onePageCount;
 
 
-        const getMinisite1Query = `SELECT hy_id,hy_num,hy_title,hy_counter FROM hy_site ${searchStr} ORDER BY hy_id DESC LIMIT ${startCount}, ${onePageCount}`;
+        const getMinisite1Query = `SELECT hy_id,hy_num,hy_title,hy_manage_site,hy_counter FROM hy_site ${searchStr} ORDER BY hy_id DESC LIMIT ${startCount}, ${onePageCount}`;
         const [miniSiteRows] = await sql_con.promise().query(getMinisite1Query);
         minisiteData = miniSiteRows;
+
+
+        const getSiteListQuery = "SELECT sl_id, sl_site_name FROM site_list ORDER BY sl_id DESC";
+        [site_list] = await sql_con.promise().query(getSiteListQuery);
     } catch (err) {
         console.error(err.message);
     }
 
-    res.json({ minisiteData, allPage })
+    res.json({ minisiteData, allPage, site_list })
+})
+
+
+minisiteRouter.post('/update_minisite_manager', async (req, res) => {
+    const body = req.body;
+    console.log(body);
+
+    try {
+        const updateManageSiteQuery = "UPDATE hy_site SET hy_manage_site = ? WHERE hy_id = ?";
+        await sql_con.promise().query(updateManageSiteQuery, [body.get_site, body.hy_id]);
+    } catch (error) {
+
+    }
+
+    res.json({})
 })
 
 
@@ -335,7 +357,7 @@ minisiteRouter.post('/add_hy_site_one', async (req, res) => {
     console.log(hy_title);
     console.log(hy_site);
     console.log(now);
-    
+
     let err_message = "";
     try {
         const addHySiteQuery = `INSERT INTO hy_site_one (hy_page_id, hy_title, hy_site, hy_creted_at) VALUES (?,?,?,?)`;
@@ -382,7 +404,7 @@ minisiteRouter.post('/load_hy_data_one', async (req, res) => {
         const [conSite] = await sql_con.promise().query(getConSite, [hyData.hy_site]);
         con_site = conSite[0]
         console.log(con_site);
-        
+
     } catch (err) {
         console.error(err.message);
     }
@@ -396,7 +418,7 @@ minisiteRouter.post('/update_hy_data_one', async (req, res) => {
     const hySiteData = req.body
 
     console.log(hySiteData);
-    
+
 
     const hyId = hySiteData.hy_id;
     delete hySiteData.hy_id;

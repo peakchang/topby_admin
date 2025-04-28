@@ -6,7 +6,7 @@
     let { data } = $props();
     const allData = data.minisiteData;
 
-    let imgList = [];
+    let imgList = $state([]);
     if (data.minisiteData.hy_image_list) {
         imgList = data.minisiteData.hy_image_list.split(",");
     }
@@ -94,6 +94,7 @@
                                 readonly
                             />
                             <span class="flex items-center">-</span>
+                            <!-- svelte-ignore event_directive_deprecated -->
                             <input
                                 type="text"
                                 name="phnum_2"
@@ -104,6 +105,7 @@
                                 bind:value={ph2}
                             />
                             <span class="flex items-center">-</span>
+                            <!-- svelte-ignore event_directive_deprecated -->
                             <input
                                 type="text"
                                 name="phnum_3"
@@ -221,7 +223,15 @@
 <!-- 우측 고정!!! -->
 {#if allData.hy_form_follow_img}
     <div class="fixed bottom-36 right-5 z-50 text-lg">
-        <div class="w-16 md:w-24 rounded-full overflow-hidden animate-pulse">
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <!-- svelte-ignore event_directive_deprecated -->
+        <div
+            class="w-16 md:w-24 rounded-full overflow-hidden animate-pulse"
+            on:click={() => {
+                console.log("aslidfjalisjdfliajsdf");
+            }}
+        >
             <img
                 src={imageOrigin + allData.hy_form_follow_img}
                 alt=""

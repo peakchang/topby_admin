@@ -10,17 +10,21 @@ export const load = async ({ params, url, data }) => {
     let pageArr = []
     let minisiteData = [];
     let allPageCount = 0;
+    let siteList = []
     try {
         const res = await axios.post(`${back_api}/minisite/load_minisite`, { nowPage, search })
         if (res.status == 200) {
             minisiteData = res.data.minisiteData;
             allPageCount = res.data.allPage;
+            siteList = res.data.site_list
             pageArr = getPagination(parseInt(nowPage), res.data.allPage);
         }
     } catch (error) {
 
     }
 
+    
 
-    return { minisiteData, pageArr, allPageCount }
+
+    return { minisiteData, pageArr, allPageCount, siteList }
 }
