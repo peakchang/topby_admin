@@ -61,7 +61,7 @@
     }
 
     async function addHySite() {
-        if (!hy_num || !hy_site_name || !hy_manage_site) {
+        if (!hy_num || !hy_site_name) {
             alert("모든 값을 입력하세요.");
             return;
         }

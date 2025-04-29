@@ -44,13 +44,13 @@
         const deleteData = imgArr[arrIdx];
 
         const getImgSplit = deleteData.split("/");
-        const getFolder = getImgSplit[getImgSplit.length - 2];
-        const getImgName = getImgSplit[getImgSplit.length - 1];
+        const delFolder = getImgSplit[getImgSplit.length - 2];
+        const delFile = getImgSplit[getImgSplit.length - 1];
 
         try {
             const res = await axios.post(`${back_api}/delete_sort_img`, {
-                getImgName,
-                getFolder,
+                delFolder,
+                delFile,
             });
 
             if (res.status == 200) {
@@ -279,6 +279,8 @@
                 .toString(36)
                 .substring(2, 11)}.${compressedFile.name.split(".")[1]}`;
             imgForm.append("onimg", compressedFile, fileName);
+
+            // 수정 쫌만 해보기
             imgForm.append("folderName", imgFolder); // �����명 추가 (��가할 경우)
             let res = {};
             try {

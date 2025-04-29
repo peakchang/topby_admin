@@ -11,6 +11,7 @@
     let modifyImgArr = $state([]);
 
     hyData = data.hyData;
+    console.log(hyData);
 
     if (data.hyData.hy_image_list) {
         modifyImgArr = data.hyData.hy_image_list.split(",");
@@ -25,8 +26,9 @@
         hyData.hy_card_image = e;
     }
 
-    function mainImageUpload(e) {
-        hyData.hy_main_image = e;
+    function imageUpdate(e) {
+        hyData[e.value] = e.baseUrl;
+        console.log(hyData);
     }
 
     async function updateHySite() {
@@ -243,9 +245,11 @@
                 <td class="in-td">
                     <div>
                         <OneImg
-                            updateImg={cardImageUpload}
+                            value={"hy_card_image"}
+                            updateImg={imageUpdate}
                             imgFolder={hyData.hy_num}
                             imageLink={hyData.hy_card_image}
+                            btnSize={"sm"}
                         ></OneImg>
                     </div>
                 </td>
@@ -257,9 +261,11 @@
                 <td class="in-td">
                     <div>
                         <OneImg
-                            updateImg={mainImageUpload}
+                            value={"hy_main_image"}
+                            updateImg={imageUpdate}
                             imgFolder={hyData.hy_num}
                             imageLink={hyData.hy_main_image}
+                            btnSize={"sm"}
                         ></OneImg>
                     </div>
                 </td>

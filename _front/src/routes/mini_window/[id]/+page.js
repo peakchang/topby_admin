@@ -19,5 +19,5 @@ export const load = async ({ params, url, data }) => {
     }
 
     console.log(hyData);
-    return { hyData }
+    return { hyData, getHyId }
 }

@@ -30,7 +30,7 @@
             const imageFile = e.target.files[0];
             const options = {
                 maxSizeMB: 1, // 최대 파일 크기 (MB)
-                maxWidthOrHeight: 1024, // 최대 너비 또는 높이
+                // maxWidthOrHeight: 1024, // 최대 너비 또는 높이
                 useWebWorker: true, // 웹 워커 사용
             };
 
@@ -80,12 +80,12 @@
 
     async function deleteImg() {
         const getImgSplit = imageLink.split("/");
-        const getFolder = getImgSplit[getImgSplit.length - 2];
-        const getImgName = getImgSplit[getImgSplit.length - 1];
+        const delFolder = getImgSplit[getImgSplit.length - 2];
+        const delFile = getImgSplit[getImgSplit.length - 1];
         try {
             const res = await axios.post(`${back_api}/delete_sort_img`, {
-                getImgName,
-                getFolder,
+                delFolder,
+                delFile,
             });
 
             if (res.status == 200) {

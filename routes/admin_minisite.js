@@ -45,13 +45,13 @@ minisiteRouter.post('/add_sub_domain', async (req, res) => {
 minisiteRouter.post('/add_hy_site', async (req, res) => {
     const hy_num = req.body.hy_num;
     const hy_site_name = req.body.hy_site_name;
-    const hy_site_id = req.body.hy_site_id
+    const hy_manage_site = req.body.hy_manage_site
 
     const now = moment().format('YYYY-MM-DD HH:mm:ss');
     let err_message = "";
     try {
-        const addHySiteQuery = `INSERT INTO hy_site (hy_num, hy_title,hy_site_id, hy_creted_at) VALUES (?,?,?)`;
-        await sql_con.promise().query(addHySiteQuery, [hy_num, hy_site_name, hy_site_id, now]);
+        const addHySiteQuery = `INSERT INTO hy_site (hy_num, hy_title,hy_manage_site, hy_creted_at) VALUES (?,?,?,?)`;
+        await sql_con.promise().query(addHySiteQuery, [hy_num, hy_site_name, hy_manage_site, now]);
     } catch (err) {
         err_message = err.message;
         console.error(err_message);
