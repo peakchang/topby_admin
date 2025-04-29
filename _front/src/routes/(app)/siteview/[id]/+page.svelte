@@ -213,9 +213,9 @@
         {/each}
     {/if}
 
-    <div class="border-t mt-3 pt-3 mb-24 md:mb-12">
+    <div class="border-t mt-3 pt-3 mb-24 md:mb-12 whitespace-pre-line">
         {#if allData.hy_footer}
-            {allData.hy_footer}
+            {@html allData.hy_footer}
         {/if}
     </div>
 </div>

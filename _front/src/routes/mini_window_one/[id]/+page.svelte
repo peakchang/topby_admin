@@ -106,15 +106,42 @@
                         bind:value={hyData.hy_sms_content}
                     ></textarea>
                 </td>
+
                 <th class="in-th text-xs bg-slate-100 border-slate-300">
-                    푸터내용
+                    신청 폼 위치
                 </th>
                 <td class="in-td">
-                    <textarea
-                        class="input-base text-xs"
-                        cols="4"
-                        bind:value={hyData.hy_footer}
-                    ></textarea>
+                    <div class="flex justify-center gap-2.5">
+                        <label class="flex items-center gap-1 text-sm">
+                            <input
+                                type="radio"
+                                value="top"
+                                class="radio radio-primary radio-xs"
+                                bind:group={hyData.hy_form_location}
+                            />
+                            위쪽
+                        </label>
+
+                        <label class="flex items-center gap-1 text-sm">
+                            <input
+                                type="radio"
+                                value="bottom"
+                                class="radio radio-primary radio-xs"
+                                bind:group={hyData.hy_form_location}
+                            />
+                            아래쪽
+                        </label>
+
+                        <label class="flex items-center gap-1 text-sm">
+                            <input
+                                type="radio"
+                                value="both"
+                                class="radio radio-primary radio-xs"
+                                bind:group={hyData.hy_form_location}
+                            />
+                            둘다
+                        </label>
+                    </div>
                 </td>
             </tr>
 
@@ -139,7 +166,7 @@
                     (폼으로 이동) <br />
                     정사각형!!
                 </th>
-                <td class="in-td">
+                <td class="in-td p-2">
                     <OneImg
                         value={"hy_form_follow_img"}
                         updateImg={imageUpdate}
@@ -215,11 +242,24 @@
                 </th>
                 <td class="in-td" colspan="3">
                     <textarea
-                        rows="8"
+                        rows="5"
                         class="w-full p-2 border bg-gray-150 focus:outline-none focus:border-blue-500 text-xs"
                         bind:value={hyData.hy_description}
                     >
                     </textarea>
+                </td>
+            </tr>
+
+            <tr>
+                <th class="in-th text-xs bg-slate-100 border-slate-300">
+                    푸터내용
+                </th>
+                <td class="in-td" colspan="3">
+                    <textarea
+                        class="w-full p-2 border bg-gray-150 focus:outline-none focus:border-blue-500 text-xs"
+                        rows="5"
+                        bind:value={hyData.hy_footer}
+                    ></textarea>
                 </td>
             </tr>
             <tr>

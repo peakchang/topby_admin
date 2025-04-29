@@ -353,11 +353,6 @@ minisiteRouter.post('/add_hy_site_one', async (req, res) => {
     const hy_site = req.body.hy_site
     const now = moment().format('YYYY-MM-DD HH:mm:ss');
 
-    console.log(hy_page_id);
-    console.log(hy_title);
-    console.log(hy_site);
-    console.log(now);
-
     let err_message = "";
     try {
         const addHySiteQuery = `INSERT INTO hy_site_one (hy_page_id, hy_title, hy_site, hy_creted_at) VALUES (?,?,?,?)`;

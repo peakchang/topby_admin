@@ -266,7 +266,7 @@
 
         const options = {
             maxSizeMB: 1, // 최대 파일 크기 (MB)
-            // maxWidthOrHeight: 1024, // 최대 너비 또는 높이
+            maxWidthOrHeight: 9000, // 최대 너비 또는 높이
             useWebWorker: true, // 웹 워커 사용
         };
 
@@ -320,7 +320,7 @@
         const files = e.target.files;
         const options = {
             maxSizeMB: 1, // 최대 파일 크기 (MB)
-            // maxWidthOrHeight: 1024, // 최대 너비 또는 높이
+            maxWidthOrHeight: 9000, // 최대 너비 또는 높이
             useWebWorker: true, // 웹 워커 사용
         };
 

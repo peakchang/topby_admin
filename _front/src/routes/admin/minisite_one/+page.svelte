@@ -57,7 +57,7 @@
     }
 
     async function addHySite() {
-        if (!hy_page_id || !hy_title || !hy_site) {
+        if (!hy_page_id || !hy_title) {
             alert("모든 값을 입력하세요.");
             return;
         }
@@ -242,7 +242,7 @@
 
             <select class="input-base" bind:value={hy_site}>
                 {#each siteList as site}
-                    <option value={site.sl_id}>{site.sl_site_name}</option>
+                    <option value={site.sl_site_name}>{site.sl_site_name}</option>
                 {/each}
             </select>
         </div>
