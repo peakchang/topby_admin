@@ -17,7 +17,6 @@
         ? import.meta.env.VITE_SERVER_URL
         : $page.url.origin;
 
-
     // 이미지를 선택하면 사이즈 변경 (최대 1200px) 및 webp 변경 후 업로드
     const onFileSelected = (e) => {
         const input = document.createElement("input");
@@ -30,7 +29,7 @@
             const imageFile = e.target.files[0];
             const options = {
                 maxSizeMB: 1, // 최대 파일 크기 (MB)
-                // maxWidthOrHeight: 1024, // 최대 너비 또는 높이
+                maxWidthOrHeight: 1024, // 최대 너비 또는 높이
                 useWebWorker: true, // 웹 워커 사용
             };
 
@@ -64,6 +63,8 @@
                     );
                     if (res.status == 200) {
                         imageLink = res.data.baseUrl;
+                        console.log(`업로드 완료! 링크 : ${imageLink}`);
+
                         updateImg({ baseUrl: res.data.baseUrl, value });
                     }
                 } catch (error) {
