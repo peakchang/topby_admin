@@ -147,9 +147,13 @@ mainRouter.post('/upload_minisite1_db', async (req, res) => {
 
     try {
         const getQuery = getQueryStr(body, "insert")
+        console.log(getQuery);
+        
 
         const siteDbInsertQuery = `INSERT INTO application_form (${getQuery.str}) VALUES (${getQuery.question})`;
-        await sql_con.promise().query(siteDbInsertQuery, [siteDbInsertQuery, getQuery.values]);
+        console.log(siteDbInsertQuery);
+        
+        await sql_con.promise().query(siteDbInsertQuery, getQuery.values);
 
         const getManagerQuery = `SELECT * FROM users WHERE manage_estate LIKE '%${body.af_form_name}%'`
         const [getManager] = await sql_con.promise().query(getManagerQuery);
@@ -169,6 +173,8 @@ mainRouter.post('/upload_minisite1_db', async (req, res) => {
 
 
     } catch (error) {
+        console.log('이 부분이 에러?!?!');
+        
         console.error(error.message);
     }
 

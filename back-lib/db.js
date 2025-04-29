@@ -80,4 +80,6 @@ ALTER TABLE hy_site_one ADD COLUMN hy_form_follow_img VARCHAR(255) AFTER hy_form
 
 ALTER TABLE hy_site ADD COLUMN hy_manage_site VARCHAR(100) AFTER hy_title;
 
+ALTER TABLE site_list ADD CONSTRAINT unique_site UNIQUE (sl_site_name);
+
 */

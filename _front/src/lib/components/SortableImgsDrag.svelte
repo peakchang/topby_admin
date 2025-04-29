@@ -404,6 +404,7 @@
     </div>
 </div> -->
 
+<!-- svelte-ignore event_directive_deprecated -->
 <input
     type="file"
     class="hidden"
@@ -412,6 +413,9 @@
     on:change={uploadImageInput}
 />
 
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore event_directive_deprecated -->
 <div
     class="dropzone mt-3 flex flex-col justify-center items-center"
     on:dragover={imageDragOver}

@@ -31,16 +31,19 @@
         users = data.user_datas;
         managers = data.manager_datas;
         pages = data.pageArr;
-        allPageCount = data.allPage
-        nowPage = parseInt($page.url.searchParams.get("page")) || 1
+        allPageCount = data.allPage;
+        nowPage = parseInt($page.url.searchParams.get("page")) || 1;
     });
 
-    
     let siteList = $state([]);
     let siteSearchKeyword = $state("");
     let selectedEstate = $state([]);
     let selectedEstateStr = $state("");
     let userId = $state(0);
+
+    let siteUploadKeyword = $state("");
+
+    let closeModalBtn = $state();
 
     async function loadSiteListFunc(e) {
         if (e.target.getAttribute("data-id")) {
@@ -58,6 +61,37 @@
                 siteList = res.data.site_list;
             }
         } catch (error) {}
+    }
+
+    // 새로운 현장명을 넣고 선택된 유저와 매치 시킴!!
+    async function uploadSiteFunc() {
+        selectedEstate = [...selectedEstate].filter((item) => item !== "");
+
+        siteUploadKeyword = siteUploadKeyword.replace(/\s/g, "");
+
+        const updateUserEstateListStr =
+            selectedEstate.join(",") + "," + siteUploadKeyword;
+        console.log(updateUserEstateListStr);
+
+        try {
+            console.log("axios 안해????");
+
+            const res = await axios.post(
+                `${back_api}/usermanage/upload_new_site_and_user_estatelist`,
+                { userId, siteUploadKeyword, updateUserEstateListStr },
+            );
+
+            if (res.status == 200) {
+                alert("현장 업로드 및 매칭 완료!");
+                invalidateAll();
+                siteUploadKeyword = "";
+                closeModalBtn.click();
+            }
+        } catch (error) {
+            console.error(error.message);
+
+            alert("오류! 중복된 현장이 존재합니다!");
+        }
     }
 
     async function updateUserSiteList() {
@@ -84,7 +118,6 @@
         const getIdx = this.value;
         let type = this.getAttribute("data-type");
         if (type == "password") {
-            
             if (
                 isHashedPassword(users[getIdx]["password"]) ||
                 !users[getIdx]["password"]
@@ -144,7 +177,6 @@
                 invalidateAll();
             }
         } catch (error) {}
-           
     }
 
     function movePage() {
@@ -174,35 +206,61 @@
 </script>
 
 <dialog id="manage_estate_modal" class="modal">
-    <div class="w-1/3 flex items-center gap-1">
-        <input type="text" class="input-base" bind:value={siteSearchKeyword} />
-        <!-- svelte-ignore event_directive_deprecated -->
-        <button
-            class="btn btn-info btn-sm text-white"
-            value={selectedEstateStr}
-            on:click={loadSiteListFunc}
-        >
-            검색
-        </button>
-        <!-- svelte-ignore event_directive_deprecated -->
-        <button
-            class="btn btn-accent btn-sm text-white"
-            value={selectedEstateStr}
-            on:click={updateUserSiteList}
-        >
-            적용
-        </button>
-        <form method="dialog">
-            <div class="flex gap-1">
-                <button class="btn btn-error btn-sm text-white"> 닫기 </button>
-            </div>
-        </form>
+    <div class="w-1/3">
+        <div class="flex items-center gap-1 mb-3">
+            <input
+                type="text"
+                class="input-base"
+                bind:value={siteUploadKeyword}
+                placeholder="띄어쓰기 금지요!"
+            />
+            <!-- svelte-ignore event_directive_deprecated -->
+            <button
+                class="btn btn-info btn-sm text-white"
+                value={selectedEstateStr}
+                on:click={uploadSiteFunc}
+            >
+                추가하기
+            </button>
+        </div>
+        <div class="flex items-center gap-1">
+            <input
+                type="text"
+                class="input-base"
+                bind:value={siteSearchKeyword}
+            />
+            <!-- svelte-ignore event_directive_deprecated -->
+            <button
+                class="btn btn-info btn-sm text-white"
+                value={selectedEstateStr}
+                on:click={loadSiteListFunc}
+            >
+                검색
+            </button>
+            <!-- svelte-ignore event_directive_deprecated -->
+            <button
+                class="btn btn-accent btn-sm text-white"
+                value={selectedEstateStr}
+                on:click={updateUserSiteList}
+            >
+                적용
+            </button>
+            <form method="dialog">
+                <div class="flex gap-1">
+                    <button class="btn btn-error btn-sm text-white">
+                        닫기
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
+
     <div class="modal-box w-11/12 max-w-5xl relative max-h-[500px]">
         <form method="dialog">
             <!-- svelte-ignore event_directive_deprecated -->
             <button
                 class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+                bind:this={closeModalBtn}
                 on:click={closeModal}
             >
                 ✕
@@ -226,6 +284,7 @@
         </div>
     </div>
 </dialog>
+<!-- svelte-ignore event_directive_deprecated -->
 <form on:submit={userManageSearch}>
     <div class="mb-4 flex items-center gap-2">
         <select class="select select-bordered select-sm" bind:value={userRate}>

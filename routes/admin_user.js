@@ -6,6 +6,31 @@ import bcrypt from "bcrypt";
 
 const userManageRouter = express.Router();
 
+
+
+
+userManageRouter.post('/upload_new_site_and_user_estatelist', async (req, res) => {
+
+    const body = req.body;
+    console.log(body);
+
+    try {
+
+        // 먼저 새롭게 사이트 넣기!!
+        const insertNewSiteQuery = "INSERT INTO site_list (sl_site_name) VALUES (?)";
+        await sql_con.promise().query(insertNewSiteQuery, [body.siteUploadKeyword])
+
+        // 회원 정보 업데이트!!
+        const updateUsertEstateListStrQuery = "UPDATE users SET manage_estate = ? WHERE id = ?";
+        await sql_con.promise().query(updateUsertEstateListStrQuery, [body.updateUserEstateListStr, body.userId])
+
+    } catch (error) {
+        console.error(error.message);
+        return res.status(400).json({})
+    }
+    return res.status(200).json({})
+})
+
 userManageRouter.post('/delete_user_rows', async (req, res) => {
     const deleteList = req.body.deleteList;
 
@@ -39,13 +64,13 @@ userManageRouter.post('/update_user_site_list', async (req, res) => {
 userManageRouter.post('/update_user_info', async (req, res) => {
 
     console.log('들어오는지 췍췍!!!');
-    
+
     const userInfo = req.body.user_info;
     const type = req.body.type
     const userId = userInfo.id;
     console.log(userInfo.work_type);
-    
-    
+
+
     delete userInfo.id;
     let hashedPassword = ""
     userInfo.created_at = moment(userInfo.created_at).format('YYYY-MM-DD HH:mm:ss');
