@@ -147,6 +147,15 @@
     }
 </script>
 
+<svelte:head>
+    {#if allData.hy_add_script}
+        {@html allData.hy_add_script}
+    {/if}
+    <!-- <SeoMeta bind:seoValue /> -->
+    <!-- SUIT 폰트 CSS -->
+
+</svelte:head>
+
 <dialog id="personal_info_modal" class="modal suit-font">
     <div class="modal-box">
         <form method="dialog">
