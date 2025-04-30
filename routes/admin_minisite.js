@@ -1,9 +1,8 @@
 import express from "express";
 import { sql_con } from '../back-lib/db.js'
-import { getQueryStr, deleteFolder } from '../back-lib/lib.js';
+import { getQueryStr, deleteFolder, aligoKakaoNotification_formanager } from '../back-lib/lib.js';
 import moment from "moment-timezone";
 import fs from "fs-extra";
-
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -524,9 +523,8 @@ minisiteRouter.post('/upload_form_data', async (req, res) => {
             }
         }
 
-
-    } catch (error) {
-
+    } catch (err) {
+        console.error(err.message);
     }
     res.json({})
 })
