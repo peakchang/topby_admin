@@ -3,13 +3,27 @@ import { back_api } from "$src/lib/const.js";
 import axios from 'axios';
 
 // 사이트 접속시 user_info store 값에 user 정보 넣기
-export const load = async ({ params, url, data, cookies }) => {
+export async function load({ params, cookies }) {
     console.log(params);
 
     const pageId = params.id;
     console.log(pageId);
-    
-    
+    console.log(cookies);
+
+
+
+    try {
+        const getVisitedCookie = cookies.get("topby_visited");
+    } catch (err) {
+        console.error(err);
+
+
+    }
+
+    // const getVisitedCookie = cookies.get("topby_visited");
+
+
+
     let user_status = false;
     user_info.subscribe(e => {
         if (e.id) {
