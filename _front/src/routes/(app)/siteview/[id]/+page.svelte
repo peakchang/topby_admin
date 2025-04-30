@@ -3,7 +3,6 @@
     import { back_api } from "$src/lib/const";
     import { page } from "$app/stores";
     import Cookies from "js-cookie";
-    
 
     let { data } = $props();
     const allData = data.minisiteData;
@@ -41,7 +40,6 @@
     let formName = $state("");
     let ph2 = $state(""); // 전화번호 중간
     let ph3 = $state(""); // 전화번호 마지막
-    let formPhone = $state(""); // 전체 전화번호
 
     // 스크롤 이동을 위한 폼 영역 설정!!
     let topFormArea = $state(); // 상단 폼 영역
@@ -70,13 +68,12 @@
     }
 
     async function addCallCountFunc() {
-        console.log("전화번호 카운터 늘리기!!");
-        console.log(allData.hy_call_count);
         const setCount = Number(allData.hy_call_count) + 1;
         try {
             const res = axios.post(
                 `${back_api}/minisite/update_call_sms_count`,
                 {
+                    page_id: data.pageId,
                     setCount,
                     type: "call",
                 },
@@ -85,13 +82,17 @@
     }
 
     function addSmsCountFunc() {
-        console.log("문자 카운터 늘리기!!");
-        console.log(allData.hy_sms_count);
-    }
-
-    function hySiteFormSubmit(e) {
-        e.preventDefault();
-        console.log("폼 클릭!!!");
+        const setCount = Number(allData.hy_sms_count) + 1;
+        try {
+            const res = axios.post(
+                `${back_api}/minisite/update_call_sms_count`,
+                {
+                    page_id: data.pageId,
+                    setCount,
+                    type: "sms",
+                },
+            );
+        } catch (error) {}
     }
 
     function scrollFormFunc() {
@@ -104,6 +105,45 @@
                 behavior: "smooth",
             });
         }
+    }
+
+    async function hySiteFormSubmit(e) {
+        e.preventDefault();
+        console.log("폼 클릭!!!");
+
+        if (!formName) {
+            alert("이름을 입력하세요");
+            return;
+        }
+        if (!ph2) {
+            alert("전화번호 가운데를 입력하세요");
+            return;
+        }
+
+        if (!ph3) {
+            alert("전화번호 마지막을 입력하세요");
+            return;
+        }
+
+        console.log(formName);
+        const formPhone = `010${ph2}${ph3}`;
+        console.log(formPhone);
+        console.log(allData.hy_site);
+
+        try {
+            const res = await axios.post(
+                `${back_api}/minisite/upload_form_data`,
+                {
+                    name: formName,
+                    phone: formPhone,
+                    site_id: allData.hy_site,
+                },
+            );
+
+            if(res.status == 200){
+                alert('접수 완료! 담당자가 빠른 시간안에 연락 드리도록 하겠습니다!')
+            }
+        } catch (error) {}
     }
 </script>
 
@@ -285,7 +325,9 @@
                                     type="text"
                                     name="phnum_3"
                                     class="border-none px-4 py-1 rounded-md w-1/3 focus:outline-none"
-                                    on:input={phoneChk}
+                                    on:input={(e) => {
+                                        phoneChk(e, "ph3");
+                                    }}
                                     bind:value={ph3}
                                 />
                             </div>
@@ -459,7 +501,9 @@
                                     type="text"
                                     name="phnum_3"
                                     class="border-none px-4 py-1 rounded-md w-1/3 focus:outline-none"
-                                    on:input={phoneChk}
+                                    on:input={(e) => {
+                                        phoneChk(e, "ph3");
+                                    }}
                                     bind:value={ph3}
                                 />
                             </div>

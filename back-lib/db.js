@@ -98,4 +98,6 @@ CREATE TABLE IF NOT EXISTS hy_site_visit(
     st_referrer VARCHAR(100),
     st_created_at DATETIME
 );
+
+ALTER TABLE hy_site_one MODIFY hy_description TEXT;
 */

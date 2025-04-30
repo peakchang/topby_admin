@@ -409,7 +409,7 @@ minisiteRouter.post('/load_hy_data_one', async (req, res) => {
 minisiteRouter.post('/update_hy_data_one', async (req, res) => {
     const hySiteData = req.body
     console.log(hySiteData);
-    
+
     const hyId = hySiteData.hy_id;
     delete hySiteData.hy_id;
     hySiteData.hy_creted_at = moment(hySiteData.hy_creted_at).format('YYYY-MM-DD HH:mm:ss');
@@ -471,13 +471,65 @@ minisiteRouter.post('/update_visit_count', async (req, res) => {
     res.json({})
 })
 
-
+// 전화번호나 SMS 버튼 클릭 했을때 카운트 올리기!!
 minisiteRouter.post('/update_call_sms_count', async (req, res) => {
+    const b = req.body;
+
+    try {
+        let tableName = ""
+        if (b.type == 'call') {
+            tableName = "hy_call_count"
+        } else {
+            tableName = "hy_sms_count"
+        }
+        const updateCallOrSmsCountQuery = `UPDATE hy_site_one SET ${tableName} = ? WHERE hy_page_id = ?`;
+        await sql_con.promise().query(updateCallOrSmsCountQuery, [b.setCount, b.page_id]);
+    } catch (err) {
+        console.error(err.message);
+    }
+    console.log(b);
+
     res.json({})
 })
 
 
+minisiteRouter.post('/upload_form_data', async (req, res) => {
+    const b = req.body;
+    console.log(b);
 
+    try {
+        const getSiteNameQuery = "SELECT sl_site_name FROM site_list WHERE sl_id = ?";
+        const [getSiteName] = await sql_con.promise().query(getSiteNameQuery, [b.site_id]);
+        const siteName = getSiteName[0]['sl_site_name']
+        const now = moment().format('YYYY-MM-DD HH:mm:ss');
+        const uploadFormQuery = "INSERT INTO application_form (af_form_name,af_form_type_in, af_form_location, af_mb_name, af_mb_phone, af_created_at) VALUES (?,?,?,?,?,?)"
+        await sql_con.promise().query(uploadFormQuery, [siteName, '분양', 'mini-one', b.name, b.phone, now]);
+
+
+        const getManagerQuery = `SELECT * FROM users WHERE manage_estate LIKE '%${siteName}%'`
+        const [getManager] = await sql_con.promise().query(getManagerQuery);
+
+        if (getManager && getManager.length > 0) {
+            const kakaoObj = {
+                ciReceiver: b.phone,
+                ciSite: siteName,
+                ciName: b.name,
+            }
+
+            for (let i = 0; i < getManager.length; i++) {
+                const m = getManager[i];
+                kakaoObj['ciPhone'] = m.user_phone;
+                console.log(kakaoObj);
+                aligoKakaoNotification_formanager(req, kakaoObj)
+            }
+        }
+
+
+    } catch (error) {
+
+    }
+    res.json({})
+})
 
 
 
