@@ -89,4 +89,13 @@ ALTER TABLE site_list ADD CONSTRAINT unique_site UNIQUE (sl_site_name);
 
 ALTER TABLE hy_site_one ADD COLUMN hy_form_location VARCHAR(255) AFTER hy_form_img;
 
+
+CREATE TABLE IF NOT EXISTS hy_site_visit(
+    st_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    st_page_id VARCHAR(100),
+    st_ip VARCHAR(100),
+    st_ua VARCHAR(255),
+    st_referrer VARCHAR(100),
+    st_created_at DATETIME
+);
 */

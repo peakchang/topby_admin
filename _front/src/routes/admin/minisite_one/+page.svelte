@@ -242,7 +242,7 @@
 
             <select class="input-base" bind:value={hy_site}>
                 {#each siteList as site}
-                    <option value={site.sl_site_name}>{site.sl_site_name}</option>
+                    <option value={site.sl_site_id}>{site.sl_site_name}</option>
                 {/each}
             </select>
         </div>

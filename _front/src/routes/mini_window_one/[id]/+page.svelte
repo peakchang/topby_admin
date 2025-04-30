@@ -12,10 +12,17 @@
     let modifyImgArr = $state([]);
 
     hyData = data.hyData;
-    const conSite = data.conSite;
+
+    // 연결현장(site) 변경 관련!!
+    let conSite = $state("");
+    conSite = data.conSite; // 최초 받아온 사이트 값
+    let conSiteChangeBool = $state(false); // 사이트 변경 창 열고 닫기
+    let searchSite = $state(""); // 사이트 리스트 필터 input 값
+    let siteList = $state([]); // 사이트 리스트!
 
     if (data.hyData.hy_image_list) {
         modifyImgArr = data.hyData.hy_image_list.split(",");
+        // svelte-ignore state_referenced_locally
         console.log(modifyImgArr);
     }
 
@@ -26,7 +33,7 @@
         hyData.hy_image_list = tempImgArr.join(",");
     }
 
-    async function updateHySite() {
+    async function updateHySiteData() {
         try {
             const res = await axios.post(
                 `${back_api}/minisite/update_hy_data_one`,
@@ -35,6 +42,24 @@
 
             if (res.status == 200) {
                 alert("수정이 완료 되었습니다.");
+                invalidateAll();
+            }
+        } catch (error) {}
+    }
+
+    async function changeSiteFunc() {
+        console.log(hyData.hy_site);
+        try {
+            const res = await axios.post(
+                `${back_api}/minisite/change_hy_site`,
+                { hy_id: hyData.hy_id, site_id: hyData.hy_site },
+            );
+
+            console.log(res.data);
+
+            if (res.status == 200) {
+                conSiteChangeBool = false;
+                conSite = res.data.site_name;
                 invalidateAll();
             }
         } catch (error) {}
@@ -67,7 +92,91 @@
                     연결현장
                 </th>
                 <td class="in-td w-2/6 p-2 text-xs">
-                    {conSite}
+                    <div class="flex justify-between items-center mb-2">
+                        {conSite}
+                        <!-- svelte-ignore event_directive_deprecated -->
+
+                        {#if conSiteChangeBool}
+                            <button
+                                class="btn btn-xs btn-success text-white"
+                                on:click={async () => {
+                                    conSiteChangeBool = false;
+                                }}
+                            >
+                                닫기
+                            </button>
+                        {:else}
+                            <button
+                                class="btn btn-xs btn-success text-white"
+                                on:click={async () => {
+                                    conSiteChangeBool = true;
+
+                                    try {
+                                        const res = await axios.post(
+                                            `${back_api}/minisite/get_site_list`,
+                                        );
+                                        if (res.status == 200) {
+                                            siteList = res.data.site_list;
+                                        }
+                                    } catch (error) {
+                                        console.error(error.message);
+                                    }
+                                }}
+                            >
+                                변경
+                            </button>
+                        {/if}
+                    </div>
+
+                    {#if conSiteChangeBool}
+                        <div class="pt-3 text-center border-t">
+                            <input
+                                type="text"
+                                class="border border-gray-300 py-1 px-2 rounded-md focus:outline-none focus:border-blue-500 w-36"
+                                placeholder="필요하면 1차검색"
+                                bind:value={searchSite}
+                            />
+                            <!-- svelte-ignore event_directive_deprecated -->
+                            <button
+                                class="btn btn-xs btn-secondary text-white"
+                                on:click={async () => {
+                                    try {
+                                        const res = await axios.post(
+                                            `${back_api}/minisite/get_site_list`,
+                                            { search_site: searchSite },
+                                        );
+                                        if (res.status == 200) {
+                                            siteList = res.data.site_list;
+                                            console.log(siteList);
+                                        }
+                                    } catch (error) {
+                                        console.error(error.message);
+                                    }
+                                }}
+                            >
+                                검색
+                            </button>
+                        </div>
+                        <div class="mt-2 text-center">
+                            <select
+                                class="border border-gray-300 py-1 px-2 rounded-md focus:outline-none focus:border-blue-500 w-36"
+                                bind:value={hyData.hy_site}
+                            >
+                                {#each siteList as site}
+                                    <option value={site.sl_id}>
+                                        {site.sl_site_name}
+                                    </option>
+                                {/each}
+                            </select>
+                            <!-- svelte-ignore event_directive_deprecated -->
+                            <button
+                                class="btn btn-xs btn-accent text-white"
+                                on:click={changeSiteFunc}
+                            >
+                                적용
+                            </button>
+                        </div>
+                    {/if}
                 </td>
             </tr>
 
@@ -309,7 +418,7 @@
             <button
                 type="button"
                 class="btn btn-accent text-white mr-5 min-h-9 h-9"
-                on:click={updateHySite}
+                on:click={updateHySiteData}
             >
                 업데이트
             </button>

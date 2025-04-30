@@ -4,16 +4,18 @@ import axios from 'axios';
 
 // 사이트 접속시 user_info store 값에 user 정보 넣기
 export const load = async ({ params, url, data, cookies }) => {
+    console.log(params);
 
+    const pageId = params.id;
+    console.log(pageId);
+    
+    
     let user_status = false;
-
     user_info.subscribe(e => {
         if (e.id) {
             user_status = true;
         }
     })
-
-
 
     let minisiteData = {}
     try {
@@ -22,11 +24,8 @@ export const load = async ({ params, url, data, cookies }) => {
             minisiteData = res.data.minisite_data
         }
     } catch (error) {
-
     }
 
-    console.log(minisiteData);
-    
 
-    return { minisiteData }
+    return { minisiteData, pageId }
 }

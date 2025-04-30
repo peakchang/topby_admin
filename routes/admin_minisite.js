@@ -294,7 +294,6 @@ minisiteRouter.post('/load_minisite', async (req, res) => {
 
 minisiteRouter.post('/update_minisite_manager', async (req, res) => {
     const body = req.body;
-    console.log(body);
 
     try {
         const updateManageSiteQuery = "UPDATE hy_site SET hy_manage_site = ? WHERE hy_id = ?";
@@ -312,6 +311,7 @@ minisiteRouter.post('/update_minisite_manager', async (req, res) => {
 // 미니사이트 ONE 단일 페이지!!!!!!!!!!!!!!!!!
 
 
+// 미니사이트one 리스트 불러오기! (전체 리스트 및 수정 페이지)
 minisiteRouter.post('/load_minisite_one', async (req, res) => {
 
     let minisiteData = [];
@@ -365,9 +365,8 @@ minisiteRouter.post('/add_hy_site_one', async (req, res) => {
     res.json({ err_message })
 })
 
-
+// 사이트 리스트 불러오기! (hy_site / hy_site_one 페이지 두개 동일하게 쓰는중!)
 minisiteRouter.post('/get_site_list', async (req, res) => {
-    console.log('일단 들어오니?!?!?!');
     let site_list = [];
     const searchSite = req.body.search_site
     let addQuery = ""
@@ -385,7 +384,7 @@ minisiteRouter.post('/get_site_list', async (req, res) => {
     res.json({ site_list })
 })
 
-
+// hy_site_one 페이지 데이터 불러오기!!
 minisiteRouter.post('/load_hy_data_one', async (req, res) => {
     const hyId = req.body.getHyId;
     let hyData = {}
@@ -398,8 +397,6 @@ minisiteRouter.post('/load_hy_data_one', async (req, res) => {
         const getConSite = "SELECT sl_site_name FROM site_list WHERE sl_id = ?"
         const [conSite] = await sql_con.promise().query(getConSite, [hyData.hy_site]);
         con_site = conSite[0]
-        console.log(con_site);
-
     } catch (err) {
         console.error(err.message);
     }
@@ -408,12 +405,9 @@ minisiteRouter.post('/load_hy_data_one', async (req, res) => {
 })
 
 
-
+// hy_site_one 페이지 데이터 업데이트!!!
 minisiteRouter.post('/update_hy_data_one', async (req, res) => {
     const hySiteData = req.body
-
-    console.log(hySiteData);
-
 
     const hyId = hySiteData.hy_id;
     delete hySiteData.hy_id;
@@ -427,6 +421,57 @@ minisiteRouter.post('/update_hy_data_one', async (req, res) => {
     } catch (err) {
         console.error(err.message);
     }
+    res.json({})
+})
+
+// 연결 현장 변경하기!! (site_id 값으로 다 하자!)
+minisiteRouter.post('/change_hy_site', async (req, res) => {
+    const hyId = req.body.hy_id
+    const siteId = req.body.site_id
+
+    let site_name = ""
+
+    try {
+        const updateHySiteQuery = "UPDATE hy_site_one SET hy_site = ? WHERE hy_id = ?";
+        await sql_con.promise().query(updateHySiteQuery, [siteId, hyId]);
+        const getSiteNameQuery = "SELECT sl_site_name FROM site_list WHERE sl_id = ?"
+        const [getSiteName] = await sql_con.promise().query(getSiteNameQuery, [siteId]);
+        site_name = getSiteName[0]['sl_site_name']
+    } catch (error) {
+
+    }
+
+    res.json({ site_name })
+})
+
+// 방문자수 올리기 + hy_site_one 방문자 기록 테이블에 업로드 하기!!
+minisiteRouter.post('/update_visit_count', async (req, res) => {
+
+    const b = req.body
+    const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    const userAgent = req.get('user-agent');
+
+    b['st_ip'] = ipAddress
+    b['st_ua'] = userAgent
+
+    try {
+        const visitCount = b.st_visit_count
+        const updateHySiteOneCountQuery = "UPDATE hy_site_one SET hy_counter = ? WHERE hy_page_id = ?";
+        await sql_con.promise().query(updateHySiteOneCountQuery, [visitCount, b.st_page_id]);
+        delete b.st_visit_count
+        const queryStr = getQueryStr(b, 'insert', 'st_created_at')
+        const insertSiteVisitQuery = `INSERT INTO hy_site_visit (${queryStr.str}) VALUES (${queryStr.question})`;
+        await sql_con.promise().query(insertSiteVisitQuery, queryStr.values);
+    } catch (error) {
+        console.error(error.message);
+
+    }
+
+    res.json({})
+})
+
+
+minisiteRouter.post('/update_call_sms_count', async (req, res) => {
     res.json({})
 })
 
