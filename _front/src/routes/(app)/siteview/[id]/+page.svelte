@@ -2,6 +2,7 @@
     import axios from "axios";
     import { back_api } from "$src/lib/const";
     import { page } from "$app/stores";
+    
 
     let { data } = $props();
     const allData = data.minisiteData;
