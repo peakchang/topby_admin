@@ -408,7 +408,8 @@ minisiteRouter.post('/load_hy_data_one', async (req, res) => {
 // hy_site_one 페이지 데이터 업데이트!!!
 minisiteRouter.post('/update_hy_data_one', async (req, res) => {
     const hySiteData = req.body
-
+    console.log(hySiteData);
+    
     const hyId = hySiteData.hy_id;
     delete hySiteData.hy_id;
     hySiteData.hy_creted_at = moment(hySiteData.hy_creted_at).format('YYYY-MM-DD HH:mm:ss');
