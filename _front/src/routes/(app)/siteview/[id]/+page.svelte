@@ -2,6 +2,7 @@
     import axios from "axios";
     import { back_api } from "$src/lib/const";
     import { page } from "$app/stores";
+    import Cookies from "js-cookie";
     
 
     let { data } = $props();
@@ -12,27 +13,27 @@
         imgList = data.minisiteData.hy_image_list.split(",");
     }
 
-    // $effect(async () => {
-    //     const getVisitedCookie = Cookies.get("topby_visited");
-    //     const referrer = document.referrer;
-    //     const setAddCount = Number(allData["hy_counter"]) + 1;
-    //     if (!getVisitedCookie) {
-    //         try {
-    //             const res = await axios.post(
-    //                 `${back_api}/minisite/update_visit_count`,
-    //                 {
-    //                     st_page_id: data.pageId,
-    //                     st_visit_count: setAddCount,
-    //                     st_referrer: referrer,
-    //                 },
-    //             );
+    $effect(async () => {
+        const getVisitedCookie = Cookies.get("topby_visited");
+        const referrer = document.referrer;
+        const setAddCount = Number(allData["hy_counter"]) + 1;
+        if (!getVisitedCookie) {
+            try {
+                const res = await axios.post(
+                    `${back_api}/minisite/update_visit_count`,
+                    {
+                        st_page_id: data.pageId,
+                        st_visit_count: setAddCount,
+                        st_referrer: referrer,
+                    },
+                );
 
-    //             if (res.status == 200) {
-    //                 Cookies.set("topby_visited", "ok", { expires: 1 });
-    //             }
-    //         } catch (error) {}
-    //     }
-    // });
+                if (res.status == 200) {
+                    Cookies.set("topby_visited", "ok", { expires: 1 });
+                }
+            } catch (error) {}
+        }
+    });
 
     console.log(allData);
 

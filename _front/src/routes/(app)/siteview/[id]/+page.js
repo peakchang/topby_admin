@@ -1,39 +1,12 @@
 import { user_info } from "$lib/store.js";
 import { back_api } from "$src/lib/const.js";
 import axios from 'axios';
-import Cookies from "js-cookie";
+
 
 // 사이트 접속시 user_info store 값에 user 정보 넣기
 export async function load({ params, }) {
 
     const pageId = params.id;
-
-
-    console.log(Cookies);
-    
-    const cookie = Cookies.get('topby_visited')
-    console.log(cookie);
-
-
-
-
-
-
-
-    try {
-        const rawCookies = document.cookie;
-        console.log(rawCookies);
-
-    } catch (err) {
-        console.error(err);
-
-
-    }
-
-    // const getVisitedCookie = cookies.get("topby_visited");
-
-
-
     let user_status = false;
     user_info.subscribe(e => {
         if (e.id) {
