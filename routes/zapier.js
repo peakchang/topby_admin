@@ -58,7 +58,7 @@ zapierRouter.post('/', async (req, res) => {
 
         try {
             const chkFor2WeeksDataQuery = "SELECT * FROM application_form WHERE af_mb_phone = ? AND af_form_name = ? AND af_created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH);"
-            const chkFor2WeeksData = await sql_con.promise().query(chkFor2WeeksDataQuery, [get_phone]);
+            const chkFor2WeeksData = await sql_con.promise().query(chkFor2WeeksDataQuery, [get_phone, reFormName]);
 
             // 테스트때는 잠시 주석!
             // if (chkFor2WeeksData[0].length > 0) {
@@ -149,44 +149,44 @@ zapierRouter.post('/', async (req, res) => {
             dbName = '성함 미입력'
         }
 
-        var customerInfo = { ciName: dbName, ciCompany: '리치분양', ciSite: getSiteInfo.sl_site_name, ciSiteLink: siteList, ciReceiver: receiverStr }
+        // var customerInfo = { ciName: dbName, ciCompany: '리치분양', ciSite: getSiteInfo.sl_site_name, ciSiteLink: siteList, ciReceiver: receiverStr }
 
         // 매니저한테 알림톡 / 문자 발송
-        for (let oo = 0; oo < findUser.length; oo++) {
-            const managerPhone = findUser[oo].user_phone
-            if (managerPhone.includes('010')) {
-                customerInfo['ciPhone'] = managerPhone
-                console.log(customerInfo);
-                try {
-                    // aligoKakaoNotification_formanager(req, customerInfo)
-                } catch (e) {
-                    console.error(e.message);
-                }
+        // for (let oo = 0; oo < findUser.length; oo++) {
+        //     const managerPhone = findUser[oo].user_phone
+        //     if (managerPhone.includes('010')) {
+        //         customerInfo['ciPhone'] = managerPhone
+        //         console.log(customerInfo);
+        //         try {
+        //             // aligoKakaoNotification_formanager(req, customerInfo)
+        //         } catch (e) {
+        //             console.error(e.message);
+        //         }
 
 
-                const resMessage = `리치분양 고객 인입 안내! ${getSiteInfo.sl_site_name} 현장 / ${dbName}님 접수되었습니다! 고객 번호 : ${receiverStr}`
-                console.log('문자 발송 부분!!!');
-                console.log(`receiver : ${managerPhone}`);
-                console.log(`msg : ${resMessage}`);
-                console.log(`글자 수 : ${resMessage.length}`);
+        //         const resMessage = `리치분양 고객 인입 안내! ${getSiteInfo.sl_site_name} 현장 / ${dbName}님 접수되었습니다! 고객 번호 : ${receiverStr}`
+        //         console.log('문자 발송 부분!!!');
+        //         console.log(`receiver : ${managerPhone}`);
+        //         console.log(`msg : ${resMessage}`);
+        //         console.log(`글자 수 : ${resMessage.length}`);
 
-                req.body = {
-                    sender: '010-3124-1105',
-                    receiver: managerPhone,
-                    msg: resMessage,
-                    msg_type: 'LMS'
-                }
+        //         req.body = {
+        //             sender: '010-3124-1105',
+        //             receiver: managerPhone,
+        //             msg: resMessage,
+        //             msg_type: 'LMS'
+        //         }
 
-                try {
-                    const aligo_res = await aligoapi.send(req, AuthData)
-                    console.log(aligo_res);
+        //         try {
+        //             const aligo_res = await aligoapi.send(req, AuthData)
+        //             console.log(aligo_res);
 
-                } catch (err) {
-                    console.error(err.message);
-                }
+        //         } catch (err) {
+        //             console.error(err.message);
+        //         }
 
-            }
-        }
+        //     }
+        // }
 
 
         // 여기서 고객에게 보낼 알림톡 발송!!!
