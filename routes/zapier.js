@@ -36,8 +36,6 @@ zapierRouter.post('/', async (req, res) => {
     const body = req.body;
     try {
 
-        console.log(body);
-
         const get_temp_phone = body['raw__phone_number'];
         let get_phone = get_temp_phone
         try {
