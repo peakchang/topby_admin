@@ -31,13 +31,13 @@ zapierRouter.get('/', (req, res) => {
 zapierRouter.post('/', async (req, res) => {
 
     console.log('zapier 진입!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-    
+
     let status = true;
     const body = req.body;
     try {
 
         console.log(body);
-        
+
         const get_temp_phone = body['raw__phone_number'];
         let get_phone = get_temp_phone
         try {
@@ -120,7 +120,7 @@ zapierRouter.post('/', async (req, res) => {
         }
 
         // 최고관리자에게 이메일 발송
-        const mailSubject = `(리치분양 접수) ${reFormName} 고객명 ${body['raw__full_name']} 접수되었습니다.`;
+        const mailSubject = `(탑분양 접수) ${reFormName} 고객명 ${body['raw__full_name']} 접수되었습니다.`;
         const mailContent = `현장: ${reFormName} / 이름 : ${body['raw__full_name']} / 전화번호 : ${get_phone} ${addEtcMessage}`;
         mailSender('adpeak@naver.com', mailSubject, mailContent);
         mailSender('changyong112@naver.com', mailSubject, mailContent);
@@ -149,67 +149,73 @@ zapierRouter.post('/', async (req, res) => {
             dbName = '성함 미입력'
         }
 
-        // var customerInfo = { ciName: dbName, ciCompany: '리치분양', ciSite: getSiteInfo.sl_site_name, ciSiteLink: siteList, ciReceiver: receiverStr }
+        var customerInfo = { ciName: dbName, ciCompany: '탑분양', ciSite: getSiteInfo.sl_site_name, ciSiteLink: siteList, ciReceiver: receiverStr }
 
         // 매니저한테 알림톡 / 문자 발송
-        // for (let oo = 0; oo < findUser.length; oo++) {
-        //     const managerPhone = findUser[oo].user_phone
-        //     if (managerPhone.includes('010')) {
-        //         customerInfo['ciPhone'] = managerPhone
-        //         console.log(customerInfo);
-        //         try {
-        //             // aligoKakaoNotification_formanager(req, customerInfo)
-        //         } catch (e) {
-        //             console.error(e.message);
-        //         }
+        for (let oo = 0; oo < findUser.length; oo++) {
+
+            let sendStatus = false;
+            const managerPhone = findUser[oo].user_phone
+            if (managerPhone.includes('010')) {
+                customerInfo['ciPhone'] = managerPhone
+                console.log(customerInfo);
+                try {
+                    aligoKakaoNotification_formanager(req, customerInfo)
+                    sendStatus = true;
+                } catch (e) {
+                    console.error(e.message);
+                }
+
+                if (!sendStatus) {
+                    const resMessage = `탑분양 고객 인입 안내! ${getSiteInfo.sl_site_name} 현장 / ${dbName}님 접수되었습니다! 고객 번호 : ${receiverStr}`
+                    console.log('문자 발송 부분!!!');
+                    console.log(`receiver : ${managerPhone}`);
+                    console.log(`msg : ${resMessage}`);
+                    console.log(`글자 수 : ${resMessage.length}`);
+
+                    req.body = {
+                        sender: '010-3124-1105',
+                        receiver: managerPhone,
+                        msg: resMessage,
+                        msg_type: 'LMS'
+                    }
+
+                    try {
+                        const aligo_res = await aligoapi.send(req, AuthData)
+                        console.log(aligo_res);
+
+                    } catch (err) {
+                        console.error(err.message);
+                    }
+                }
 
 
-        //         const resMessage = `리치분양 고객 인입 안내! ${getSiteInfo.sl_site_name} 현장 / ${dbName}님 접수되었습니다! 고객 번호 : ${receiverStr}`
-        //         console.log('문자 발송 부분!!!');
-        //         console.log(`receiver : ${managerPhone}`);
-        //         console.log(`msg : ${resMessage}`);
-        //         console.log(`글자 수 : ${resMessage.length}`);
 
-        //         req.body = {
-        //             sender: '010-3124-1105',
-        //             receiver: managerPhone,
-        //             msg: resMessage,
-        //             msg_type: 'LMS'
-        //         }
-
-        //         try {
-        //             const aligo_res = await aligoapi.send(req, AuthData)
-        //             console.log(aligo_res);
-
-        //         } catch (err) {
-        //             console.error(err.message);
-        //         }
-
-        //     }
-        // }
+            }
+        }
 
 
         // 여기서 고객에게 보낼 알림톡 발송!!!
 
-        // try {
-        //     const getSendContentQuery = "SELECT * FROM site_list WHERE sl_site_name = ?"
-        //     const getSendContent = await sql_con.promise().query(getSendContentQuery, [getSiteInfo.sl_site_name])
-        //     const sendRealSiteName = getSendContent[0][0]['sl_site_realname']
-        //     const sendContent = getSendContent[0][0]['sl_sms_content']
-        //     if (sendRealSiteName && sendContent) {
-        //         const detailSendContent = {
-        //             receiver: get_phone,
-        //             ciName: body['raw__full_name'],
-        //             ciCompany: "리치분양",
-        //             ciSite: sendRealSiteName,
-        //             smsContent: sendContent
-        //         }
-        //         // aligoKakaoNotification_detail(req, detailSendContent)
-        //     }
+        try {
+            const getSendContentQuery = "SELECT * FROM site_list WHERE sl_site_name = ?"
+            const getSendContent = await sql_con.promise().query(getSendContentQuery, [getSiteInfo.sl_site_name])
+            const sendRealSiteName = getSendContent[0][0]['sl_site_realname']
+            const sendContent = getSendContent[0][0]['sl_sms_content']
+            if (sendRealSiteName && sendContent) {
+                const detailSendContent = {
+                    receiver: get_phone,
+                    ciName: body['raw__full_name'],
+                    ciCompany: "탑분양",
+                    ciSite: sendRealSiteName,
+                    smsContent: sendContent
+                }
+                // aligoKakaoNotification_detail(req, detailSendContent)
+            }
 
-        // } catch (error) {
-        //     console.error(error.message);
-        // }
+        } catch (error) {
+            console.error(error.message);
+        }
 
         // 알림톡 발송 끝~~~~
         return res.sendStatus(200);
