@@ -8,7 +8,6 @@
     let userId = $state("");
     let userIdInput = $state();
     let userPwd = $state("");
-
     let moveUrl = $state("");
 
     $effect(() => {

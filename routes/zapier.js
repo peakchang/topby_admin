@@ -10,9 +10,6 @@ import aligoapi from 'aligoapi'
 
 // ---------
 
-import HttpsProxyAgent from 'https-proxy-agent';
-import https from 'https'
-import { exec } from 'child_process';
 
 var token = process.env.TOKEN || 'whtoken';
 
@@ -38,6 +35,9 @@ zapierRouter.post('/', async (req, res) => {
     let status = true;
     const body = req.body;
     try {
+
+        console.log(body);
+        
         const get_temp_phone = body['raw__phone_number'];
         let get_phone = get_temp_phone
         try {
