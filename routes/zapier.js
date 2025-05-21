@@ -34,6 +34,8 @@ zapierRouter.post('/', async (req, res) => {
 
     let status = true;
     const body = req.body;
+    console.log(body);
+    
     try {
 
         const get_temp_phone = body['raw__phone_number'];
@@ -171,7 +173,6 @@ zapierRouter.post('/', async (req, res) => {
             const managerPhone = findUser[oo].user_phone
             if (managerPhone.includes('010')) {
                 customerInfo['ciPhone'] = managerPhone
-                console.log(customerInfo);
                 try {
                     aligoKakaoNotification_formanager(req, customerInfo)
                     sendStatus = true;
@@ -195,7 +196,7 @@ zapierRouter.post('/', async (req, res) => {
 
                     try {
                         const aligo_res = await aligoapi.send(req, AuthData)
-                        console.log(aligo_res);
+                        console.log(`알리고 발송 : ${aligo_res.message}`);
 
                     } catch (err) {
                         console.error(err.message);

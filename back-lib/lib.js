@@ -98,10 +98,10 @@ export function mailSender(reciever, subject, content) {
 
 export async function aligoKakaoNotification_formanager(req, customerInfo) {
 
-    console.log('Kakao Message Send Is Started!!!!!!!!!!!!!!!!');
-    console.log(process.env.ALIGOKEY);
-    console.log(process.env.ALIGOID);
-    console.log(process.env.ALIGO_SENDERKEY);
+    // console.log('Kakao Message Send Is Started!!!!!!!!!!!!!!!!');
+    // console.log(process.env.ALIGOKEY);
+    // console.log(process.env.ALIGOID);
+    // console.log(process.env.ALIGO_SENDERKEY);
 
     try {
         const AuthData = {
@@ -134,10 +134,10 @@ export async function aligoKakaoNotification_formanager(req, customerInfo) {
             }
         })
 
-        console.log(result);
+        // console.log(result);
 
 
-        console.log(customerInfo);
+        // console.log(customerInfo);
 
         req.body = {
             senderkey: process.env.ALIGO_SENDERKEY,
