@@ -35,7 +35,7 @@ zapierRouter.post('/', async (req, res) => {
     let status = true;
     const body = req.body;
     console.log(body);
-    
+
     try {
 
         const get_temp_phone = body['raw__phone_number'];
@@ -59,7 +59,7 @@ zapierRouter.post('/', async (req, res) => {
             try {
                 const result = await axios.post('https://richby.co.kr/zapier', body)
                 console.log(`리치로 발송 상태! : ${result.status}`);
-                
+
                 return res.sendStatus(200);
             } catch (error) {
                 return res.sendStatus(200);
@@ -97,25 +97,36 @@ zapierRouter.post('/', async (req, res) => {
         let etcValuesStr = '';
         let addEtcMessage = '';
 
+        // for (const key in body) {
+        //     if (key.includes('raw__etc1')) {
+        //         etcInsertStr = etcInsertStr + `, af_mb_etc1`;
+        //         etcValuesStr = etcValuesStr + `, '${body[key]}'`;
+        //         addEtcMessage = addEtcMessage + `// 기타 정보1 : ${body[key]}`
+        //     } else if (key.includes('raw__etc2')) {
+        //         etcInsertStr = etcInsertStr + `, af_mb_etc2`;
+        //         etcValuesStr = etcValuesStr + `, '${body[key]}'`;
+        //         addEtcMessage = addEtcMessage + `// 기타 정보2 : ${body[key]}`
+        //     } else if (key.includes('raw__etc3')) {
+        //         etcInsertStr = etcInsertStr + `, af_mb_etc3`;
+        //         etcValuesStr = etcValuesStr + `, '${body[key]}'`;
+        //         addEtcMessage = addEtcMessage + `// 기타 정보3 : ${body[key]}`
+        //     }
+        // }
+
+        let idx = 0;
         for (const key in body) {
-            if (key.includes('raw__etc1')) {
-                etcInsertStr = etcInsertStr + `, af_mb_etc1`;
+            if(key == 'raw__full_name' || key == 'raw__phone_number'){
+                continue
+            }
+            if (key.includes('raw_')) {
+                idx++
+                etcInsertStr = etcInsertStr + `, af_mb_etc${idx}`;
                 etcValuesStr = etcValuesStr + `, '${body[key]}'`;
-                addEtcMessage = addEtcMessage + `// 기타 정보1 : ${body[key]}`
-            } else if (key.includes('raw__etc2')) {
-                etcInsertStr = etcInsertStr + `, af_mb_etc2`;
-                etcValuesStr = etcValuesStr + `, '${body[key]}'`;
-                addEtcMessage = addEtcMessage + `// 기타 정보2 : ${body[key]}`
-            } else if (key.includes('raw__etc3')) {
-                etcInsertStr = etcInsertStr + `, af_mb_etc3`;
-                etcValuesStr = etcValuesStr + `, '${body[key]}'`;
-                addEtcMessage = addEtcMessage + `// 기타 정보3 : ${body[key]}`
+                addEtcMessage = addEtcMessage + `// 기타 정보${idx} : ${body[key]}`
             }
         }
-
-
+        console.log(addEtcMessage);
         
-
         const values = [reFormName, '분양', 'FB', body['raw__full_name'], get_phone, '', nowStr]
 
         // 폼 insert 하기!!
