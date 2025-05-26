@@ -52,13 +52,8 @@ zapierRouter.post('/', async (req, res) => {
         const nowStr = moment().format('YYYY-MM-DD HH:mm:ss');
 
         const get_form_name = body['form_name']
-        var reFormName = get_form_name.replace(/[a-zA-Z\(\)\-\s]/g, '')
-
-        console.log(reFormName);
         
-
-
-        if (reFormName.includes('rich') || reFormName.includes('RICH') || reFormName.includes('리치')) {
+        if (get_form_name.includes('rich') || get_form_name.includes('RICH') || get_form_name.includes('리치')) {
             try {
                 const result = await axios.post('https://richby.co.kr/zapier', body)
                 console.log(`리치로 발송 상태! : ${result.status}`);
@@ -68,6 +63,10 @@ zapierRouter.post('/', async (req, res) => {
                 return res.sendStatus(200);
             }
         }
+
+        var reFormName = get_form_name.replace(/[a-zA-Z\(\)\-\s]/g, '')
+
+        console.log(reFormName);
 
         // 조회 먼저 해 보고 만약 기존 DB와 겹치면 패스하기
 
