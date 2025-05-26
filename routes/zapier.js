@@ -54,6 +54,9 @@ zapierRouter.post('/', async (req, res) => {
         const get_form_name = body['form_name']
         var reFormName = get_form_name.replace(/[a-zA-Z\(\)\-\s]/g, '')
 
+        console.log(reFormName);
+        
+
 
         if (reFormName.includes('rich') || reFormName.includes('RICH') || reFormName.includes('리치')) {
             try {
