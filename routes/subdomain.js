@@ -1,14 +1,41 @@
 import express from "express";
 import fs from 'fs';
+import path from "path";
+
 import multer from "multer";
 import { sql_con } from '../back-lib/db.js'
 import { getQueryStr, aligoKakaoNotification_formanager, aligoKakaoNotification_detail } from '../back-lib/lib.js';
+
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+import { processImageFile } from "../back-lib/processImageFile.js";
+
 import moment from "moment-timezone";
 moment.tz.setDefault("Asia/Seoul");
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 
 const subdomainRouter = express.Router();
+
+
+let img_upload_set = multer({
+    storage: multer.diskStorage({
+        destination: (req, file, cb) => {
+            const folder = req.body.folder || 'default';
+            console.log(folder);
+            
+            const uploadPath = path.join(__dirname, 'uploads', folder);
+            ensureDirectoryExistence(uploadPath);
+            cb(null, uploadPath);
+        },
+        filename: (req, file, cb) => {
+            cb(null, file.originalname);
+        }
+    })
+})
 
 let img_upload = multer({
     storage: multer.diskStorage({
@@ -24,6 +51,96 @@ let img_upload = multer({
     }),
     // limits: { fileSize: 10 * 1024 * 1024 },
 });
+
+// 폴더 존재 여부 확인 및 생성
+const ensureDirectoryExistence = (folderPath) => {
+    if (!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath, { recursive: true });
+    }
+};
+
+
+
+subdomainRouter.post('/img_upload_set', img_upload_set.single('onimg'), (req, res, next) => {
+
+    let baseUrl
+    let saveUrl
+
+    console.log(req.body);
+    
+
+    try {
+        const lastFolderArr = req.file.destination.split('/');
+        const lastFolder = lastFolderArr[lastFolderArr.length - 1];
+        var origin = req.get('host');
+        baseUrl = req.protocol + '://' + origin + '/subimg/' + lastFolder + '/' + req.file.filename;
+        saveUrl = req.file.path
+
+    } catch (error) {
+
+    }
+
+    res.json({ baseUrl, saveUrl })
+})
+
+
+
+
+// 사이트 카피 부분!!!
+
+subdomainRouter.post('/copy_site', async (req, res, next) => {
+    console.log('들어는 오잖아?!?!?!');
+
+    const copyData = req.body.allData
+    console.log(copyData);
+
+    for (let i = 0; i < 5; i++) {
+        delete copyData[`ld_pg${i}_img`]
+    }
+
+    console.log(copyData);
+
+    // 'ld_banner_img',
+    const singleImgKeyList = ['ld_logo',
+        'ld_ph_img',
+        'ld_card_image',
+        'ld_invite_image',
+        'ld_popup_img',
+        'ld_mobile_bt_event_img',
+        'ld_mobile_bt_phone_img',
+        'ld_event_img']
+
+    // for (const key in copyData) {
+    //     if (singleImgKeyList.includes(key) && copyData[key]) {
+    //         let imgPath = copyData[key]
+    //         if (imgPath.includes('http')) {
+    //             // http, https 등 도메인 빼고 subimg/... 으로 주소 변경
+    //             imgPath = imgPath.replace(/https?:\/\/[^/]+/g, '');
+    //             // subimg/도 빼고 img/파일명 만 남기기
+    //             const relativePath = imgPath.replace('/subimg/', ''); // img241004/...
+    //             // 절대 경로 주소 만들기
+    //             const filePath = path.join(__dirname, '..', 'subuploads', 'img', relativePath);
+
+    //             if (fs.existsSync(filePath)) {
+    //                 console.log('✅ 파일이 존재합니다:', filePath);
+    //                 const res = await processImageFile(relativePath)
+    //                 console.log(res);
+    //             }
+    //         }
+    //     }
+    // }
+
+    // ld_json_main
+    // ld_json_menus
+
+    // -----------------------------------------
+
+
+    res.json({})
+})
+
+
+
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 여기는 visit!!!!!!!!!!!!!!!
 
@@ -232,7 +349,7 @@ subdomainRouter.post('/update_site_set', async (req, res, next) => {
         const updateSiteSetQuery = `UPDATE land SET ${queryData.str} WHERE ld_domain = ?`
 
         console.log(updateSiteSetQuery);
-        
+
         queryData.values.push(body.get_id)
         await sql_con.promise().query(updateSiteSetQuery, queryData.values);
 
@@ -399,6 +516,7 @@ function imgFolderChk() {
 
     return setFolder;
 }
+
 
 export { subdomainRouter }
 
