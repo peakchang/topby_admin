@@ -25,9 +25,13 @@ let img_upload_set = multer({
     storage: multer.diskStorage({
         destination: (req, file, cb) => {
             const folder = req.body.folder || 'default';
+            console.log(__dirname);
+
             console.log(folder);
-            
-            const uploadPath = path.join(__dirname, 'uploads', folder);
+
+            const uploadPath = path.join(__dirname, '..', 'subuploads', 'img', folder);
+            console.log(uploadPath);
+
             ensureDirectoryExistence(uploadPath);
             cb(null, uploadPath);
         },
@@ -62,25 +66,27 @@ const ensureDirectoryExistence = (folderPath) => {
 
 
 subdomainRouter.post('/img_upload_set', img_upload_set.single('onimg'), (req, res, next) => {
-
-    let baseUrl
-    let saveUrl
+    let saveUrl = ""
 
     console.log(req.body);
+    console.log(req.file);
+
+    saveUrl = `/subimg/${req.body.folder}/${req.file.originalname}`
+
     
 
-    try {
-        const lastFolderArr = req.file.destination.split('/');
-        const lastFolder = lastFolderArr[lastFolderArr.length - 1];
-        var origin = req.get('host');
-        baseUrl = req.protocol + '://' + origin + '/subimg/' + lastFolder + '/' + req.file.filename;
-        saveUrl = req.file.path
+    // try {
+    //     const lastFolderArr = req.file.destination.split('/');
+    //     const lastFolder = lastFolderArr[lastFolderArr.length - 1];
+    //     var origin = req.get('host');
+    //     baseUrl = req.protocol + '://' + origin + '/subimg/' + lastFolder + '/' + req.file.filename;
+    //     saveUrl = req.file.path
 
-    } catch (error) {
+    // } catch (error) {
 
-    }
+    // }
 
-    res.json({ baseUrl, saveUrl })
+    res.json({ saveUrl })
 })
 
 
