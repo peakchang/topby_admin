@@ -292,7 +292,7 @@
 </dialog>
 
 <div class="">
-    <div class="pb-5 w-full md:w-1/2 flex gap-4">
+    <div class="pb-5 w-full flex gap-4">
         <div class="flex items-center gap-2">
             <input type="text" class="input-base" bind:value={searchVal} />
             <!-- svelte-ignore event_directive_deprecated -->

@@ -134,49 +134,34 @@ minisiteRouter.post('/copy_hy_data', async (req, res) => {
         const [getHyDataRow] = await sql_con.promise().query(getHyDataQuery, body.copyData.hy_id);
         const getHyData = getHyDataRow[0];
 
-        delete getHyData.hy_id;
+        delete getHyData.hy_creted_at
+        delete getHyData.hy_id
 
-        let keyStr = "";
-        let questions = "";
-        let values = [];
+        const originHyNum = getHyData.hy_num
         for (const key in getHyData) {
-            keyStr += `${key},`;
-            questions += `?,`;
-
-            if (key == 'hy_creted_at') {
-                const getTime = moment(getHyData[key]).format('YYYY-MM-DD HH:mm:ss');
-                values.push(getTime)
-            } else if (key == 'hy_num') {
-                values.push(body.copyId)
-            } else if (key.includes('image')) {
-                const getImgPath = getHyData[key].replaceAll(body.copyData.hy_num, body.copyId)
-                values.push(getImgPath);
-            } else {
-                values.push(getHyData[key])
+            const val = getHyData[key];
+            if (val && typeof val === 'string') {
+                if (getHyData[key].includes(originHyNum)) {
+                    getHyData[key] = getHyData[key].replaceAll(originHyNum, body.copyId)
+                }
             }
-
         }
+        
 
-        if (keyStr.endsWith(',')) {
-            keyStr = keyStr.slice(0, -1);
-        }
-
-        if (questions.endsWith(',')) {
-            questions = questions.slice(0, -1);
-        }
-
-        const getOldFolder = `./public/uploads/image/${body.copyData.hy_num}`
-        const getNewFolder = `./public/uploads/image/${body.copyId}`;
+        // 폴더 복사 시작욤
+        const getOldFolder = path.join(process.cwd(), 'public', 'uploads', 'image', originHyNum);
+        const getNewFolder = path.join(process.cwd(), 'public', 'uploads', 'image', body.copyId);
         if (fs.existsSync(getOldFolder)) {
             fs.copySync(getOldFolder, getNewFolder);
         } else {
         }
 
-        const addHyDataQuery = `INSERT INTO hy_site (${keyStr}) VALUES (${questions})`;
-        await sql_con.promise().query(addHyDataQuery, values);
+        const queryStr = getQueryStr(getHyData, 'insert', 'hy_creted_at')
+        const addHyDataQuery = `INSERT INTO hy_site (${queryStr.str}) VALUES (${queryStr.question})`;
+        await sql_con.promise().query(addHyDataQuery, queryStr.values);
     } catch (err) {
         console.error(err.message);
-        return res.status(400).json({message : '아이디 값이 중복됩니다.'})
+        return res.status(400).json({ message: '아이디 값이 중복됩니다.' })
     }
 
     return res.json({})
@@ -264,8 +249,6 @@ minisiteRouter.post('/load_minisite', async (req, res) => {
     const search = req.body.search || "";
     let searchStr = "";
 
-    console.log(nowPage);
-    
 
     let site_list = [];
     if (search) {
@@ -285,8 +268,6 @@ minisiteRouter.post('/load_minisite', async (req, res) => {
         const [miniSiteRows] = await sql_con.promise().query(getMinisite1Query);
         minisiteData = miniSiteRows;
 
-        console.log(minisiteData);
-        
 
 
         const getSiteListQuery = "SELECT sl_id, sl_site_name FROM site_list ORDER BY sl_id DESC";
@@ -321,7 +302,6 @@ minisiteRouter.post('/delete_minisite_one_raw', async (req, res) => {
 
 
     const deleteData = req.body.deleteData;
-    console.log(deleteData);
 
     for (let i = 0; i < deleteData.length; i++) {
         const data = deleteData[i];
@@ -366,7 +346,6 @@ minisiteRouter.post('/copy_minisite_one', async (req, res) => {
         for (const key in copyData) {
             const val = copyData[key];
             if (val && typeof val === 'string') {
-                console.log(copyData[key]);
                 if (copyData[key].includes(originalPageId) && copyData[key].includes('img')) {
                     copyData[key] = copyData[key].replaceAll(`img/${originalPageId}/`, `img/${body.copyId}/`);
                 }
@@ -381,7 +360,6 @@ minisiteRouter.post('/copy_minisite_one', async (req, res) => {
         // 폴더 복사 시작욤
         const getOldFolder = path.join(process.cwd(), 'public', 'uploads', 'image', body.copyData.hy_page_id);
         const getNewFolder = path.join(process.cwd(), 'public', 'uploads', 'image', body.copyId);
-        console.log(fs.existsSync(getOldFolder));
 
         if (fs.existsSync(getOldFolder)) {
             fs.copySync(getOldFolder, getNewFolder);
@@ -408,7 +386,7 @@ minisiteRouter.post('/load_minisite_one', async (req, res) => {
     let onePageCount = 10;
     const nowPage = req.body.nowPage || 1;
     const search = req.body.search || "";
-    
+
     let searchStr = "";
     if (search) {
         searchStr = `WHERE hy_title LIKE '%${search}%'`;
@@ -426,8 +404,7 @@ minisiteRouter.post('/load_minisite_one', async (req, res) => {
         const getMinisite1Query = `SELECT hy_id,hy_page_id,hy_title,hy_counter FROM hy_site_one ${searchStr} ORDER BY hy_id DESC LIMIT ${startCount}, ${onePageCount}`;
         const [miniSiteRows] = await sql_con.promise().query(getMinisite1Query);
         minisiteData = miniSiteRows;
-        console.log(minisiteData);
-        
+
     } catch (err) {
         '진따 에러가 나는거야?'
         console.error(err.message);
@@ -500,7 +477,6 @@ minisiteRouter.post('/load_hy_data_one', async (req, res) => {
 // hy_site_one 페이지 데이터 업데이트!!!
 minisiteRouter.post('/update_hy_data_one', async (req, res) => {
     const hySiteData = req.body
-    console.log(hySiteData);
 
     const hyId = hySiteData.hy_id;
     delete hySiteData.hy_id;
@@ -579,7 +555,6 @@ minisiteRouter.post('/update_call_sms_count', async (req, res) => {
     } catch (err) {
         console.error(err.message);
     }
-    console.log(b);
 
     res.json({})
 })
@@ -587,7 +562,6 @@ minisiteRouter.post('/update_call_sms_count', async (req, res) => {
 
 minisiteRouter.post('/upload_form_data', async (req, res) => {
     const b = req.body;
-    console.log(b);
 
     try {
         const getSiteNameQuery = "SELECT sl_site_name FROM site_list WHERE sl_id = ?";
@@ -611,7 +585,6 @@ minisiteRouter.post('/upload_form_data', async (req, res) => {
             for (let i = 0; i < getManager.length; i++) {
                 const m = getManager[i];
                 kakaoObj['ciPhone'] = m.user_phone;
-                console.log(kakaoObj);
                 aligoKakaoNotification_formanager(req, kakaoObj)
             }
         }
