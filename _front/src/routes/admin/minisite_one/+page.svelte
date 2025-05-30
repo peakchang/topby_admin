@@ -133,15 +133,19 @@
         const deleteData = checkedList.map((index) =>
             JSON.parse(JSON.stringify(minisiteData[index])),
         );
+
+        console.log(deleteData);
+
         try {
-            const res = await axios.post(`${back_api}/minisite/delete_hy_raw`, {
-                deleteData,
-            });
-            if (res.status == 200) {
-                alert("삭제가 완료 되었습니다.");
-                checkedList = [];
-                invalidateAll();
-            }
+            const res = await axios.post(
+                `${back_api}/minisite/delete_minisite_one_raw`,
+                {
+                    deleteData,
+                },
+            );
+            alert("삭제가 완료 되었습니다.");
+            checkedList = [];
+            invalidateAll();
         } catch (error) {}
     }
 
@@ -160,17 +164,25 @@
         }
         const copyData = minisiteData[checkedList[0]];
         try {
-            const res = await axios.post(`${back_api}/minisite/copy_hy_data`, {
-                copyData,
-                copyId,
-            });
+            const res = await axios.post(
+                `${back_api}/minisite/copy_minisite_one`,
+                {
+                    copyData,
+                    copyId,
+                },
+            );
             if (res.status == 200) {
                 alert("복사가 완료 되었습니다.");
                 checkedList = [];
                 copyId = "";
                 invalidateAll();
             }
-        } catch (error) {}
+        } catch (err) {
+            console.error(err);
+            const m = err.response.data.message;
+            alert(m ? m : "에러가 발생 했습니다.");
+            return;
+        }
     }
 
     function movePage() {

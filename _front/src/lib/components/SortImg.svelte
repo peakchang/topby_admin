@@ -4,6 +4,7 @@
     import axios from "axios";
     import { back_api } from "$src/lib/const";
     import { page } from "$app/stores";
+    import uploadImageAct from "$src/lib/lib.js";
 
     let {
         updateImg,
@@ -70,88 +71,28 @@
         imgArr.splice(this.value, 1);
     }
 
-    const onFileSelected = (e) => {
-        if (imgArr.length >= maxImgCount) {
-            alert(`최대 ${maxImgCount}개 이미지만 업로드 가능합니다.`);
-            return false;
-        }
+    function onFileSelected() {
+        console.log("클릭클릭!!!");
 
-        const input = document.createElement("input");
-        input.setAttribute("type", "file");
-        input.setAttribute("accept", ".png,.jpg,.jpeg,.webp");
-        input.click();
+        uploadImageAct(
+            `${back_api}/img_upload_set`,
+            (err, data) => {
+                console.log(err);
 
-        // input change
-        input.onchange = async (e) => {
-            const imageFile = e.target.files[0];
-            const options = {
-                maxSizeMB: 1, // 최대 파일 크기 (MB)
-                maxWidthOrHeight: 9000, // 최대 너비 또는 높이
-                useWebWorker: true, // 웹 워커 사용
-            };
+                console.log(data);
 
-            try {
-                const compressedFile = await imageCompression(
-                    imageFile,
-                    options,
-                );
-                console.log("Compressed file:", compressedFile);
-                console.log(compressedFile.name);
+                addVal(data.saveUrl);
+                // setDetailImgCount = imgArr.length - 1;
+                console.log(imgArr);
+                updateImg(imgArr);
+            },
+            {
+                folder: imgFolder,
+            },
+        );
+    }
 
-                let imgForm = new FormData();
 
-                const timestamp = new Date().getTime();
-                const fileName = `${timestamp}${Math.random()
-                    .toString(36)
-                    .substring(2, 11)}.${compressedFile.name.split(".")[1]}`;
-
-                console.log(fileName);
-
-                imgForm.append("onimg", compressedFile, fileName);
-                imgForm.append("folderName", imgFolder);
-
-                // FormData의 key 값과 value값 찾기
-                // let keys = imgForm.keys();
-                // for (const pair of keys) {
-                //     console.log(`name : ${pair}`);
-                // }
-
-                // let values = imgForm.values();
-                // for (const pair of values) {
-                //     console.log(`value : ${pair}`);
-                // }
-
-                let res = {};
-                try {
-                    res = await axios.post(
-                        `${back_api}/upload_sort_img`,
-                        imgForm,
-                        {
-                            headers: {
-                                "Content-Type": "multipart/form-data",
-                            },
-                        },
-                    );
-                } catch (error) {
-                    console.error("Error during image upload:", error.message);
-                    alert("이미지 업로드 오류! 다시 시도해주세요!");
-                    return;
-                }
-
-                console.log(res);
-
-                if (res.status == 200) {
-                    console.log("여기는 일단 들어 오는거지?!?!?!?");
-                    addVal(res.data.baseUrl);
-                    setDetailImgCount = imgArr.length - 1;
-                    updateImg(imgArr);
-                }
-            } catch (error) {
-                console.error("Error during image compression:", error);
-                alert("이미지 업로드 오류! 다시 시도해주세요!");
-            }
-        };
-    };
 
     // 아래는 sortable 관련 함수! 건드리지 말기!!
 
@@ -219,12 +160,12 @@
         <img src={imgArr[setDetailImgCount]["href"]} alt="" />
     </div>
 {/if} -->
-<ul class="flex flex-wrap" bind:this={sortable}>
+<ul class="flex flex-wrap m-2 gap-2" bind:this={sortable}>
     {#each imgArr as img, idx (img)}
         <!-- svelte-ignore a11y_consider_explicit_label -->
         <!-- svelte-ignore event_directive_deprecated -->
         <li
-            class="m-2 flex w-24 h-24 items-center justify-center gap-1 border-2 my-handle rounded-lg overflow-hidden relative"
+            class="flex w-24 h-24 items-center justify-center border-2 my-handle rounded-lg overflow-hidden relative"
             data-idx={idx}
         >
             <button

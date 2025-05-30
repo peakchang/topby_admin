@@ -28,7 +28,7 @@
 
     $effect(() => {});
 
-    function updateImg(e) {
+    function updateImgList(e) {
         const tempImgArr = e.map((e) => e.href);
         hyData.hy_image_list = tempImgArr.join(",");
     }
@@ -66,7 +66,7 @@
     }
 
     function imageUpdate(e) {
-        hyData[e.value] = e.baseUrl;
+        hyData[e.value] = e.saveUrl;
         console.log(hyData);
     }
 </script>
@@ -267,7 +267,7 @@
                             imageLink={hyData.hy_form_img}
                             btnLocation={"left"}
                             btnSize={"xs"}
-                        ></OneImg>
+                        />
                     </div>
                 </td>
                 <th class="in-th text-xs bg-slate-100 border-slate-300">
@@ -283,7 +283,7 @@
                         imageLink={hyData.hy_form_follow_img}
                         btnLocation={"left"}
                         btnSize={"xs"}
-                    ></OneImg>
+                    />
                 </td>
             </tr>
 
@@ -299,7 +299,7 @@
                         imageLink={hyData.hy_form_btn_img}
                         btnLocation={"left"}
                         btnSize={"xs"}
-                    ></OneImg>
+                    />
                 </td>
                 <th class="in-th text-xs bg-slate-100 border-slate-300">
                     명함 이미지
@@ -312,7 +312,7 @@
                         imageLink={hyData.hy_card_image}
                         btnLocation={"left"}
                         btnSize={"xs"}
-                    ></OneImg>
+                    />
                 </td>
             </tr>
 
@@ -328,7 +328,7 @@
                         imageLink={hyData.hy_ft_phone_img}
                         btnLocation={"left"}
                         btnSize={"xs"}
-                    ></OneImg>
+                    />
                 </td>
                 <th class="in-th text-xs bg-slate-100 border-slate-300">
                     하단 SMS<br />이미지
@@ -341,7 +341,7 @@
                         imageLink={hyData.hy_ft_sms_img}
                         btnLocation={"left"}
                         btnSize={"xs"}
-                    ></OneImg>
+                    />
                 </td>
             </tr>
 
@@ -397,7 +397,7 @@
                             imgFolder={hyData.hy_page_id}
                             imageLink={hyData.hy_main_image}
                             btnSize={"sm"}
-                        ></OneImg>
+                        />
                     </div>
                 </td>
             </tr>
@@ -408,7 +408,7 @@
         <SortImg
             imgFolder={hyData.hy_page_id}
             imgModifyList={modifyImgArr}
-            {updateImg}
+            updateImg={updateImgList}
         ></SortImg>
     </div>
     <div class="my-5">

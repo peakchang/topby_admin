@@ -3,6 +3,7 @@ import { sql_con } from '../back-lib/db.js'
 import { getQueryStr, deleteFolder, aligoKakaoNotification_formanager } from '../back-lib/lib.js';
 import moment from "moment-timezone";
 import fs from "fs-extra";
+import path from 'path';
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -175,9 +176,10 @@ minisiteRouter.post('/copy_hy_data', async (req, res) => {
         await sql_con.promise().query(addHyDataQuery, values);
     } catch (err) {
         console.error(err.message);
+        return res.status(400).json({message : '아이디 값이 중복됩니다.'})
     }
 
-    res.json({})
+    return res.json({})
 })
 
 
@@ -262,6 +264,9 @@ minisiteRouter.post('/load_minisite', async (req, res) => {
     const search = req.body.search || "";
     let searchStr = "";
 
+    console.log(nowPage);
+    
+
     let site_list = [];
     if (search) {
         searchStr = `WHERE hy_title LIKE '%${search}%'`;
@@ -279,6 +284,9 @@ minisiteRouter.post('/load_minisite', async (req, res) => {
         const getMinisite1Query = `SELECT hy_id,hy_num,hy_title,hy_manage_site,hy_counter FROM hy_site ${searchStr} ORDER BY hy_id DESC LIMIT ${startCount}, ${onePageCount}`;
         const [miniSiteRows] = await sql_con.promise().query(getMinisite1Query);
         minisiteData = miniSiteRows;
+
+        console.log(minisiteData);
+        
 
 
         const getSiteListQuery = "SELECT sl_id, sl_site_name FROM site_list ORDER BY sl_id DESC";
@@ -309,6 +317,87 @@ minisiteRouter.post('/update_minisite_manager', async (req, res) => {
 
 // 미니사이트 ONE 단일 페이지!!!!!!!!!!!!!!!!!
 
+minisiteRouter.post('/delete_minisite_one_raw', async (req, res) => {
+
+
+    const deleteData = req.body.deleteData;
+    console.log(deleteData);
+
+    for (let i = 0; i < deleteData.length; i++) {
+        const data = deleteData[i];
+        const deletePath = `./public/uploads/image/${data.hy_page_id}`
+        deleteFolder(deletePath)
+        try {
+            const deleteHyRawQuery = "DELETE FROM hy_site_one WHERE hy_id = ?";
+            await sql_con.promise().query(deleteHyRawQuery, data.hy_id);
+        } catch (error) {
+            return res.status(400).json({ message: '삭제 실패! 다시 시도해주세요!' })
+        }
+    }
+    return res.json({})
+})
+
+
+minisiteRouter.post('/copy_minisite_one', async (req, res) => {
+    const body = req.body;
+    let copyData = {}
+
+    // 먼저 원래 page id 값 변수 지정 (나중에 데이터에서 삭제되니까~)
+    const originalPageId = body.copyData.hy_page_id
+    // DB 내용 불러오기
+    try {
+        const getCopyDataQuery = "SELECT * FROM hy_site_one WHERE hy_id = ?";
+        const [getCopyData] = await sql_con.promise().query(getCopyDataQuery, [body.copyData.hy_id]);
+        copyData = getCopyData[0];
+    } catch (error) {
+        return res.status(400).json({ message: '불러오기 실패! 다시 시도해주세요!' })
+    }
+
+    try {
+        // 복사할 데이터 셋팅
+
+        // 일단 뺄거 빼고 페이지 아이디 값은 새로 지정~
+        delete copyData.hy_id;
+        delete copyData.hy_creted_at;
+        delete copyData.hy_page_id;
+        copyData['hy_page_id'] = body.copyId
+
+        // DB 내 이미지 파일들 지정된 폴더명 변경 해주기
+        for (const key in copyData) {
+            const val = copyData[key];
+            if (val && typeof val === 'string') {
+                console.log(copyData[key]);
+                if (copyData[key].includes(originalPageId) && copyData[key].includes('img')) {
+                    copyData[key] = copyData[key].replaceAll(`img/${originalPageId}/`, `img/${body.copyId}/`);
+                }
+            }
+
+        }
+        // DB 복사 시작욤
+        const queryStr = getQueryStr(copyData, 'insert', 'hy_creted_at');
+        const insertQuery = `INSERT INTO hy_site_one (${queryStr.str}) VALUES (${queryStr.question})`;
+        await sql_con.promise().query(insertQuery, queryStr.values);
+
+        // 폴더 복사 시작욤
+        const getOldFolder = path.join(process.cwd(), 'public', 'uploads', 'image', body.copyData.hy_page_id);
+        const getNewFolder = path.join(process.cwd(), 'public', 'uploads', 'image', body.copyId);
+        console.log(fs.existsSync(getOldFolder));
+
+        if (fs.existsSync(getOldFolder)) {
+            fs.copySync(getOldFolder, getNewFolder);
+        } else {
+        }
+
+
+    } catch (err) {
+        console.error(err.message);
+
+        return res.status(400).json({ message: '아이디 값이 중복됩니다.' })
+    }
+
+
+    return res.json({})
+})
 
 // 미니사이트one 리스트 불러오기! (전체 리스트 및 수정 페이지)
 minisiteRouter.post('/load_minisite_one', async (req, res) => {
@@ -319,6 +408,7 @@ minisiteRouter.post('/load_minisite_one', async (req, res) => {
     let onePageCount = 10;
     const nowPage = req.body.nowPage || 1;
     const search = req.body.search || "";
+    
     let searchStr = "";
     if (search) {
         searchStr = `WHERE hy_title LIKE '%${search}%'`;
@@ -336,7 +426,10 @@ minisiteRouter.post('/load_minisite_one', async (req, res) => {
         const getMinisite1Query = `SELECT hy_id,hy_page_id,hy_title,hy_counter FROM hy_site_one ${searchStr} ORDER BY hy_id DESC LIMIT ${startCount}, ${onePageCount}`;
         const [miniSiteRows] = await sql_con.promise().query(getMinisite1Query);
         minisiteData = miniSiteRows;
+        console.log(minisiteData);
+        
     } catch (err) {
+        '진따 에러가 나는거야?'
         console.error(err.message);
     }
 

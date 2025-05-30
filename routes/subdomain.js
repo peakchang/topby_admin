@@ -1,5 +1,5 @@
 import express from "express";
-import fs from 'fs';
+import fs from 'fs-extra';
 import path from "path";
 
 import multer from "multer";
@@ -64,85 +64,211 @@ const ensureDirectoryExistence = (folderPath) => {
 };
 
 
-
+// 이미지 업로드 부분!! (단일 이미지)
 subdomainRouter.post('/img_upload_set', img_upload_set.single('onimg'), (req, res, next) => {
     let saveUrl = ""
 
-    console.log(req.body);
-    console.log(req.file);
-
     saveUrl = `/subimg/${req.body.folder}/${req.file.originalname}`
-
-    
-
-    // try {
-    //     const lastFolderArr = req.file.destination.split('/');
-    //     const lastFolder = lastFolderArr[lastFolderArr.length - 1];
-    //     var origin = req.get('host');
-    //     baseUrl = req.protocol + '://' + origin + '/subimg/' + lastFolder + '/' + req.file.filename;
-    //     saveUrl = req.file.path
-
-    // } catch (error) {
-
-    // }
 
     res.json({ saveUrl })
 })
 
+
+// 사이트 삭제 부분!!!
+// 배열 첫번째에 다 몰리는 경우가 있어서 ㅠ 나눠주는 함수!
+function splitArrayElement(arr) {
+    if (arr.length === 1 && typeof arr[0] === 'string') {
+        return arr[0].split(',');
+    }
+    return arr;
+}
+// 절대경로로 이루어진 배열 내 이미지 경로 병렬로 삭제하는 함수!
+async function deleteImages(paths) {
+    try {
+        await Promise.all(
+            paths.map(async (path) => {
+                await fs.remove(path);  // remove는 파일, 폴더 모두 삭제 가능
+            })
+        );
+        console.log('이미지 모두 삭제 완료!');
+    } catch (err) {
+        console.error('삭제 중 에러 발생:', err);
+    }
+}
+
+subdomainRouter.post('/delete_site', async (req, res, next) => {
+    const deleteList = req.body.checkedList;
+
+    for (let i = 0; i < deleteList.length; i++) {
+        const d = deleteList[i];
+        let deleteData = {}
+
+        try {
+            const getDeleteDataQuery = "SELECT * FROM land WHERE ld_id = ?"
+            const [getDeleteData] = await sql_con.promise().query(getDeleteDataQuery, [d]);
+            deleteData = getDeleteData[0]
+        } catch (error) {
+            return res.status(400).json({ message: '데이터 불러오기 에러!' })
+        }
+
+        try {
+            // 폴더에 셋팅 되어 있는 경우 말고 구버전 (http 포함) 이미지 삭제하기!!
+            let delImgList = [];
+            let delImgListTemp = [];
+
+            for (const key in deleteData) {
+                const val = deleteData[key];
+                if (val && typeof val === 'string') {
+                    // console.log(val);
+                    let imageUrls = val.match(/https?:\/\/[^\s'"]+\.(jpg|jpeg|png|webp|gif)(\?[^\s'"]*)?/gi);
+                    if (imageUrls) {
+                        imageUrls = splitArrayElement(imageUrls)
+                        delImgListTemp = [...delImgListTemp, imageUrls]
+                    }
+                }
+            }
+            if (delImgListTemp.length > 0) {
+                delImgListTemp = delImgListTemp.flat();
+                for (let i = 0; i < delImgListTemp.length; i++) {
+                    const t = delImgListTemp[i].split('/');
+                    const deletePath = path.join(__dirname, '..', 'subuploads', 'img', t[t.length - 2], t[t.length - 1]);
+                    delImgList.push(deletePath)
+                }
+                deleteImages(delImgList)
+            }
+            // 구버전 이미지 삭제 끝!!
+
+        } catch (error) {
+            console.error(error.message);
+        }
+
+        try {
+            console.log('여기 아노아?');
+            const deleteFolderPath = path.join(__dirname, '..', 'subuploads', 'img', deleteData.ld_domain);
+            await fs.remove(deleteFolderPath);
+        } catch (error) {
+            console.error(error.message);
+        }
+
+        try {
+            const deleteQuery = "DELETE FROM land WHERE ld_id = ?"
+            await sql_con.promise().query(deleteQuery, [d]);
+        } catch (error) {
+            return res.status(400).json({message : '이미지 삭제 에러! 다시 시도해주세요!'})
+        }
+    }
+
+    return res.json({})
+})
 
 
 
 // 사이트 카피 부분!!!
 
 subdomainRouter.post('/copy_site', async (req, res, next) => {
-    console.log('들어는 오잖아?!?!?!');
 
-    const copyData = req.body.allData
-    console.log(copyData);
+    console.log('안들어오니?');
 
-    for (let i = 0; i < 5; i++) {
-        delete copyData[`ld_pg${i}_img`]
+    const body = req.body
+    console.log(body);
+    let copyData = {}
+
+    // 데이터 불러오기
+    try {
+        const getCopyDataQuery = "SELECT * FROM land WHERE ld_domain = ?";
+        const [getCopyData] = await sql_con.promise().query(getCopyDataQuery, [body.oldDomain]);
+        copyData = getCopyData[0]
+    } catch (error) {
+        return res.status(400).json({ message: '데이터 불러오기 실패! 다시 시도해주세요!' })
     }
 
-    console.log(copyData);
+    // 기존 폴더 있는지 체크
 
-    // 'ld_banner_img',
-    const singleImgKeyList = ['ld_logo',
-        'ld_ph_img',
-        'ld_card_image',
-        'ld_invite_image',
-        'ld_popup_img',
-        'ld_mobile_bt_event_img',
-        'ld_mobile_bt_phone_img',
-        'ld_event_img']
+    const oldFolderPath = path.join(__dirname, '..', 'subuploads', 'img', body.oldDomain);
+    const newFolderPath = path.join(__dirname, '..', 'subuploads', 'img', body.copyDomain);
 
-    // for (const key in copyData) {
-    //     if (singleImgKeyList.includes(key) && copyData[key]) {
-    //         let imgPath = copyData[key]
-    //         if (imgPath.includes('http')) {
-    //             // http, https 등 도메인 빼고 subimg/... 으로 주소 변경
-    //             imgPath = imgPath.replace(/https?:\/\/[^/]+/g, '');
-    //             // subimg/도 빼고 img/파일명 만 남기기
-    //             const relativePath = imgPath.replace('/subimg/', ''); // img241004/...
-    //             // 절대 경로 주소 만들기
-    //             const filePath = path.join(__dirname, '..', 'subuploads', 'img', relativePath);
 
-    //             if (fs.existsSync(filePath)) {
-    //                 console.log('✅ 파일이 존재합니다:', filePath);
-    //                 const res = await processImageFile(relativePath)
-    //                 console.log(res);
-    //             }
+    console.log(fs.existsSync(oldFolderPath));
+
+    try {
+        if (fs.existsSync(oldFolderPath)) {
+            fs.copySync(oldFolderPath, newFolderPath);
+        }
+    } catch (error) {
+        console.log('카피에서 에러 나나?');
+
+        return res.status(400).json({ message: '중복된 아이디값(도메인)이 있습니다.' })
+    }
+
+
+    try {
+
+        // 불러온 데이터 가공 & 구버전 이미지 복붙 하기!
+        for (const key in copyData) {
+            const val = copyData[key];
+            if (val && typeof val === 'string') {
+                if (copyData[key].includes('http') && copyData[key].includes('img')) {
+                    const imageUrls = copyData[key].match(/https?:\/\/[^\s'"]+\.(jpg|jpeg|png|webp|gif)(\?[^\s'"]*)?/gi);
+                    for (let i = 0; i < imageUrls.length; i++) {
+                        try {
+                            const us = imageUrls[i].split('/');
+                            // 기존 이미지 절대경로 따기
+                            const oldImagePath = path.join(__dirname, '..', 'subuploads', 'img', us[us.length - 2], us[us.length - 1]);
+                            // 이미지 복붙 하기
+                            const newImagePath = path.join(__dirname, '..', 'subuploads', 'img', body.copyDomain, us[us.length - 1]);
+                            fs.copyFileSync(oldImagePath, newImagePath);
+
+                            // 기존 데이터를 새로운 경로 데이터로 변경하기
+                            const newPath = `/subimg/${body.copyDomain}/${us[us.length - 1]}`
+                            copyData[key] = copyData[key].replace(imageUrls[i], newPath)
+                        } catch (error) {
+                            console.error(error.message);
+
+                        }
+
+                    }
+                } else if (copyData[key].includes(body.oldDomain)) {
+                    copyData[key] = copyData[key].replaceAll(body.oldDomain, body.copyDomain)
+                }
+            }
+        }
+
+        delete copyData.ld_id;
+        delete copyData.ld_created_at;
+
+        const queryStr = getQueryStr(copyData, 'insert', 'ld_created_at');
+        console.log(queryStr);
+
+        const insertCopyData = `INSERT INTO land (${queryStr.str}) VALUES (${queryStr.question})`;
+        await sql_con.promise().query(insertCopyData, queryStr.values);
+
+
+    } catch (error) {
+        console.error(error.message);
+
+        return res.status(400).json({ message: '중복된 아이디값(도메인)이 있습니다.' })
+
+    }
+
+
+    // const getOldFolder = `./public/uploads/image/${body.copyData.hy_num}`
+    //         const getNewFolder = `./public/uploads/image/${body.copyId}`;
+    //         if (fs.existsSync(getOldFolder)) {
+    //             fs.copySync(getOldFolder, getNewFolder);
+    //         } else {
     //         }
-    //     }
-    // }
 
-    // ld_json_main
-    // ld_json_menus
+    // >> 기존폴더 있으면 복사
 
-    // -----------------------------------------
+    // 데이터 가공
+    // 혹시 모르니까 돌면서 겸사겸사 구버전 (http 붙어있는거) 이미지 경로 체크, 있으면 리스트 만들어서 복붙 밑 문자열 변경 해주기
+    // 1. 리스트로 변환 / 2. 새 값으로 만들기 / 3. 직접적으로 하나씩 replace >> 저장
 
 
-    res.json({})
+
+
+
+    return res.json({})
 })
 
 

@@ -16,7 +16,9 @@
 
     let siteListOpt = $state(data.siteList);
 
-    minisiteData = data.minisiteData;
+    
+
+    
 
     // 카피할 아이디 및 창 보이게 bool
     let copyRawBool = $state(true);
@@ -38,6 +40,7 @@
     let allChecked = $state(false);
 
     $effect(() => {
+        minisiteData = data.minisiteData;
         pageArr = data.pageArr;
         nowPage = $page.url.searchParams.get("page") || 1;
         allPageCount = data.allPageCount;
@@ -170,7 +173,12 @@
                 copyId = "";
                 invalidateAll();
             }
-        } catch (error) {}
+        } catch (err) {
+            console.error(err);
+            const m = err.response.data.message;
+            alert(m ? m : "에러가 발생 했습니다.");
+            return;
+        }
     }
 
     function movePage() {

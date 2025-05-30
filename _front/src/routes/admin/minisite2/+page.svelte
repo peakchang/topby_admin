@@ -1,11 +1,12 @@
 <script>
     import { invalidateAll } from "$app/navigation";
-    import { back_api } from "$src/lib/const.js";
+    import { back_api, back_api_origin } from "$src/lib/const.js";
     import axios from "axios";
 
     let { data } = $props();
     let mDatas = $state([]);
     let selectIdx = $state(0);
+    let checkedList = $state([]);
 
     $effect(() => {
         mDatas = data.minisiteData;
@@ -92,6 +93,23 @@
             }
         } catch (error) {}
     }
+
+    async function deleteSite() {
+        console.log(checkedList);
+        if (!confirm("사이트를 삭제하면 이미지 등 전부 삭제됨! 후회 NO?")) {
+            return;
+        }
+
+        try {
+            const res = await axios.post(
+                `${back_api_origin}/api/subdomain/delete_site`,
+                { checkedList },
+            );
+        } catch (err) {
+            const m = err.response.data.message;
+            alert(m ? m : "에러! 다시 시도해주세요!");
+        }
+    }
 </script>
 
 <div>
@@ -104,6 +122,11 @@
             }}
         >
             사이트 추가
+        </button>
+
+        <!-- svelte-ignore event_directive_deprecated -->
+        <button class="btn btn-error btn-sm text-white" on:click={deleteSite}>
+            사이트 삭제
         </button>
     </div>
     <div
@@ -152,6 +175,8 @@
                         <input
                             type="checkbox"
                             class="checkbox checkbox-xs md:checkbox-sm"
+                            value={mdata.ld_id}
+                            bind:group={checkedList}
                         />
                     </td>
                     <td class="in-td text-center">

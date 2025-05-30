@@ -1,8 +1,8 @@
 <script>
-    import imageCompression from "browser-image-compression";
     import axios from "axios";
-    import { back_api } from "$src/lib/const";
+    import { back_api, back_api_origin } from "$src/lib/const";
     import { page } from "$app/stores";
+    import uploadImageAct from "$src/lib/lib.js";
 
     let {
         updateImg,
@@ -18,66 +18,24 @@
         : $page.url.origin;
 
     // 이미지를 선택하면 사이즈 변경 (최대 1200px) 및 webp 변경 후 업로드
-    const onFileSelected = (e) => {
-        const input = document.createElement("input");
-        input.setAttribute("type", "file");
-        input.setAttribute("accept", ".png,.jpg,.jpeg,.webp");
-        input.click();
+    function onFileSelected() {
+        console.log("클릭클릭!!!");
 
-        // input change
-        input.onchange = async (e) => {
-            const imageFile = e.target.files[0];
-            const options = {
-                maxSizeMB: 1, // 최대 파일 크기 (MB)
-                maxWidthOrHeight: 9000, // 최대 너비 또는 높이
-                useWebWorker: true, // 웹 워커 사용
-            };
+        uploadImageAct(
+            `${back_api}/img_upload_set`,
+            (err, data) => {
+                console.log(err);
 
-            try {
-                const compressedFile = await imageCompression(
-                    imageFile,
-                    options,
-                );
-                // console.log("Compressed file:", compressedFile);
-                // console.log(compressedFile.name);
+                console.log(data);
 
-                let imgForm = new FormData();
+                updateImg({ saveUrl: data.saveUrl, value });
+            },
+            {
+                folder: imgFolder,
+            },
+        );
+    }
 
-                const timestamp = new Date().getTime();
-                const fileName = `${timestamp}${Math.random()
-                    .toString(36)
-                    .substring(2, 11)}.${compressedFile.name.split(".")[1]}`;
-
-                imgForm.append("onimg", compressedFile, fileName);
-                imgForm.append("folderName", imgFolder); // �����명 추가 (��가할 경우)
-                let res = {};
-                try {
-                    res = await axios.post(
-                        `${back_api}/upload_sort_img`,
-                        imgForm,
-                        {
-                            headers: {
-                                "Content-Type": "multipart/form-data",
-                            },
-                        },
-                    );
-                    if (res.status == 200) {
-                        imageLink = res.data.baseUrl;
-                        console.log(`업로드 완료! 링크 : ${imageLink}`);
-
-                        updateImg({ baseUrl: res.data.baseUrl, value });
-                    }
-                } catch (error) {
-                    console.error("Error during image upload:", error.message);
-                    alert("이미지 업로드 오류! 다시 시도해주세요!");
-                    return;
-                }
-            } catch (error) {
-                console.error("Error during image compression:", error);
-                alert("이미지 업로드 오류! 다시 시도해주세요!");
-            }
-        };
-    };
 
     async function deleteImg() {
         const getImgSplit = imageLink.split("/");
@@ -91,7 +49,7 @@
 
             if (res.status == 200) {
                 imageLink = "";
-                updateImg("");
+                updateImg({ saveUrl: "", value });
             } else {
                 alert("에러가 발생했습니다. 다시 시도해주세요");
             }
