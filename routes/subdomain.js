@@ -154,7 +154,7 @@ subdomainRouter.post('/delete_site', async (req, res, next) => {
             const deleteQuery = "DELETE FROM land WHERE ld_id = ?"
             await sql_con.promise().query(deleteQuery, [d]);
         } catch (error) {
-            return res.status(400).json({message : '이미지 삭제 에러! 다시 시도해주세요!'})
+            return res.status(400).json({ message: '이미지 삭제 에러! 다시 시도해주세요!' })
         }
     }
 
@@ -209,24 +209,27 @@ subdomainRouter.post('/copy_site', async (req, res, next) => {
             if (val && typeof val === 'string') {
                 if (copyData[key].includes('http') && copyData[key].includes('img')) {
                     const imageUrls = copyData[key].match(/https?:\/\/[^\s'"]+\.(jpg|jpeg|png|webp|gif)(\?[^\s'"]*)?/gi);
-                    for (let i = 0; i < imageUrls.length; i++) {
-                        try {
-                            const us = imageUrls[i].split('/');
-                            // 기존 이미지 절대경로 따기
-                            const oldImagePath = path.join(__dirname, '..', 'subuploads', 'img', us[us.length - 2], us[us.length - 1]);
-                            // 이미지 복붙 하기
-                            const newImagePath = path.join(__dirname, '..', 'subuploads', 'img', body.copyDomain, us[us.length - 1]);
-                            fs.copyFileSync(oldImagePath, newImagePath);
+                    if (imageUrls) {
+                        for (let i = 0; i < imageUrls.length; i++) {
+                            try {
+                                const us = imageUrls[i].split('/');
+                                // 기존 이미지 절대경로 따기
+                                const oldImagePath = path.join(__dirname, '..', 'subuploads', 'img', us[us.length - 2], us[us.length - 1]);
+                                // 이미지 복붙 하기
+                                const newImagePath = path.join(__dirname, '..', 'subuploads', 'img', body.copyDomain, us[us.length - 1]);
+                                fs.copyFileSync(oldImagePath, newImagePath);
 
-                            // 기존 데이터를 새로운 경로 데이터로 변경하기
-                            const newPath = `/subimg/${body.copyDomain}/${us[us.length - 1]}`
-                            copyData[key] = copyData[key].replace(imageUrls[i], newPath)
-                        } catch (error) {
-                            console.error(error.message);
+                                // 기존 데이터를 새로운 경로 데이터로 변경하기
+                                const newPath = `/subimg/${body.copyDomain}/${us[us.length - 1]}`
+                                copyData[key] = copyData[key].replace(imageUrls[i], newPath)
+                            } catch (error) {
+                                console.error(error.message);
+
+                            }
 
                         }
-
                     }
+
                 } else if (copyData[key].includes(body.oldDomain)) {
                     copyData[key] = copyData[key].replaceAll(body.oldDomain, body.copyDomain)
                 }
