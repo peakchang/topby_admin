@@ -16,10 +16,10 @@ adminAllDbRouter.post('/load_ex_data', async (req, res) => {
     let ex_data = [];
 
     queryStr = `WHERE af_created_at BETWEEN '${startData}' AND '${endData}'`
-    if(body.setSite != 'base'){
+    if (body.setSite != 'base') {
         queryStr += ` AND af_form_name = '${body.setSite}'`
     }
-    if(body.setStatus!= 'base'){
+    if (body.setStatus != 'base') {
         queryStr += ` AND af_mb_status = '${body.setStatus}'`
     }
 
@@ -36,18 +36,18 @@ adminAllDbRouter.post('/load_ex_data', async (req, res) => {
         const result = await sql_con.promise().query(loadDataQuery);
 
         console.log(result);
-        
+
         ex_data = result[0];
         console.log(ex_data.length);
-        
+
     } catch (error) {
-        
+
     }
-    
-    
 
 
-    res.json({ex_data})
+
+
+    res.json({ ex_data })
 })
 
 adminAllDbRouter.post('/delete_list', async (req, res) => {
@@ -187,19 +187,34 @@ adminAllDbRouter.post('/load_data', async (req, res) => {
         const [siteListRows] = await sql_con.promise().query(getSiteListQuery);
         site_list = siteListRows;
         // const getAllCountApFormQuery = `SELECT count(*) AS af_count FROM application_form`;
-        const getAllCountApFormQuery = `SELECT count(*) AS af_count
-            FROM application_form t
-            JOIN (
-                SELECT 
-                af_form_name, 
-                af_mb_phone, 
-                MAX(af_id) AS max_af_id
-                FROM application_form
-                ${addQuery}
-                GROUP BY af_form_name, af_mb_phone
-            ) AS g ON g.af_form_name = t.af_form_name
-                AND g.af_mb_phone = t.af_mb_phone
-                AND g.max_af_id = t.af_id`;
+        // const getAllCountApFormQuery = `SELECT count(*) AS af_count
+        //     FROM application_form t
+        //     JOIN (
+        //         SELECT 
+        //         af_form_name, 
+        //         af_mb_phone, 
+        //         MAX(af_id) AS max_af_id
+        //         FROM application_form
+        //         ${addQuery}
+        //         GROUP BY af_form_name, af_mb_phone
+        //     ) AS g ON g.af_form_name = t.af_form_name
+        //         AND g.af_mb_phone = t.af_mb_phone
+        //         AND g.max_af_id = t.af_id`;
+
+        const getAllCountApFormQuery = `SELECT COUNT(*) AS af_count
+                FROM application_form t
+                JOIN (
+                    SELECT 
+                    COALESCE(af_form_name, '__NULL__') AS af_form_name,
+                    af_mb_phone, 
+                    MAX(af_id) AS max_af_id
+                    FROM application_form
+                    ${addQuery}
+                    GROUP BY COALESCE(af_form_name, '__NULL__'), af_mb_phone
+                ) AS g 
+                    ON COALESCE(g.af_form_name, '__NULL__') = COALESCE(t.af_form_name, '__NULL__')
+                    AND g.af_mb_phone = t.af_mb_phone
+                    AND g.max_af_id = t.af_id;`;
         const [countRows] = await sql_con.promise().query(getAllCountApFormQuery);
         allCount = countRows[0].af_count;
         allPage = Math.ceil(allCount / onePageCount);
