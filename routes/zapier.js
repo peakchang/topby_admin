@@ -52,7 +52,7 @@ zapierRouter.post('/', async (req, res) => {
         const nowStr = moment().format('YYYY-MM-DD HH:mm:ss');
 
         const get_form_name = body['form_name']
-        
+
         if (get_form_name.includes('rich') || get_form_name.includes('RICH') || get_form_name.includes('리치')) {
             try {
                 const result = await axios.post('https://richby.co.kr/zapier', body)
@@ -117,10 +117,10 @@ zapierRouter.post('/', async (req, res) => {
 
         let idx = 0;
         for (const key in body) {
-            if(key == 'raw__full_name' || key == 'raw__phone_number'){
+            if (key == 'raw__full_name' || key == 'raw__phone_number') {
                 continue
             }
-            if (key.includes('raw_')) {
+            if (key.includes('raw_') || !etcInsertStr.includes(`af_mb_etc${idx}`)) {
                 idx++
                 etcInsertStr = etcInsertStr + `, af_mb_etc${idx}`;
                 etcValuesStr = etcValuesStr + `, '${body[key]}'`;
@@ -128,7 +128,7 @@ zapierRouter.post('/', async (req, res) => {
             }
         }
         console.log(addEtcMessage);
-        
+
         const values = [reFormName, '분양', 'FB', body['raw__full_name'], get_phone, '', nowStr]
 
         // 폼 insert 하기!!

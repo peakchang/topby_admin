@@ -2,11 +2,17 @@
     import { invalidateAll } from "$app/navigation";
     import { back_api, back_api_origin } from "$src/lib/const.js";
     import axios from "axios";
+    import { page } from "$app/stores";
 
     let { data } = $props();
     let mDatas = $state([]);
     let selectIdx = $state(0);
     let checkedList = $state([]);
+
+    let host = $state($page.url.host);
+    if (import.meta.env.VITE_ENV == "dev") {
+        host = "localhost:5173";
+    }
 
     $effect(() => {
         mDatas = data.minisiteData;
@@ -188,7 +194,7 @@
                     <td class="in-td">
                         <div class="px-2 flex flex-wrap gap-2 justify-center">
                             <a
-                                href={`https://${mDatas[idx]["ld_domain"]}.adpeak.kr`}
+                                href={`${$page.url.protocol}//${mDatas[idx]["ld_domain"]}.${host}`}
                                 class="btn btn-outline btn-info btn-xs"
                                 target="_blank"
                             >
@@ -199,7 +205,7 @@
                                 <span>사이트</span>
                             </a>
                             <a
-                                href={`https://${mDatas[idx]["ld_domain"]}.adpeak.kr/visit`}
+                                href={`${$page.url.protocol}//${mDatas[idx]["ld_domain"]}.${host}/visit`}
                                 class="btn btn-outline btn-success btn-xs"
                                 target="_blank"
                             >
@@ -209,7 +215,7 @@
 
                             {#if mDatas[idx]["ld_view_type"] == "old"}
                                 <a
-                                    href={`https://${mDatas[idx]["ld_domain"]}.adpeak.kr/setting`}
+                                    href={`${$page.url.protocol}//${mDatas[idx]["ld_domain"]}.${host}/setting`}
                                     class="btn btn-success btn-xs text-white"
                                     target="_blank"
                                 >
@@ -218,7 +224,7 @@
                                 </a>
                             {:else}
                                 <a
-                                    href={`https://${mDatas[idx]["ld_domain"]}.adpeak.kr/site_set`}
+                                    href={`${$page.url.protocol}//${mDatas[idx]["ld_domain"]}.${host}/site_set`}
                                     class="btn btn-success btn-xs text-white"
                                     target="_blank"
                                 >
