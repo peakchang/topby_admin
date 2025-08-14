@@ -117,11 +117,16 @@ zapierRouter.post('/', async (req, res) => {
 
         let idx = 0;
         for (const key in body) {
-            if (key == 'raw__full_name' || key == 'raw__phone_number') {
-                continue
-            }
-            if (key.includes('raw_') || !etcInsertStr.includes(`af_mb_etc${idx}`)) {
-                idx++
+            if (key.includes('raw_')) {
+                if (key.includes('name') || key.includes('number')) {
+                    continue
+                }else{
+                    idx++
+                }
+                
+                if (etcValuesStr.includes(`'${body[key]}'`)) {
+                    continue; // 중복된 값은 건너뛰기
+                }
                 etcInsertStr = etcInsertStr + `, af_mb_etc${idx}`;
                 etcValuesStr = etcValuesStr + `, '${body[key]}'`;
                 addEtcMessage = addEtcMessage + `// 기타 정보${idx} : ${body[key]}`
