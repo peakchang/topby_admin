@@ -120,12 +120,11 @@ zapierRouter.post('/', async (req, res) => {
             if (key.includes('raw_')) {
                 if (key.includes('name') || key.includes('number')) {
                     continue
-                } else {
-                    idx++
-                }
-
+                } 
                 if (etcValuesStr.includes(`'${body[key]}'`)) {
                     continue; // 중복된 값은 건너뛰기
+                }else {
+                    idx++
                 }
                 etcInsertStr = etcInsertStr + `, af_mb_etc${idx}`;
                 etcValuesStr = etcValuesStr + `, '${body[key]}'`;
