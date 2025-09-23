@@ -14,12 +14,17 @@ mainRouter.post('/chk_ex_file', async (req, res, next) => {
     try {
         const chkDbQuery = `SELECT * FROM application_form WHERE af_mb_phone = ? AND af_form_name LIKE '%${body.form_name}%'`;
         const chkDb = await sql_con.promise().query(chkDbQuery, [body.ph_num])
+
+        console.log(chkDb[0]);
+        
         if (!chkDb[0][0]) {
             chkDbBool = false;
             // const insertChkDb = "INSERT INTO application_form (af_form_name,af_form_type_in,af_mb_name,af_mb_phone) VALUES (?,?,?,?)";
             // await sql_con.promise().query(insertChkDb, [body.form_name, 'fb', body.full_name, body.ph_num])
         }
     } catch (error) {
+        console.log('에러남!!!');
+        
         console.error(error.message);
         status = false;
     }
