@@ -23,6 +23,7 @@ import { authRouter } from "./routes/auth.js"
 
 import { webhookRouter } from './routes/webhook.js';
 import { zapierRouter } from './routes/zapier.js';
+import { tiktokRouter } from './routes/webhook_tiktok.js';
 
 import { subdomainRouter } from './routes/subdomain.js';
 
@@ -81,6 +82,8 @@ app.use('/api/v3/dbcount', adminDbCount);
 
 app.use('/webhook', webhookRouter);
 app.use('/zapier', zapierRouter);
+
+app.use('/webhook_tiktok', tiktokRouter);
 
 app.use('/api/subdomain', subdomainRouter);
 
