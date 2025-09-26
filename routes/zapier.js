@@ -34,7 +34,6 @@ zapierRouter.post('/', async (req, res) => {
 
     let status = true;
     const body = req.body;
-    console.log(body);
 
     try {
 
