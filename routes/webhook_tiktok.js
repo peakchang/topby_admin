@@ -30,7 +30,7 @@ tiktokRouter.post('/', async (req, res) => {
 
         const get_temp_phone = body['phone_number'];
         let get_phone = get_temp_phone
-        const dbName = body['name']
+        let dbName = body['name']
         try {
             get_phone = get_temp_phone.replace('+82', '').replace(/[^0-9]/g, "");
             if (get_phone.charAt(0) != '0') {
