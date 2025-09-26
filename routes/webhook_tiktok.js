@@ -20,7 +20,7 @@ tiktokRouter.get('/', (req, res) => {
 
 tiktokRouter.post('/', (req, res) => {
     console.log('진입함?!?!?!?!?!??!?!');
-    const { body } = req.body;
+    const body = req.body;
 
     console.log(body);
     
