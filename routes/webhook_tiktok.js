@@ -30,6 +30,7 @@ tiktokRouter.post('/', async (req, res) => {
 
         const get_temp_phone = body['phone_number'];
         let get_phone = get_temp_phone
+        const dbName = body['name']
         try {
             get_phone = get_temp_phone.replace('+82', '').replace(/[^0-9]/g, "");
             if (get_phone.charAt(0) != '0') {
@@ -56,7 +57,7 @@ tiktokRouter.post('/', async (req, res) => {
 
         let reFormName = "";
 
-        if (reFormName.includes('test')) {
+        if (get_form_name.includes('test')) {
             reFormName = "톡톡테스트현장"
         } else {
             reFormName = get_form_name.replace(/[a-zA-Z\(\)\-\s]/g, '')
@@ -148,14 +149,14 @@ tiktokRouter.post('/', async (req, res) => {
 
         // 담당자들 에게 이메일 발송
         for await (const goUser of findUser) {
-            const mailSubjectManager = `${reFormName} / ${body['raw__full_name']} 고객 DB 접수되었습니다.`;
-            const mailContentManager = `현장 : ${reFormName} / 이름 : ${body['raw__full_name']} / 전화번호 : ${get_phone} ${addEtcMessage}`;
+            const mailSubjectManager = `${reFormName} / ${dbName} 고객 DB 접수되었습니다.`;
+            const mailContentManager = `현장 : ${reFormName} / 이름 : ${dbName} / 전화번호 : ${get_phone} ${addEtcMessage}`;
             mailSender(goUser.user_email, mailSubjectManager, mailContentManager);
         }
 
         // 최고관리자에게 이메일 발송
-        const mailSubject = `(탑분양 접수) ${reFormName} 고객명 ${body['raw__full_name']} 접수되었습니다.`;
-        const mailContent = `현장: ${reFormName} / 이름 : ${body['raw__full_name']} / 전화번호 : ${get_phone} ${addEtcMessage}`;
+        const mailSubject = `(탑분양 접수) ${reFormName} 고객명 ${dbName} 접수되었습니다.`;
+        const mailContent = `현장: ${reFormName} / 이름 : ${dbName} / 전화번호 : ${get_phone} ${addEtcMessage}`;
         mailSender('adpeak@naver.com', mailSubject, mailContent);
         mailSender('changyong112@naver.com', mailSubject, mailContent);
 
@@ -172,8 +173,7 @@ tiktokRouter.post('/', async (req, res) => {
         }
 
         const receiverStr = `${get_phone} ${addEtcMessage}`
-
-        let dbName = body['raw__full_name']
+        
         const cleanText = dbName.replace(/[^\w\s.,!@#$%^&*()_\-+=\[\]{}|;:'"<>?\\/가-힣]/g, '');
         const containsKoreanOrEnglish = /[A-Za-z\uAC00-\uD7A3]/.test(cleanText);
 
@@ -238,7 +238,7 @@ tiktokRouter.post('/', async (req, res) => {
             if (sendRealSiteName && sendContent) {
                 const detailSendContent = {
                     receiver: get_phone,
-                    ciName: body['raw__full_name'],
+                    ciName: dbName,
                     ciCompany: "탑분양",
                     ciSite: sendRealSiteName,
                     smsContent: sendContent
