@@ -55,13 +55,26 @@ apiRouter.get('/', (req, res) => {
 })
 
 
-apiRouter.post('/img_upload_set', img_upload_set.single('onimg'), (req, res, next) => {
+apiRouter.post('/img_upload_set', async(req, res, next) => {
+
     let saveUrl = ""
 
-    saveUrl = `/img/${req.body.folder}/${req.file.originalname}`
+
+
+    console.log(req.body);
+    
 
     res.json({ saveUrl })
 })
+
+
+// apiRouter.post('/img_upload_set', img_upload_set.single('onimg'), (req, res, next) => {
+//     let saveUrl = ""
+
+//     saveUrl = `/img/${req.body.folder}/${req.file.originalname}`
+
+//     res.json({ saveUrl })
+// })
 
 
 apiRouter.post('/delete_sort_img', async (req, res, next) => {

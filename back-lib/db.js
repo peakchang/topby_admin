@@ -13,6 +13,15 @@ export const sql_con = mysql.createConnection({
 
 /*
 
+
+ALTER TABLE land ADD COLUMN ld_invite_bool VARCHAR(10) DEFAULT 'on' AFTER ld_view_type;
+ALTER TABLE land ADD COLUMN ld_reserve_msg_bool VARCHAR(10) DEFAULT 'on' AFTER ld_invite_bool;
+ALTER TABLE land ADD COLUMN ld_btn_message VARCHAR(100) AFTER ld_invite_message;
+
+
+
+
+
 ALTER TABLE users ADD COLUMN refresh_token TEXT DEFAULT NULL;
 ALTER TABLE hy_site MODIFY COLUMN hy_main_image VARCHAR(255);
 ALTER TABLE hy_site MODIFY COLUMN hy_card_image VARCHAR(255);
