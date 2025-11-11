@@ -55,17 +55,12 @@ apiRouter.get('/', (req, res) => {
 })
 
 
-apiRouter.post('/img_upload_set', async(req, res, next) => {
-
+apiRouter.post('/img_upload_set', img_upload_set.single('onimg'), (req, res, next) => {
     let saveUrl = ""
-
-
-
-    console.log(req.body);
-    
-
+    saveUrl = `/img/${req.body.folder}/${req.file.originalname}`
     res.json({ saveUrl })
 })
+
 
 
 // apiRouter.post('/img_upload_set', img_upload_set.single('onimg'), (req, res, next) => {
