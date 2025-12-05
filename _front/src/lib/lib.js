@@ -100,6 +100,11 @@ export function formatPhoneNumber(input) {
 }
 
 
+export function numberToTime(num) {
+  return String(num).padStart(2, '0') + ":00";
+}
+
+
 
 
 

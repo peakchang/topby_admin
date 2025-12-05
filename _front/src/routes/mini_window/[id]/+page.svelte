@@ -52,13 +52,13 @@
             </button>
         </div>
     </form>
-    <table class="w-full">
+    <table class="w-full mb-2">
         <tbody>
             <tr>
-                <th class="in-th text-sm bg-slate-100 border-slate-300">
+                <th class="in-th text-sm bg-slate-100 border-slate-300 w-1/6">
                     현장명
                 </th>
-                <td class="in-td">
+                <td class="in-td" colspan="2">
                     <input
                         type="text"
                         class="input-base text-xs"
@@ -67,10 +67,10 @@
                 </td>
             </tr>
             <tr>
-                <th class="in-th text-sm bg-slate-100 border-slate-300"
-                    >간략설명</th
-                >
-                <td class="in-td">
+                <th class="in-th text-sm bg-slate-100 border-slate-300">
+                    간략설명
+                </th>
+                <td class="in-td" colspan="2">
                     <input
                         type="text"
                         class="input-base text-xs"
@@ -79,10 +79,10 @@
                 </td>
             </tr>
             <tr>
-                <th class="in-th text-sm bg-slate-100 border-slate-300"
-                    >사이트명</th
-                >
-                <td class="in-td">
+                <th class="in-th text-sm bg-slate-100 border-slate-300">
+                    사이트명
+                </th>
+                <td class="in-td" colspan="2">
                     <input
                         type="text"
                         class="input-base text-xs"
@@ -90,10 +90,41 @@
                     />
                 </td>
             </tr>
+        </tbody>
+    </table>
+
+    <table class="w-full mb-2">
+        <tbody>
             <tr>
-                <th class="in-th text-sm bg-slate-100 border-slate-300"
-                    >사업명</th
-                >
+                <td class="in-td" colspan="4">
+                    <div class="flex gap-4 py-2 px-3 items-center">
+                        <span class="text-sm">
+                            현장 안내 사용 여부 : 
+                        </span>
+                        <label class="flex items-center gap-1 text-sm">
+                            <span>사용</span>
+                            <input
+                                type="radio"
+                                name="radio-9"
+                                class="radio radio-info radio-xs"
+                            />
+                        </label>
+
+                        <label class="flex items-center gap-1 text-sm">
+                            <span>미사용</span>
+                            <input
+                                type="radio"
+                                name="radio-9"
+                                class="radio radio-info radio-xs"
+                            />
+                        </label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th class="in-th text-sm bg-slate-100 border-slate-300 w-1/6">
+                    사업명
+                </th>
                 <td class="in-td">
                     <input
                         type="text"
@@ -101,10 +132,9 @@
                         bind:value={hyData.hy_businessname}
                     />
                 </td>
-            </tr>
-            <tr>
-                <th class="in-th text-sm bg-slate-100 border-slate-300">분류</th
-                >
+                <th class="in-th text-sm bg-slate-100 border-slate-300 w-1/6">
+                    분류
+                </th>
                 <td class="in-td">
                     <input
                         type="text"
@@ -113,6 +143,7 @@
                     />
                 </td>
             </tr>
+
             <tr>
                 <th class="in-th text-sm bg-slate-100 border-slate-300">규모</th
                 >
@@ -123,8 +154,6 @@
                         bind:value={hyData.hy_scale}
                     />
                 </td>
-            </tr>
-            <tr>
                 <th class="in-th text-sm bg-slate-100 border-slate-300"
                     >전용면적</th
                 >
@@ -136,6 +165,7 @@
                     />
                 </td>
             </tr>
+
             <tr>
                 <th class="in-th text-sm bg-slate-100 border-slate-300"
                     >세대수</th
@@ -147,8 +177,6 @@
                         bind:value={hyData.hy_house_number}
                     />
                 </td>
-            </tr>
-            <tr>
                 <th class="in-th text-sm bg-slate-100 border-slate-300"
                     >공급위치</th
                 >
@@ -172,20 +200,40 @@
                     />
                 </td>
             </tr>
+        </tbody>
+    </table>
+
+    <table class="w-full">
+        <tbody>
             <tr>
-                <th class="in-th text-sm bg-slate-100 border-slate-300"
-                    >카카오링크</th
-                >
-                <td class="in-td">
-                    <input
-                        type="text"
-                        class="input-base text-xs"
-                        bind:value={hyData.hy_kakao_link}
-                    />
+                <td class="in-td" colspan="2">
+                    <div class="flex gap-4 py-2 px-3 items-center">
+                        <span class="text-sm">
+                            특장점 사용 여부 :
+                        </span>
+                        <label class="flex items-center gap-1 text-sm">
+                            <span>사용</span>
+                            <input
+                                type="radio"
+                                name="radio-9"
+                                class="radio radio-info radio-xs"
+                            />
+                        </label>
+
+                        <label class="flex items-center gap-1 text-sm">
+                            <span>미사용</span>
+                            <input
+                                type="radio"
+                                name="radio-9"
+                                class="radio radio-info radio-xs"
+                            />
+                        </label>
+                    </div>
                 </td>
             </tr>
+
             <tr>
-                <th class="in-th text-sm bg-slate-100 border-slate-300"
+                <th class="in-th text-sm bg-slate-100 border-slate-300 w-1/6"
                     >특장점</th
                 >
                 <td class="in-td">
@@ -204,7 +252,7 @@
                 <td class="in-td">
                     <textarea
                         rows="8"
-                        class="w-full border bg-gray-150 focus:outline-none focus:border-blue-500 text-sm"
+                        class="input-base text-xs"
                         bind:value={hyData.hy_add_script}
                     >
                     </textarea>
@@ -231,6 +279,18 @@
                         type="text"
                         class="input-base text-xs"
                         bind:value={hyData.hy_sms}
+                    />
+                </td>
+            </tr>
+            <tr>
+                <th class="in-th text-sm bg-slate-100 border-slate-300"
+                    >카카오링크</th
+                >
+                <td class="in-td">
+                    <input
+                        type="text"
+                        class="input-base text-xs"
+                        bind:value={hyData.hy_kakao_link}
                     />
                 </td>
             </tr>
@@ -268,6 +328,7 @@
             </tr>
         </tbody>
     </table>
+
     <div class="mt-3 p-3 border rounded-md">
         <div class="mb-3 font-semibold">이미지 리스트</div>
         <SortImg

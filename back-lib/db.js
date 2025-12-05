@@ -13,6 +13,20 @@ export const sql_con = mysql.createConnection({
 
 /*
 
+11-28 추가!!
+
+ALTER TABLE land ADD COLUMN ld_complete_msg VARCHAR(255) AFTER ld_consent_info;
+
+ALTER TABLE land MODIFY COLUMN ld_font VARCHAR(50);
+
+ALTER TABLE land MODIFY COLUMN ld_Interaction VARCHAR(50) DEFAULT 'fix';
+ALTER TABLE land MODIFY COLUMN ld_db_input_subject VARCHAR(50);
+
+ALTER TABLE land ADD COLUMN ld_Interaction VARCHAR(10) DEFAULT 'fix' AFTER ld_location;
+ALTER TABLE land ADD COLUMN ld_consent_info TEXT AFTER ld_json_menus;
+ALTER TABLE land ADD COLUMN ld_font VARCHAR(10) AFTER ld_domain;
+
+-*------
 
 ALTER TABLE land ADD COLUMN ld_invite_bool VARCHAR(10) DEFAULT 'on' AFTER ld_view_type;
 ALTER TABLE land ADD COLUMN ld_reserve_msg_bool VARCHAR(10) DEFAULT 'on' AFTER ld_invite_bool;
